@@ -6,7 +6,7 @@
     <Name>Model</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{1354b85c-1a9b-41cc-9e35-45026789a1af}</ProjectGuid>
+    <ProjectGuid>{120aa83d-caaf-4e89-99a5-d4b539c3b218}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
@@ -56,8 +56,55 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="MasterData" />
     <Folder Include="Tables" />
     <Folder Include="Publish" />
-    <Folder Include="MasterData" />
+    <Folder Include="MasterData\LOCAL" />
+    <Folder Include="MasterData\PRODUCTION" />
+  </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="Environment">
+      <DefaultValue>LOCAL</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MasterData\Script.DatabaseVersioning.sql" />
+    <Build Include="Tables\AccountDeletionRequest.sql" />
+    <Build Include="Tables\AdditionalBoatServiceInfos.sql" />
+    <Build Include="Tables\AdditionalVillaServiceInfo.sql" />
+    <Build Include="Tables\BoatOwnerResponsibilityTypes.sql" />
+    <Build Include="Tables\BoatReservationDetails.sql" />
+    <Build Include="Tables\BoatServiceNavigationTools.sql" />
+    <Build Include="Tables\BoatTypes.sql" />
+    <Build Include="Tables\Cities.sql" />
+    <Build Include="Tables\Countries.sql" />
+    <Build Include="Tables\DatabaseVersion.sql" />
+    <Build Include="Tables\FurtherClientInfo.sql" />
+    <Build Include="Tables\Images.sql" />
+    <Build Include="Tables\Issues.sql" />
+    <Build Include="Tables\LegacyCategories.sql" />
+    <Build Include="Tables\LinkNavigationBoat.sql" />
+    <Build Include="Tables\Marks.sql" />
+    <Build Include="Tables\PromoActions.sql" />
+    <Build Include="Tables\RegistrationReasons.sql" />
+    <Build Include="Tables\Reports.sql" />
+    <Build Include="Tables\Reservations.sql" />
+    <Build Include="Tables\Services.sql" />
+    <Build Include="Tables\ServiceTypes.sql" />
+    <Build Include="Tables\Subscriptions.sql" />
+    <Build Include="Tables\SystemConfigurations.sql" />
+    <Build Include="Tables\Users.sql" />
+    <Build Include="Tables\UserTypes.sql" />
+    <None Include="MasterData\UserTypes.Table.sql" />
+    <None Include="MasterData\ServiceTypes.Table.sql" />
+    <None Include="MasterData\BoatOwnerResponsibilityTypes.Table.sql" />
+    <None Include="MasterData\BoatTypes.Table.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="MasterData\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Publish\LOCAL.Model.publish.xml" />
   </ItemGroup>
 </Project>

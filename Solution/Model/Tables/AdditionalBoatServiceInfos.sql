@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[AdditionalBoatServiceInfos]
 (
-	[ServiceID] INT NOT NULL, 
+	[ServiceId] INT NOT NULL, 
     [Length] DECIMAL(2) NULL, 
     [BoatType] INT NULL, 
     [NumberOfEngines] INT NULL, 

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Reservations]
 (
-	[ReservationsID] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[ReservationsId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [UserId] INT NULL, 
     [ServiceId] INT NULL, 
     [ReservedDateTime] DATETIME2 NULL, 

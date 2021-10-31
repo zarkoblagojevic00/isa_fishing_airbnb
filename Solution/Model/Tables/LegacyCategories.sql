@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[LegacyCategories]
 (
-	[LegacyCategoryID] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[LegacyCategoryId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [Name] NVARCHAR(MAX) NULL, 
     [MinPoints] INT NULL, 
     [MaxPoints] INT NULL, 

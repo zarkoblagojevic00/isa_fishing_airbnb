@@ -70,9 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MasterData\Script.DatabaseVersioning.sql" />
-    <Build Include="Tables\AccountDeletionRequest.sql" />
+    <Build Include="Tables\AccountDeletionRequests.sql" />
     <Build Include="Tables\AdditionalBoatServiceInfos.sql" />
-    <Build Include="Tables\AdditionalVillaServiceInfo.sql" />
+    <Build Include="Tables\AdditionalVillaServiceInfos.sql" />
     <Build Include="Tables\BoatOwnerResponsibilityTypes.sql" />
     <Build Include="Tables\BoatReservationDetails.sql" />
     <Build Include="Tables\BoatServiceNavigationTools.sql" />
@@ -100,11 +100,16 @@
     <None Include="MasterData\ServiceTypes.Table.sql" />
     <None Include="MasterData\BoatOwnerResponsibilityTypes.Table.sql" />
     <None Include="MasterData\BoatTypes.Table.sql" />
+    <None Include="MasterData\Countries.Table.sql" />
+    <None Include="MasterData\Cities.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish\LOCAL.Model.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Model.refactorlog" />
   </ItemGroup>
 </Project>

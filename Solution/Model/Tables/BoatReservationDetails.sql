@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[BoatReservationDetails]
 (
-	[BoatReservationDetailID] INT NOT NULL, 
+	[BoatReservationDetailId] INT NOT NULL, 
     [BoatOwnerResponsibilityType] INT NULL
 )

@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[AccountDeletionRequest]
+﻿CREATE TABLE [dbo].[AccountDeletionRequests]
 (
 	[UserId] INT NOT NULL, 
     [RequestedDateTime] DATETIME2 NULL, 

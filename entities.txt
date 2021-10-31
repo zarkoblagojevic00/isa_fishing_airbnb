@@ -1,0 +1,146 @@
+General types [Enumerations]
+	UserType : Registered, VillaOwner, BoatOwner, Instructor, Admin
+	ServiceType : Villa, Boat, Advanture
+	BoatOwnerResponsibilityType : Captain, FirstAssistent
+	BoatType : [?]
+Entities:
+	User:
+		int id
+		UserType userType
+		string name
+		string surname
+		string email
+		string password
+		string address
+		int cityId
+		string phoneNumber
+		bool isAccountActive - for VillaOwners, BoatOwners and Instructors
+		bool isAccountVerified
+	FurtherClientInfo:
+		int userId
+		int collectedPoints
+		int numberOfPenalties
+------------------------------------------------------------------------			
+	Reservation: [ScheduleItem]
+		int id
+		int userId
+		int serviceId
+		datetime2 reservedDateTime
+		bool isPromo [Akcija]
+		datetime2 startDateTime
+		datetime2 endDateTime
+		bool isCanceled
+		bool isServiceUnavaiableMarker [ako je ovo true onda oznacava kada nije dostupno]
+		int reportId
+		int markId
+		string additionalEquipment
+		float price
+	BoatReservationDetail: [samo za brod]
+		int reservationId
+		BoatOwnerResponsibilityType responsibility
+	Mark:
+		int id [Kroz reservation tablu cemo znati koji se servis ocenjuje]
+		int userId
+		float mark [Kao broj zvezdica npr]
+		string description
+	Report:
+		int id
+		string reportText
+		datetime2 createdDateTime
+		
+	PromoAction:
+		int id
+		int serviceId
+		datetime2 startDateTime
+		datetime2 endDateTime
+		float pricePerDay
+		bool isTaken
+		int capacity
+		string addedBenefits [json sacuvan niz koji ce se mapirati na nesto interno]
+------------------------------------------------------------------------	
+	Service:
+		int id
+		int ownerId [userId]
+		serviceType serviceType
+		int name
+		float pricePerDay
+		string address
+		float longitude [za mape]
+		float latitude  [za mape]
+		string promoDescription
+		string termsOfUse [json sacuvan niz pravila koji ce se mapirati na nesto u modelu]
+		string additionalEquipment [json sacuvan niz isto]
+		datetime2 availableFrom
+		datetime2 availableTo [ako je ovo null znaci stalno dostupno]
+		int capacity
+		bool isProcentageTakenForCancelation
+		float procentageToTake
+	AdditionalBoatServiceInfo:
+		int serviceId
+		double length
+		BoatType boatType
+		int numberOfEngines
+		double powerOfEngine
+		double maxSpeed
+	AdditionalVillaServiceInfo:
+		int serviceId
+		int numberOfBeds
+		int numberOfRooms
+	BoatServiceNavigationTools:
+		int id
+		string name
+		string description
+	LinkNavigationBoat:
+		int serviceId
+		int boatServiceNavigationToolsId
+------------------------------------------------------------------------	
+	Subscription:
+		int userId
+		int serviceId
+	
+	Issue:
+		int id
+		int userId [Po tipu korisnika se zna da li se zali na uslugu ili se neko zali na korisnika]
+		int issuedEntityId [ako se zali obican korisnik ovo je serviceId, ako se zali neko ko je nesto drugo onda je ovo userId]
+		string reason
+		datetime2 createdDateTime
+	
+	AccountDeletionRequest:
+		int userId,
+		datetime2 requestedDateTime
+		string description
+		bool isReviewed
+	
+	SystemConfiguration: [Global config, npr prihod od rezervacija]
+		string name
+		string value
+		
+	RegistrationReason:
+		int userId
+		string reason
+		string denialReason
+		bool reviewed - when admin reviews the registration
+	
+	City:
+		int id
+		string name
+		int countryId
+	Country:
+		int id
+		string name
+	
+	LegacyCategory:
+		int id
+		string name
+		int minPoints
+		int maxPoints
+		string benefits
+		float discount
+	
+	Image:
+		int id
+		byte[] bytes
+		int serviceId
+------------------------------------------------------------------------	
+
+	

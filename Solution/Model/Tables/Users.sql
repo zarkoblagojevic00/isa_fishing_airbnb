@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Users]
 (
-	[UserID] INT NOT NULL PRIMARY KEY IDENTITY(1, 1), 
+	[UserId] INT NOT NULL PRIMARY KEY IDENTITY(1, 1), 
     [UserType] INT NULL, 
     [Name] NVARCHAR(MAX) NULL, 
     [Surname] NVARCHAR(MAX) NULL, 
@@ -9,5 +9,6 @@
     [CityId] INT NULL, 
     [PhoneNumber] NVARCHAR(MAX) NULL, 
     [IsAccountActive] BIT NULL, 
-    [IsAccountVerified] BIT NULL
+    [IsAccountVerified] BIT NULL, 
+    [Email] NVARCHAR(MAX) NULL
 )

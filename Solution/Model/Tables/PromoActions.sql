@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[PromoActions]
 (
-	[PromoActionID] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[PromoActionId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [ServiceId] INT NULL, 
     [StartDateTime] DATETIME2 NULL, 
     [EndDateTime] DATETIME2 NULL, 

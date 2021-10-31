@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Issues]
 (
-	[IssueID] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[IssueId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [UserId] INT NULL, 
     [IssuedEntityId] INT NULL, 
     [Reason] NVARCHAR(MAX) NULL, 

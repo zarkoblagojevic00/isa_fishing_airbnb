@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Services]
 (
-	[ServiceID] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[ServiceId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [OwnerId] INT NULL, 
     [ServiceType] INT NULL, 
     [Name] NVARCHAR(MAX) NULL, 
@@ -14,6 +14,6 @@
     [AvailableFrom] DATETIME2 NULL, 
     [AvailableTo] DATETIME2 NULL, 
     [Capacity] INT NULL, 
-    [IsProcentageTakenFromCancelation] BIT NULL, 
-    [ProcentageToTake] DECIMAL(2) NULL
+    [IsPercentageTakenFromCancelation] BIT NULL, 
+    [PercentageToTake] DECIMAL(2) NULL
 )

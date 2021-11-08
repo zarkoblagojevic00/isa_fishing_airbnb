@@ -15,7 +15,7 @@ namespace Domain.Mappings
             Table("RegistrationReasons");
             Lazy(true);
 
-            Property(x => x.UserId, map => map.Column("UserId"));
+            Id(x => x.UserId, map => map.Column("UserId"));
             Property(x => x.Reason, map => map.Column("Reason"));
             Property(x => x.DenialReason, map => map.Column("DenialReason"));
             Property(x => x.IsReviewed, map => map.Column("IsReviewed"));

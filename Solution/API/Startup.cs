@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using API.Attributes;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Domain.Entities;
@@ -38,7 +39,24 @@ namespace API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v3" });
+                c.AddSecurityDefinition("emailAuth", new OpenApiSecurityScheme()
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Cookie,
+                    Name = "email"
+                });
+                c.AddSecurityDefinition("userIdAuth", new OpenApiSecurityScheme()
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Cookie,
+                    Name = "userId"
+                });
+            });
+
+            services.AddMvcCore(options =>
+            {
+                options.Filters.Add(new CookieMapGlobalAttribute());
             });
 
             var builder = new ContainerBuilder();

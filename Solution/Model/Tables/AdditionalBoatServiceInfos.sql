@@ -5,5 +5,6 @@
     [BoatType] INT NULL, 
     [NumberOfEngines] INT NULL, 
     [PowerOfEngines] DECIMAL(2) NULL, 
-    [MaxSpeed] DECIMAL(2) NULL 
+    [MaxSpeed] DECIMAL(2) NULL, 
+    CONSTRAINT [PK_AdditionalBoatServiceInfos] PRIMARY KEY ([ServiceId]) 
 )

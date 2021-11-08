@@ -15,7 +15,7 @@ namespace Domain.Mappings
             Table("AdditionalBoatServiceInfos");
             Lazy(true);
 
-            Property(x => x.ServiceId, map => map.Column("ServiceId"));
+            Id(x => x.ServiceId, map => map.Column("ServiceId"));
             Property(x => x.Length, map => map.Column("Length"));
             Property(x => x.BoatType, map => map.Column("BoatType"));
             Property(x => x.NumberOfEngines, map => map.Column("NumberOfEngines"));

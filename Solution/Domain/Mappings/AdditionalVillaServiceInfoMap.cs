@@ -15,7 +15,7 @@ namespace Domain.Mappings
             Table("AdditionalVillaServiceInfos");
             Lazy(true);
 
-            Property(x => x.ServiceId, map => map.Column("ServiceId"));
+            Id(x => x.ServiceId, map => map.Column("ServiceId"));
             Property(x => x.NumberOfBeds, map => map.Column("NumberOfBeds"));
             Property(x => x.NumberOfRooms, map => map.Column("NumberOfRooms"));
         }

@@ -15,7 +15,7 @@ namespace Domain.Mappings
             Table("BoatReservationDetails");
             Lazy(true);
 
-            Property(x => x.BoatReservationDetailId, map => map.Column("BoatReservationDetailId"));
+            Id(x => x.BoatReservationId, map => map.Column("BoatReservationId"));
             Property(x => x.BoatOwnerResponsibilityType, map => map.Column("BoatOwnerResponsibilityType"));
         }
     }

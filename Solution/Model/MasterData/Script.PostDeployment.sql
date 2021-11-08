@@ -12,3 +12,10 @@ Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje poda
 :r .\BoatTypes.Table.sql
 :r .\Countries.Table.sql
 :r .\Cities.Table.sql
+:r .\Users.Table.sql
+
+IF '$(Environment)' = 'LOCAL'
+	BEGIN
+		-- Scripts run for local configurations 
+		:r .\LOCAL\SystemConfiguration.Table.sql
+	END

@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[BoatReservationDetails]
 (
-	[BoatReservationDetailId] INT NOT NULL, 
-    [BoatOwnerResponsibilityType] INT NULL
+	[BoatReservationId] INT NOT NULL, 
+    [BoatOwnerResponsibilityType] INT NULL, 
+    CONSTRAINT [PK_BoatReservationDetails] PRIMARY KEY ([BoatReservationId])
 )

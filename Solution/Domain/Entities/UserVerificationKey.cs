@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Subscription
+    public class UserVerificationKey
     {
         public virtual int UserId { get; set; }
-        public virtual int ServiceId { get; set; }
-        public virtual int Id { get; set; }
+        public virtual Guid VerificationKey { get; set; }
+        public virtual bool IsUsed { get; set; }
     }
 }

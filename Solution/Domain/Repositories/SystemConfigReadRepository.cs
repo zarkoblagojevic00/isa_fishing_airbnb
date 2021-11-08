@@ -14,5 +14,15 @@ namespace Domain.Repositories
         public SystemConfigReadRepository(ISession session) : base(session)
         {
         }
+
+        public T GetValue<T>(string name)
+        {
+            var property = GetAll().FirstOrDefault(x => x.Name == name);
+
+            if (property == null)
+                return default;
+
+            return (T) Convert.ChangeType(property.Value, typeof(T));
+        }
     }
 }

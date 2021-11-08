@@ -102,6 +102,8 @@
     <None Include="MasterData\BoatTypes.Table.sql" />
     <None Include="MasterData\Countries.Table.sql" />
     <None Include="MasterData\Cities.Table.sql" />
+    <None Include="MasterData\LOCAL\SystemConfiguration.Table.sql" />
+    <None Include="MasterData\Users.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />
@@ -111,5 +113,8 @@
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Model.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\UserVerificationKeys.sql" />
   </ItemGroup>
 </Project>

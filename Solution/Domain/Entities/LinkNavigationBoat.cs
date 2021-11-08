@@ -10,5 +10,6 @@ namespace Domain.Entities
     {
         public virtual int ServiceId { get; set; }
         public virtual int BoatServiceNavigationToolId { get; set; }
+        public virtual int Id { get; set; }
     }
 }

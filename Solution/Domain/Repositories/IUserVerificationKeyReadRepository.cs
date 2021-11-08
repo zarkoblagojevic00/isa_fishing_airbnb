@@ -8,8 +8,7 @@ using Domain.Repositories.Base;
 
 namespace Domain.Repositories
 {
-    public interface ISystemConfigReadRepository : IReadRepositoryBase<int, SystemConfig>
+    public interface IUserVerificationKeyReadRepository : IReadRepositoryBase<int, UserVerificationKey>
     {
-        T GetValue<T>(string name);
     }
 }

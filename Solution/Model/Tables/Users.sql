@@ -8,7 +8,7 @@
     [Address] NVARCHAR(MAX) NULL, 
     [CityId] INT NULL, 
     [PhoneNumber] NVARCHAR(MAX) NULL, 
-    [IsAccountActive] BIT NULL, 
+    [Email] NVARCHAR(MAX) NULL, 
     [IsAccountVerified] BIT NULL, 
-    [Email] NVARCHAR(MAX) NULL
+    [IsAccountActive] BIT NULL
 )

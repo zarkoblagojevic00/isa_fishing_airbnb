@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class BoatReservationDetail
     {
-        public virtual int BoatReservationDetailId { get; set; }
+        public virtual int BoatReservationId { get; set; }
         public virtual BoatOwnerResponsibilityType BoatOwnerResponsibilityType { get; set; }
     }
 

@@ -16,7 +16,7 @@ namespace Domain.Mappings
             Table("AccountDeletionRequests");
             Lazy(true);
 
-            Property(x => x.UserId, map => map.Column("UserId"));
+            Id(x => x.UserId, map => map.Column("UserId"));
             Property(x => x.RequestedDateTime, map =>
             {
                 map.Column("RequestedDateTime");

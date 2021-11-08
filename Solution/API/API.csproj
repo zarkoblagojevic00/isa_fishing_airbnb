@@ -16,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Attributes\" />
     <Folder Include="Mappers\" />
-    <Folder Include="DTOs\" />
   </ItemGroup>
 
 </Project>

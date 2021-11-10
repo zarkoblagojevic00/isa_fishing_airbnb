@@ -1,0 +1,40 @@
+<template>
+  <router-link to="/adventure/gallery">
+    <div class="card">
+      <img src="../assets/gallery.jpg" style="width: 100%" />
+      <div class="container">
+        <p><b> For images from previous adventures, follow here!</b></p>
+      </div>
+    </div>
+  </router-link>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style scoped>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  min-width: 350px;
+  max-width: 350px;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+.img {
+  width: 100%;
+}
+
+p {
+  margin-top: 40px;
+}
+</style>

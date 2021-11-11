@@ -104,6 +104,8 @@
     <None Include="MasterData\Cities.Table.sql" />
     <None Include="MasterData\LOCAL\SystemConfiguration.Table.sql" />
     <None Include="MasterData\Users.Table.sql" />
+    <None Include="MasterData\Services.Table.sql" />
+    <None Include="MasterData\ClearAndReseed.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />

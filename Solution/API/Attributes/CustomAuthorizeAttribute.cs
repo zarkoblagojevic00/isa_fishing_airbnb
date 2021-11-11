@@ -12,40 +12,41 @@ namespace API.Attributes
 {
     public class CustomAuthorizeAttribute : ActionFilterAttribute
     {
-        private readonly IUnitOfWork UnitOfWork;
-        private readonly UserType userType;
-        private readonly bool shouldAuthorizeAll;
+        private readonly IUnitOfWork _UnitOfWork;
+        private readonly UserType _userType;
+        private readonly bool _shouldAuthorizeAll;
+        private readonly bool _lastInChain;
 
         public CustomAuthorizeAttribute(IUnitOfWork uow, bool authorizeAll = true, UserType authorizedUserTypes = UserType.Admin)
         {
-            UnitOfWork = uow;
-            userType = authorizedUserTypes;
-            shouldAuthorizeAll = authorizeAll;
+            _UnitOfWork = uow;
+            _userType = authorizedUserTypes;
+            _shouldAuthorizeAll = authorizeAll;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var email = context.HttpContext.Request.Cookies["email"];
-            var userId = context.HttpContext.Request.Cookies["userId"];
+            var email = context.HttpContext.Request.Cookies[CookieInformation.CookieInformation.Email];
+            var userId = context.HttpContext.Request.Cookies[CookieInformation.CookieInformation.UserId];
 
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(userId))
             {
                 if (int.TryParse(userId, out int id))
                 {
-                    var user = UnitOfWork.GetRepository<IUserReadRepository>()
+                    var user = _UnitOfWork.GetRepository<IUserReadRepository>()
                         .GetAll()
-                        .FirstOrDefault(x => x.Email == email && x.UserId == id && x.IsAccountActive);
+                        .FirstOrDefault(x => x.Email == email && x.UserId == id && x.IsAccountActive && x.IsAccountVerified);
 
                     if (user != null)
                     {
-                        if (shouldAuthorizeAll)
+                        if (_shouldAuthorizeAll)
                         {
                             base.OnActionExecuting(context);
                             return;
                         }
                         else
                         {
-                            if (user.UserType == userType)
+                            if (user.UserType == _userType)
                             {
                                 base.OnActionExecuting(context);
                                 return;

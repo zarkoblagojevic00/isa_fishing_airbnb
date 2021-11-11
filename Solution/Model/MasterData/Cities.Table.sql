@@ -1,8 +1,4 @@
-﻿DELETE Cities
-
-DBCC CHECKIDENT ('[dbo].[Cities]', RESEED, 1)
-
-INSERT INTO Cities VALUES ('Backa Topola', 1)
+﻿INSERT INTO Cities VALUES ('Backa Topola', 1)
 INSERT INTO Cities VALUES ('Mali Iđos', 1)
 INSERT INTO Cities VALUES ('Subotica', 1)
 INSERT INTO Cities VALUES ('Žitiste', 1)

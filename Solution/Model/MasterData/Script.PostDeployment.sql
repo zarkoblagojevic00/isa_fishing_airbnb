@@ -2,6 +2,9 @@
 Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje podataka
 */
 
+-- Clear and reseed Database
+:r .\ClearAndReseed.sql
+
 -- Insert version info
 :r .\Script.DatabaseVersioning.sql
 
@@ -13,6 +16,7 @@ Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje poda
 :r .\Countries.Table.sql
 :r .\Cities.Table.sql
 :r .\Users.Table.sql
+:r .\Services.Table.sql
 
 IF '$(Environment)' = 'LOCAL'
 	BEGIN

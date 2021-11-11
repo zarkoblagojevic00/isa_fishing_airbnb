@@ -10,7 +10,7 @@ using Domain.UnitOfWork;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class CityController : ControllerBase
     {
         private readonly IUnitOfWork _uoW;

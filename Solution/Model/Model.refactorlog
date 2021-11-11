@@ -189,4 +189,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Email" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="94f21522-4373-40c5-b2f1-966e4e80f725" ChangeDateTime="11/11/2021 19:06:49">
+    <Property Name="ElementName" Value="[dbo].[Services].[IsPercentageTakenFromCancelation]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Services]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsPercentageTakenFromCanceledReservations" />
+  </Operation>
 </Operations>

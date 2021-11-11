@@ -16,5 +16,11 @@ namespace Services.Constants
 
         public static string VerificationKeyUsed = "Verification key was already used";
         public static string VerificationKeyNotFound = "Verification key was not found";
+
+        public static string MissingCookieInfo = "Missing information in cookie";
+
+        public static string ServiceOwnerNotLinked = "Service and Owner specified are not linked";
+
+        public static string WrongImageFormat = "Image was not in the correct format";
     }
 }

@@ -70,7 +70,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [TypeFilter(typeof(CustomAuthorizeAttribute))]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult ReviewRequest(RegistrationReviewDTO reviewDto)
         {
             if (!reviewDto.Result && string.IsNullOrEmpty(reviewDto.Reason))

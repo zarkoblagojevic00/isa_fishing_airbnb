@@ -41,7 +41,7 @@ namespace API.Attributes
                 }
             }
 
-            context.Result = new BadRequestResult();
+            context.Result = new UnauthorizedResult();
         }
     }
 }

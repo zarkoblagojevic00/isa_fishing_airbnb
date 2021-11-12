@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Attributes;
+using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
 using Domain.Repositories;
@@ -15,13 +16,10 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class VillaManagementController : ControllerBase
+    public class VillaManagementController : AdvancedController
     {
-        private readonly IUnitOfWork _uow;
-
-        public VillaManagementController(IUnitOfWork uow)
+        public VillaManagementController(IUnitOfWork uow) : base(uow)
         {
-            _uow = uow;
         }
 
         [HttpPost]
@@ -49,24 +47,24 @@ namespace API.Controllers
             {
                 var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
                 var villa = CreateNewVilla(currentUser, newVilla);
-                var villaWriteRepo = _uow.GetRepository<IServiceWriteRepository>();
+                var villaWriteRepo = UoW.GetRepository<IServiceWriteRepository>();
 
-                var additionalVillaInfoWriteRepo = _uow.GetRepository<IAdditionalVillaServiceInfoWriteRepository>();
+                var additionalVillaInfoWriteRepo = UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>();
 
-                _uow.BeginTransaction();
+                UoW.BeginTransaction();
 
                 villaWriteRepo.Add(villa);
 
                 var additionalInfo = CreateAdditionalVillaServiceInfo(villa.ServiceId, newVilla);
                 additionalVillaInfoWriteRepo.Add(additionalInfo);
 
-                _uow.Commit();
+                UoW.Commit();
 
                 return Ok(villa.ServiceId);
             }
             catch (Exception e)
             {
-                _uow.Rollback();
+                UoW.Rollback();
                 return Problem(e.Message);
             }
         }
@@ -81,26 +79,23 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
-            var validationResponse = new ValidateServiceOwnerService(_uow).ValidateOwnerShip(villa.VillaId.Value, currentUser);
-
-            if (!validationResponse)
+            if (!CheckOwnerShip(villa.VillaId.Value))
             {
-                return BadRequest(Responses.ServiceOwnerNotLinked);
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
 
-            var villaService = _uow.GetRepository<IServiceReadRepository>().GetById(villa.VillaId.Value);
-            var additionalVillaInfo = _uow.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
+            var villaService = UoW.GetRepository<IServiceReadRepository>().GetById(villa.VillaId.Value);
+            var additionalVillaInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll().First(x => x.ServiceId == villa.VillaId.Value);
 
             MapNewInformation(villa, villaService, additionalVillaInfo);
 
-            _uow.BeginTransaction();
+            UoW.BeginTransaction();
 
-            _uow.GetRepository<IServiceWriteRepository>().Update(villaService);
-            _uow.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Update(additionalVillaInfo);
+            UoW.GetRepository<IServiceWriteRepository>().Update(villaService);
+            UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Update(additionalVillaInfo);
 
-            _uow.Commit();
+            UoW.Commit();
 
             return Ok(Responses.Ok);
         }
@@ -137,8 +132,7 @@ namespace API.Controllers
             };
         }
 
-        private void MapNewInformation(VillaDTO villa, Service villaService,
-            AdditionalVillaServiceInfo additionalVillaServiceInfo)
+        private void MapNewInformation(VillaDTO villa, Service villaService, AdditionalVillaServiceInfo additionalVillaServiceInfo)
         {
             villaService.Name = villa.Name;
             villaService.PricePerDay = villa.PricePerDay;

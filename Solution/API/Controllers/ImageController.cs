@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Attributes;
+using API.Controllers.Base;
 using API.DTOs;
 using API.Extensions;
 using Domain.Entities;
@@ -17,14 +18,12 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class ImageController : ControllerBase
+    public class ImageController : AdvancedController
     {
-        private readonly IUnitOfWork _uow;
         private readonly int _maxImageSize;
 
-        public ImageController(IUnitOfWork uow)
+        public ImageController(IUnitOfWork uow) : base(uow)
         {
-            _uow = uow;
             _maxImageSize = uow.GetRepository<ISystemConfigReadRepository>().GetValue<int>("MaxImageSize");
         }
 
@@ -32,7 +31,7 @@ namespace API.Controllers
         [ResponseCache(Duration = 259_200)]
         public IActionResult GetImage(int id)
         {
-            var image = _uow.GetRepository<IImageReadRepository>().GetById(id);
+            var image = UoW.GetRepository<IImageReadRepository>().GetById(id);
 
             return File(image.Bytes, image.GetImageFormat());
         }
@@ -41,27 +40,24 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult AddImage(ImageDTO image)
         {
-            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
-            var validationResponse = new ValidateServiceOwnerService(_uow).ValidateOwnerShip(image.ServiceId,currentUser);
-
-            if (!validationResponse)
+            if (!CheckOwnerShip(image.ServiceId))
             {
-                return BadRequest(Responses.ServiceOwnerNotLinked);
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
 
             try
             {
-                _uow.BeginTransaction();
+                UoW.BeginTransaction();
 
                 var newImage = CreateImage(image);
 
-                _uow.GetRepository<IImageWriteRepository>().Add(newImage);
+                UoW.GetRepository<IImageWriteRepository>().Add(newImage);
 
-                _uow.Commit();
+                UoW.Commit();
             }
             catch (Exception e)
             {
-                _uow.Rollback();
+                UoW.Rollback();
                 return BadRequest(Responses.WrongImageFormat);
             }
 
@@ -72,20 +68,17 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult DeleteImage(int id)
         {
-            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
-            var image = _uow.GetRepository<IImageReadRepository>().GetById(id);
-
-            var validationResponse = new ValidateServiceOwnerService(_uow).ValidateOwnerShip(image.ServiceId, currentUser);
-            if (!validationResponse)
+            var image = UoW.GetRepository<IImageReadRepository>().GetById(id);
+            if (!CheckOwnerShip(image.ServiceId))
             {
-                return BadRequest(Responses.ServiceOwnerNotLinked);
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
 
-            _uow.BeginTransaction();
+            UoW.BeginTransaction();
 
-            _uow.GetRepository<IImageWriteRepository>().Delete(image);
+            UoW.GetRepository<IImageWriteRepository>().Delete(image);
 
-            _uow.Commit();
+            UoW.Commit();
 
             return Ok(Responses.Ok);
         }

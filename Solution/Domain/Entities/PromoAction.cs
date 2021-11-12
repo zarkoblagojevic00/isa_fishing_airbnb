@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Entities.Abstractions;
 
 namespace Domain.Entities
 {
-    public class PromoAction
+    public class PromoAction : CalendarItem
     {
         public virtual int PromoActionId { get; set; }
         public virtual int ServiceId { get; set; }
-        public virtual DateTime StartDateTime { get; set; }
-        public virtual DateTime EndDateTime { get; set; }
         public virtual double PricePerDay { get; set; }
         public virtual bool IsTaken { get; set; }
         public virtual int Capacity { get; set; }

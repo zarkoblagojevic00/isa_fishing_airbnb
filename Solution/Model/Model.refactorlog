@@ -196,4 +196,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="IsPercentageTakenFromCanceledReservations" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a262ecc6-52eb-41dc-b864-01b1581c8be9" ChangeDateTime="11/12/2021 15:35:34">
+    <Property Name="ElementName" Value="[dbo].[Reservations].[ReservationsId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Reservations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReservationId" />
+  </Operation>
 </Operations>

@@ -56,12 +56,7 @@ namespace API.Attributes
                 }
             }
 
-            context.Result = new BadRequestResult();
-        }
-
-        public override void OnActionExecuted(ActionExecutedContext context)
-        {
-            base.OnActionExecuted(context);
+            context.Result = new UnauthorizedResult();
         }
     }
 }

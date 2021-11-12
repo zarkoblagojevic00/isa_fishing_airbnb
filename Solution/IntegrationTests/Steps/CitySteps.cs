@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Autofac;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using TechTalk.SpecFlow;
 
 namespace IntegrationTests.Steps
@@ -42,6 +46,15 @@ namespace IntegrationTests.Steps
 
             CommonSteps.ScenarioContext.Set(pathParams, "pathParams");
         }
-        
+
+        [Then(@"the response should be an array of Cities")]
+        public async Task TheResponseShouldBeAnArrayOfCities()
+        {
+            var response = CommonSteps.ScenarioContext.Get<HttpResponseMessage>();
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            json.Should().BeOfType<IEnumerable<City>>();
+        }
     }
 }

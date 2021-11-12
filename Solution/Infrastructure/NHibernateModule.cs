@@ -20,6 +20,8 @@ namespace Infrastructure
     {
         public List<Type> MappingTypes { get; set; }
         public List<Assembly> MappingAssemblies { get; set; }
+        public bool NamedRegister { get; set; } = false;
+        public string Domain { get; set; }
         public string ConnectionString { get; set; }
         public string DbType { get; set; } = "SqlServer";
 
@@ -61,8 +63,16 @@ namespace Infrastructure
 
             builder.RegisterInstance(configuration).As<Configuration>().SingleInstance();
 
-            builder.Register(c => configuration.BuildSessionFactory()).As<ISessionFactory>().SingleInstance();
-            builder.Register(c => c.Resolve<ISessionFactory>().OpenSession());
+            if (NamedRegister)
+            {
+                builder.Register(c => configuration.BuildSessionFactory()).Named<ISessionFactory>(Domain).SingleInstance();
+                builder.Register(c => c.ResolveNamed<ISessionFactory>(Domain).OpenSession()).Named<ISession>(Domain);
+            }
+            else
+            {
+                builder.Register(c => configuration.BuildSessionFactory()).As<ISessionFactory>().SingleInstance();
+                builder.Register(c => c.Resolve<ISessionFactory>().OpenSession());
+            }
         }
     }
 }

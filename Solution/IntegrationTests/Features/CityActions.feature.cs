@@ -106,22 +106,70 @@ this.ScenarioInitialize(scenarioInfo);
                             "HttpMethod",
                             "get"});
                 table1.AddRow(new string[] {
-                            "BaseUrl",
-                            "https://localhost:44383/"});
+                            "RelativeResourceUrl",
+                            "/City/GetCity"});
 #line 5
  testRunner.When("a request is sent to the API", ((string)(null)), table1, "When ");
+#line hidden
+#line 9
+ testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
                 TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                             "Key",
                             "Value"});
                 table2.AddRow(new string[] {
-                            "Name",
+                            "name",
                             "Novi Sad"});
                 table2.AddRow(new string[] {
-                            "CountryId",
+                            "countryId",
                             "1"});
-#line 9
- testRunner.Then("a \"200\" status code should be received with data", ((string)(null)), table2, "Then ");
+#line 10
+ testRunner.And("the response will come with following json object", ((string)(null)), table2, "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Get all cities", SourceLine=14)]
+        public virtual void GetAllCities()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get all cities", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 15
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table3.AddRow(new string[] {
+                            "HttpMethod",
+                            "get"});
+                table3.AddRow(new string[] {
+                            "RelativeResourceUrl",
+                            "/City/GetCities"});
+#line 16
+ testRunner.When("a request is sent to the API", ((string)(null)), table3, "When ");
+#line hidden
+#line 21
+ testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

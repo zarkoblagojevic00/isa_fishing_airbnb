@@ -14,6 +14,7 @@ using Domain.UnitOfWork;
 using FluentAssertions;
 using Infrastructure;
 using IntegrationTests.Parameters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -29,19 +30,16 @@ namespace IntegrationTests.Steps
         public static HttpClientHandler ClientHandler { get; private set; }
         public static CookieContainer CookieContainer { get; private set; }
 
-        public CommonSteps(FeatureContext context)
-        {
-            FeatureContext = context;
-        }
-
         [BeforeFeature]
         public static void BeforeFeature(FeatureContext context)
         {
+            FeatureContext = context;
+
             var builder = new ContainerBuilder();
             builder.RegisterModule(new NHibernateModule()
             {
                 DbType = "SqlServer",
-                ConnectionString = ConfigurationManager.ConnectionStrings["Local"].ToString(),
+                ConnectionString = "Data Source=localhost;Initial Catalog=ISA;Integrated Security=True", //TODO: fix this so it reads from APP.config
                 MappingAssemblies = new List<Assembly>()
                 {
                     typeof(AccountDeletionRequestMap).Assembly
@@ -73,6 +71,7 @@ namespace IntegrationTests.Steps
         public static void BeforeScenario(ScenarioContext context)
         {
             ScenarioContext = context;
+            context.Set(string.Empty,"pathParams");
 
             CookieContainer = new CookieContainer();
             ClientHandler = new HttpClientHandler()
@@ -123,26 +122,31 @@ namespace IntegrationTests.Steps
 
             Client.BaseAddress = new Uri(parameters.BaseUrl);
 
-            if (parameters.CookieEmail != string.Empty)
+            if (!string.IsNullOrEmpty(parameters.CookieEmail))
             {
                 CookieContainer.Add(new Cookie("email", parameters.CookieEmail));
             }
 
-            if (parameters.CookieUserId != string.Empty)
+            if (!string.IsNullOrEmpty(parameters.CookieUserId))
             {
                 CookieContainer.Add(new Cookie("userId",parameters.CookieUserId));
             }
 
-            await SendRequest(parameters.HttpMethod, parameters.BaseUrl);
+            await SendRequest(parameters.HttpMethod, parameters.RelativeResourceUrl);
         }
 
-        [Then(@"a ""(.*)"" status code should be received with data")]
-        public async Task AStatusCodeShouldBeReceivedWithData(HttpStatusCode statusCode, Table table)
+        [Then(@"a ""(.*)"" status code should be received")]
+        public void AStatusCodeShouldBeReceivedWithData(HttpStatusCode statusCode)
         {
             var response = ScenarioContext.Get<HttpResponseMessage>();
 
             response.StatusCode.Should().Be(statusCode);
+        }
 
+        [Then(@"the response will come with following json object")]
+        public async Task TheResponseWillComeWithFollowingJsonObject(Table table)
+        {
+            var response = ScenarioContext.Get<HttpResponseMessage>();
             var kvps = table.CreateSet<HttpResponseParameter>();
             var content = await response.Content.ReadAsStringAsync();
 

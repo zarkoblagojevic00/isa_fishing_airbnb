@@ -24,5 +24,13 @@ namespace API.Controllers
 
             return cityReadRepo.GetAll();
         }
+
+        [HttpGet]
+        public City GetCity(int id)
+        {
+            var cityReadRepo = UoW.GetRepository<ICityReadRepository>();
+
+            return cityReadRepo.GetById(id);
+        }
     }
 }

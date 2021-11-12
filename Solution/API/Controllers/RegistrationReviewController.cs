@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Attributes;
+using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
 using Domain.Repositories;
@@ -18,26 +19,23 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class RegistrationReviewController : ControllerBase
+    public class RegistrationReviewController : AdvancedController
     {
-        private readonly IUnitOfWork _uow;
-
-        public RegistrationReviewController(IUnitOfWork uow)
+        public RegistrationReviewController(IUnitOfWork uow) : base(uow)
         {
-            _uow = uow;
         }
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[]{false, UserType.Admin})]
         public IEnumerable<UserAndRegistrationReasonDTO> GetAll()
         {
-            var registrationReasonRepo = _uow.GetRepository<IRegistrationReasonReadRepository>();
-            var userRepo = _uow.GetRepository<IUserReadRepository>();
+            var registrationReasonRepo = UoW.GetRepository<IRegistrationReasonReadRepository>();
+            var userRepo = UoW.GetRepository<IUserReadRepository>();
 
             var allRequests = registrationReasonRepo.GetAll();
             var allUsers = userRepo.GetAll();
-            var allCities = _uow.GetRepository<ICityReadRepository>().GetAll();
-            var allCountries = _uow.GetRepository<ICountryReadRepository>().GetAll();
+            var allCities = UoW.GetRepository<ICityReadRepository>().GetAll();
+            var allCountries = UoW.GetRepository<ICountryReadRepository>().GetAll();
 
             return allRequests
                 .Join(allUsers, x => x.UserId, y => y.UserId, (x, y) => new UserAndRegistrationReasonDTO()
@@ -70,7 +68,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [TypeFilter(typeof(CustomAuthorizeAttribute))]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult ReviewRequest(RegistrationReviewDTO reviewDto)
         {
             if (!reviewDto.Result && string.IsNullOrEmpty(reviewDto.Reason))
@@ -79,10 +77,10 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
             
-            var registrationReasonReadRepo = _uow.GetRepository<IRegistrationReasonReadRepository>();
-            var registrationReasonWriteRepo = _uow.GetRepository<IRegistrationReasonWriteRepository>();
-            var userWriteRepo = _uow.GetRepository<IUserWriteRepository>();
-            var userReadRepo = _uow.GetRepository<IUserReadRepository>();
+            var registrationReasonReadRepo = UoW.GetRepository<IRegistrationReasonReadRepository>();
+            var registrationReasonWriteRepo = UoW.GetRepository<IRegistrationReasonWriteRepository>();
+            var userWriteRepo = UoW.GetRepository<IUserWriteRepository>();
+            var userReadRepo = UoW.GetRepository<IUserReadRepository>();
 
             var regReason = registrationReasonReadRepo.GetAll()
                 .FirstOrDefault(x => x.UserId == reviewDto.UserId);
@@ -93,7 +91,7 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
-            _uow.BeginTransaction();
+            UoW.BeginTransaction();
 
             try
             {
@@ -105,9 +103,9 @@ namespace API.Controllers
                 user.IsAccountVerified = reviewDto.Result;
                 userWriteRepo.Update(user);
 
-                _uow.Commit();
+                UoW.Commit();
 
-                var mailService = new MailingService(_uow)
+                var mailService = new MailingService(UoW)
                 {
                     Body = GenerateReviewMailBody(regReason),
                     Receiver = user.Email,
@@ -117,7 +115,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                _uow.Rollback();
+                UoW.Rollback();
                 return Problem(e.Message);
             }
 

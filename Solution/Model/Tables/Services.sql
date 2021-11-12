@@ -14,6 +14,6 @@
     [AvailableFrom] DATETIME2 NULL, 
     [AvailableTo] DATETIME2 NULL, 
     [Capacity] INT NULL, 
-    [IsPercentageTakenFromCancelation] BIT NULL, 
+    [IsPercentageTakenFromCanceledReservations] BIT NULL, 
     [PercentageToTake] DECIMAL(2) NULL
 )

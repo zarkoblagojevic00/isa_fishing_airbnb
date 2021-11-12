@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.Controllers.Base;
 using API.DTOs;
 using API.Extensions;
 using Domain.Entities;
@@ -20,30 +21,25 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class RegistrationController : ControllerBase
+    public class RegistrationController : AdvancedController
     {
-        private readonly IUnitOfWork _uow;
-
-        public RegistrationController(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
+        public RegistrationController(IUnitOfWork uow) : base(uow) {}
 
         [HttpPost]
         public IActionResult RegisterServiceOwner(ServiceOwnerRegistrationDTO registrationForm)
         {
-            var emailValidationService = new EmailValidationService(_uow);
+            var emailValidationService = new EmailValidationService(UoW);
             var serviceResponse = emailValidationService.CheckEmailDuplication(registrationForm.Email);
             if (serviceResponse != Responses.Ok)
             {
                 return BadRequest(serviceResponse);
             }
 
-            var writeUserRepo = _uow.GetRepository<IUserWriteRepository>();
-            var writeReasonRepo = _uow.GetRepository<IRegistrationReasonWriteRepository>();
-            var writeUserVerificationRepo = _uow.GetRepository<IUserVerificationKeyWriteRepository>();
+            var writeUserRepo = UoW.GetRepository<IUserWriteRepository>();
+            var writeReasonRepo = UoW.GetRepository<IRegistrationReasonWriteRepository>();
+            var writeUserVerificationRepo = UoW.GetRepository<IUserVerificationKeyWriteRepository>();
 
-            _uow.BeginTransaction();
+            UoW.BeginTransaction();
             
             var newUser = ExtractUser(registrationForm);
             writeUserRepo.Add(newUser);
@@ -61,9 +57,9 @@ namespace API.Controllers
 
             writeUserVerificationRepo.Add(userRegistrationKey);
 
-            _uow.Commit();
+            UoW.Commit();
 
-            var mailService = new MailingService(_uow)
+            var mailService = new MailingService(UoW)
             {
                 Body = GenerateMailForConfirmation(newUser.UserId, userRegistrationKey.VerificationKey.ToString()),
                 Receiver = newUser.Email,
@@ -77,7 +73,7 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult ConfirmIdentity(int userId, Guid guid)
         {
-            var verificationKeyReadRepo = _uow.GetRepository<IUserVerificationKeyReadRepository>();
+            var verificationKeyReadRepo = UoW.GetRepository<IUserVerificationKeyReadRepository>();
             var key = verificationKeyReadRepo.GetAll()
                 .FirstOrDefault(x => x.UserId == userId && x.VerificationKey == guid);
 
@@ -91,17 +87,17 @@ namespace API.Controllers
                 return BadRequest(Responses.VerificationKeyUsed);
             }
 
-            var user = _uow.GetRepository<IUserReadRepository>().GetById(userId);
+            var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
 
-            _uow.BeginTransaction();
+            UoW.BeginTransaction();
 
             key.IsUsed = true;
-            _uow.GetRepository<IUserVerificationKeyWriteRepository>().Update(key);
+            UoW.GetRepository<IUserVerificationKeyWriteRepository>().Update(key);
 
             user.IsAccountVerified = true;
-            _uow.GetRepository<IUserWriteRepository>().Update(user);
+            UoW.GetRepository<IUserWriteRepository>().Update(user);
 
-            _uow.Commit();
+            UoW.Commit();
 
             return Ok(Responses.Ok);
         }

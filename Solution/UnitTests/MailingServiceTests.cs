@@ -8,6 +8,7 @@ using Autofac;
 using Domain.Entities;
 using Domain.Mappings;
 using Domain.UnitOfWork;
+using FluentAssertions;
 using Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Services;
@@ -57,7 +58,7 @@ namespace UnitTests
         {
             var uow = container.Resolve<IUnitOfWork>();
 
-            Assert.IsNotNull(uow);
+            uow.Should().NotBeNull();
 
             var mailingService = new MailingService(uow)
             {

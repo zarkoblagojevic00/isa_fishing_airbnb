@@ -10,18 +10,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Attributes
 {
-    public class CustomAuthorizeAttribute : ActionFilterAttribute
+    public class CustomAuthorizeServiceOwnerAttribute : ActionFilterAttribute
     {
         private readonly IUnitOfWork _UnitOfWork;
-        private readonly UserType _userType;
-        private readonly bool _shouldAuthorizeAll;
-        private readonly bool _lastInChain;
 
-        public CustomAuthorizeAttribute(IUnitOfWork uow, bool authorizeAll = true, UserType authorizedUserTypes = UserType.Admin)
+        public CustomAuthorizeServiceOwnerAttribute(IUnitOfWork uow)
         {
             _UnitOfWork = uow;
-            _userType = authorizedUserTypes;
-            _shouldAuthorizeAll = authorizeAll;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -35,23 +30,13 @@ namespace API.Attributes
                 {
                     var user = _UnitOfWork.GetRepository<IUserReadRepository>()
                         .GetAll()
-                        .FirstOrDefault(x => x.Email == email && x.UserId == id && x.IsAccountActive && x.IsAccountVerified);
+                        .FirstOrDefault(x => x.Email == email && x.UserId == id && x.IsAccountActive && x.IsAccountVerified &&
+                                             x.UserType != UserType.Admin && x.UserType != UserType.Registered);
 
                     if (user != null)
                     {
-                        if (_shouldAuthorizeAll)
-                        {
-                            base.OnActionExecuting(context);
-                            return;
-                        }
-                        else
-                        {
-                            if (user.UserType == _userType)
-                            {
-                                base.OnActionExecuting(context);
-                                return;
-                            }
-                        }
+                        base.OnActionExecuting(context);
+                        return;
                     }
                 }
             }

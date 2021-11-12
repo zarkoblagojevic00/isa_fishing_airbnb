@@ -1,4 +1,5 @@
 ﻿using System;
+using API.Controllers.Base;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
@@ -7,28 +8,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class CountryController : ControllerBase
+    [Route("[controller]/[action]")]
+    public class CountryController : AdvancedController
     {
-        private readonly IUnitOfWork _uow;
-
-        public CountryController(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
+        public CountryController(IUnitOfWork uow) : base(uow)
+        { }
 
         [HttpPost]
         public IActionResult AddCountry(Country country)
         {
             try
             {
-                _uow.BeginTransaction();
-                _uow.GetRepository<ICountryWriteRepository>().Add(country);
-                _uow.Commit();
+                UoW.BeginTransaction();
+                UoW.GetRepository<ICountryWriteRepository>().Add(country);
+                UoW.Commit();
             }
             catch (Exception e)
             {
-                _uow.Rollback();
+                UoW.Rollback();
             }
             
             return Ok("success");

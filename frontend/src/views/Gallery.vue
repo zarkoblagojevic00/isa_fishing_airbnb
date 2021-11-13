@@ -4,7 +4,11 @@
       headerText="Sunrise adventure"
       subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
     />
-    <h1>Images from previous adventures</h1>
+    <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
+    <div class="images">
+      <h1>Images from previous adventures</h1>
+    </div>
+
     <div class="images" v-viewer>
       <img
         v-for="img in images"
@@ -12,19 +16,27 @@
         v-bind:src="require('../assets/' + img)"
       />
     </div>
-    <router-link to="/adventure"><p>Go back...</p></router-link>
   </div>
 </template>
 <script>
 import Header from "@/components/Header.vue";
+import Navbar from "@/components/Navbar.vue";
 
 export default {
   name: "Gallery",
   components: {
     Header,
+    Navbar,
   },
   data() {
     return {
+      navbarItems: [
+        "Quick reservation",
+        "Gallery",
+        "Price list",
+        "Rules of conduct",
+      ],
+      baseUrlInstructor: "/adventure/",
       images: [
         "gallery-item-1.jpg",
         "gallery-item-2.jpg",
@@ -39,6 +51,13 @@ export default {
 </script>
 
 <style scoped>
+.images {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 50px;
+}
+
 img {
   margin: 20px;
   height: 350px;

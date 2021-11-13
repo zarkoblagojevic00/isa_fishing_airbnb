@@ -1,6 +1,5 @@
 <template>
   <div class="card">
-    <p><b> Rules of conduct </b></p>
     <div class="container">
       <table class="allowed-table">
         <thead>
@@ -86,9 +85,8 @@ export default {
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
-  min-width: 500px;
-  max-width: 500px;
   cursor: pointer;
+  padding: 20px;
 }
 
 .card:hover {

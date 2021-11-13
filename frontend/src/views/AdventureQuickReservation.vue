@@ -5,24 +5,24 @@
   />
   <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
   <div class="flexbox-container">
-    <InstructorInfo />
-    <Map />
+    <h1>Quick reservation</h1>
+  </div>
+  <div class="flexbox-container">
+    <QuickReservation />
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header.vue";
-import InstructorInfo from "@/components/InstructorInfo.vue";
-import Map from "@/components/Map.vue";
 import Navbar from "../components/Navbar.vue";
+import QuickReservation from "../components/QuickReservation.vue";
 
 export default {
-  name: "AdventureProfile",
+  name: "AdventureQuickReservation",
   components: {
     Header,
-    InstructorInfo,
-    Map,
     Navbar,
+    QuickReservation,
   },
   data() {
     return {
@@ -42,7 +42,7 @@ export default {
 <style scoped>
 .flexbox-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 50px;
 }
 </style>

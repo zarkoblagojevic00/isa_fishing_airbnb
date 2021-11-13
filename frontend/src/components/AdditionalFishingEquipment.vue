@@ -1,6 +1,5 @@
 <template>
-  <p><b> Additional fishing equipment </b></p>
-  <div class="container">
+  <div class="container card">
     <table class="equipment-table">
       <thead>
         <tr>
@@ -36,8 +35,15 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 2px 16px;
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
 .left {

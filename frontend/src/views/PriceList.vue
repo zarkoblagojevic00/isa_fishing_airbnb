@@ -1,6 +1,13 @@
 <template>
+  <Header
+    headerText="Sunrise adventure"
+    subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
+  />
+  <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
   <div>
-    <p><b> Pricelist </b></p>
+    <div class="container">
+      <h1>Price list</h1>
+    </div>
     <div class="container">
       <table class="price-table">
         <thead>
@@ -21,9 +28,24 @@
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
+import Navbar from "@/components/Navbar.vue";
+
 export default {
+  name: "PriceList",
+  components: {
+    Navbar,
+    Header,
+  },
   data() {
     return {
+      navbarItems: [
+        "Quick reservation",
+        "Gallery",
+        "Price list",
+        "Rules of conduct",
+      ],
+      baseUrlInstructor: "/adventure/",
       services: [
         {
           id: 1,
@@ -48,7 +70,9 @@ export default {
 
 <style scoped>
 .container {
-  padding: 2px 16px;
+  padding: 50px;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .left {

@@ -30,6 +30,11 @@ namespace Services
 
         private double CalculateAverageMark(IEnumerable<Mark> marks)
         {
+            if (!marks.Any())
+            {
+                return 0.0;
+            }
+
             return marks.Select(x => x.GivenMark).Average();
         }
 
@@ -56,7 +61,7 @@ namespace Services
         {
             var result = new List<SummaryItem>();
 
-            for (int i = 0; i < backPeriod; i++)
+            for (int i = 1; i <= backPeriod; i++)
             {
                 var startDate = DateTime.Now.AddMonths(-1 * i);
                 var endDate = startDate.AddMonths(1).Subtract(new TimeSpan(1,0,0,0));
@@ -75,7 +80,7 @@ namespace Services
         {
             var result = new List<SummaryItem>();
 
-            for (int i = 0; i < backPeriod; i++)
+            for (int i = 1; i <= backPeriod; i++)
             {
                 var startDate = DateTime.Now.AddYears(i * -1);
                 var endDate = startDate.AddYears(1).Subtract(new TimeSpan(1,0,0,0));

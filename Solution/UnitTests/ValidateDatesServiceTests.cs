@@ -13,7 +13,7 @@ namespace UnitTests
 {
     [TestClass]
     [TestCategory("ServiceTests")]
-    public class ValidateDatesService
+    public class ValidateDatesServiceTests
     {
         [TestMethod]
         public void NonOverlappingDates()

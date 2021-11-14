@@ -12,6 +12,7 @@ using Domain.Entities.Abstractions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
+using Services;
 using Services.Constants;
 using Services.Validators;
 
@@ -238,7 +239,9 @@ namespace API.Controllers
             var sysInfoBackPeriod = UoW.GetRepository<ISystemConfigReadRepository>()
                 .GetValue<int>("BusinessInfoBackPeriod");
 
-            return Ok();
+            var summary = new BusinessReportService().GetBusinessSummary(reservations, marks, sysInfoBackPeriod);
+
+            return Ok(summary);
         }
 
         private Report CreateNewReport(ReportDTO report)

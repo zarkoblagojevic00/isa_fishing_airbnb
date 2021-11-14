@@ -215,6 +215,31 @@ namespace API.Controllers
             return Ok(ongoingReservations);
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
+        public IActionResult GetBusinessSummary(int serviceId)
+        {
+            if (!CheckOwnerShip(serviceId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime < DateTime.Now && !x.IsCanceled && !x.IsServiceUnavailableMarker);
+            var marks = UoW.GetRepository<IMarkReadRepository>()
+                .GetAll()
+                .Where(x => x.MarkId.In(reservations
+                    .Where(y => y.MarkId != null)
+                    .Select(y => y.MarkId.Value)
+                    .Distinct()
+                    .ToArray()));
+
+            var sysInfoBackPeriod = UoW.GetRepository<ISystemConfigReadRepository>()
+                .GetValue<int>("BusinessInfoBackPeriod");
+
+            return Ok();
+        }
 
         private Report CreateNewReport(ReportDTO report)
         {

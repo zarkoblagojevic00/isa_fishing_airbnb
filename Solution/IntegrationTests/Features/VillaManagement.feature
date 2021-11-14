@@ -20,4 +20,7 @@ Scenario: Create New Villa
 	| HttpMethod          | post                         |
 	| RelativeResourceUrl | /VillaManagement/CreateVilla |
 	| CookieUserId        | 2                            |
-	| CookieUserEmail     | testvillaowner@gmail.com     |
+	| CookieEmail         | testvillaowner@gmail.com     |
+	
+	Then a "200" status code should be received
+	And a villa with the name "Test Villa" will be created and will be owned by "testvillaowner@gmail.com"

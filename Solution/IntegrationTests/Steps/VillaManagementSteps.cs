@@ -7,7 +7,10 @@ using Autofac;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
+using FluentAssertions;
 using FluentNHibernate.Utils;
+using Newtonsoft.Json;
+using NHibernate;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -60,7 +63,28 @@ namespace IntegrationTests.Steps
         {
             var villaDTO = table.CreateInstance<VillaDTO>();
 
-            CommonSteps.ScenarioContext.Set<VillaDTO>(villaDTO);
+            var content = JsonConvert.SerializeObject(villaDTO);
+
+            CommonSteps.ScenarioContext.Set(content, TestConstants.Content);
+        }
+
+        [Then(@"a villa with the name ""(.*)"" will be created and will be owned by ""(.*)""")]
+        public void VillaWillBeCreatedAndWillBeOwnedBy(string villaName, string ownerEmail)
+        {
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var user = uow.GetRepository<IUserReadRepository>().GetAll().FirstOrDefault(x => x.Email == ownerEmail);
+
+            if (user == null)
+            {
+                throw new ObjectNotFoundByUniqueKeyException("user", "email", ownerEmail);
+            }
+
+            var villa = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == villaName && x.OwnerId == user.UserId);
+
+            villa.Should().NotBeNull();
         }
     }
 }

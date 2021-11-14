@@ -55,6 +55,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\GeneralService.feature.cs">
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Update="Features\VillaManagement.feature.cs">
       <DesignTime>True</DesignTime>
     </Compile>
@@ -63,6 +66,7 @@
   <ItemGroup>
     <SpecFlowFeatureFiles Update="Features\GeneralService.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GeneralService.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\VillaManagement.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

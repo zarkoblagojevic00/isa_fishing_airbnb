@@ -5,7 +5,9 @@ using System.Collections.Specialized;
 using System.Json;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Domain.Entities;
@@ -71,7 +73,7 @@ namespace IntegrationTests.Steps
         public static void BeforeScenario(ScenarioContext context)
         {
             ScenarioContext = context;
-            context.Set(string.Empty,"pathParams");
+            context.Set(string.Empty,TestConstants.PathParam);
 
             CookieContainer = new CookieContainer();
             ClientHandler = new HttpClientHandler()
@@ -91,28 +93,18 @@ namespace IntegrationTests.Steps
             Client.Dispose();
             ClientHandler.Dispose();
         }
-
-        [Given(@"a key ""(.*)"" had a value ""(.*)"" in the jsonObject")]
-        public void AKeyHadAValueInJsonObject(string key, string value)
-        {
-            var jsonObject = ScenarioContext.Get<JsonObject>();
-
-            jsonObject.Add(key, value);
-
-            ScenarioContext.Set<JsonObject>(jsonObject);
-        }
-
+        
         [Given(@"a path parameter with the key ""(.*)"" has the value ""(.*)""")]
         public void APathParameterWithKeyHasTheValue(string key, string value)
         {
-            var str = ScenarioContext.Get<string>("pathParams");
+            var str = ScenarioContext.Get<string>(TestConstants.PathParam);
 
             if (str == string.Empty)
                 str = "?" + key + "=" + value;
             else
                 str = "&" + key + "=" + value;
 
-            ScenarioContext.Set(str, "pathParams");
+            ScenarioContext.Set(str, TestConstants.PathParam);
         }
 
         [When(@"a request is sent to the API")]
@@ -124,12 +116,12 @@ namespace IntegrationTests.Steps
 
             if (!string.IsNullOrEmpty(parameters.CookieEmail))
             {
-                CookieContainer.Add(new Cookie("email", parameters.CookieEmail));
+                CookieContainer.Add(new Cookie("email", parameters.CookieEmail) {Domain = TestConstants.Domain});
             }
 
             if (!string.IsNullOrEmpty(parameters.CookieUserId))
             {
-                CookieContainer.Add(new Cookie("userId",parameters.CookieUserId));
+                CookieContainer.Add(new Cookie("userId",parameters.CookieUserId) {Domain = TestConstants.Domain});
             }
 
             await SendRequest(parameters.HttpMethod, parameters.RelativeResourceUrl);
@@ -163,14 +155,19 @@ namespace IntegrationTests.Steps
 
         private async Task SendRequest(string method, string url)
         {
-            var jsonObject = ScenarioContext.Get<JsonObject>();
-            var pathParams = ScenarioContext.Get<string>("pathParams");
+            var json = ScenarioContext.Get<string>(TestConstants.Content);
+            var content = new StringContent(json, Encoding.Unicode, "application/json");
+
+            var pathParams = ScenarioContext.Get<string>(TestConstants.PathParam);
             HttpResponseMessage response;
 
             switch (method.ToLower())
             {
                 case "get":
                     response = await Client.GetAsync(url + pathParams);
+                    break;
+                case "post":
+                    response = await Client.PostAsync(url + pathParams, content);
                     break;
                 default:
                     throw new Exception("Method not recognized");

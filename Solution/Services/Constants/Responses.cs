@@ -26,5 +26,13 @@ namespace Services.Constants
 
         public static string DatesOverlap = "Dates overlap";
         public static string PromoActionTaken = "Action is already booked";
+
+        public static string CannotChangeService = "Service is booked and cannot be changed";
+
+        public static string OngoingReservation = "Reservation is still not over";
+
+        public static string ReportAlreadySubmitted = "Report already submitted";
+
+        public static string AccountDeletionRequestSubmitted = "Account deletion request was already submitted for this user";
     }
 }

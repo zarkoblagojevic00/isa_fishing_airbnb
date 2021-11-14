@@ -162,7 +162,7 @@ namespace API.Controllers
         {
             var existingActionsForService = UoW.GetRepository<IPromoActionReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId)
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime < DateTime.Now)
                 .Select(x => new CalendarItem()
                 {
                     StartDateTime = x.StartDateTime,
@@ -171,7 +171,7 @@ namespace API.Controllers
 
             var existingReservationsForService = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.StartDateTime > DateTime.Now)
+                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime < DateTime.Now)
                 .Select(x => new CalendarItem()
                 {
                     StartDateTime = x.StartDateTime,

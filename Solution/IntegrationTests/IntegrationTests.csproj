@@ -58,6 +58,9 @@
     <Compile Update="Features\GeneralService.feature.cs">
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Update="Features\QuickActions.feature.cs">
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Update="Features\VillaManagement.feature.cs">
       <DesignTime>True</DesignTime>
     </Compile>
@@ -67,6 +70,10 @@
     <SpecFlowFeatureFiles Update="Features\GeneralService.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GeneralService.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Features\QuickActions.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>QuickActions.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\VillaManagement.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

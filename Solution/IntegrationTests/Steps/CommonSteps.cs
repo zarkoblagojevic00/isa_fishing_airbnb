@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Collections.Specialized;
 using System.Json;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,12 +13,14 @@ using System.Threading.Tasks;
 using Autofac;
 using Domain.Entities;
 using Domain.Mappings;
+using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentAssertions;
 using Infrastructure;
 using IntegrationTests.Parameters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using NHibernate.Util;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -74,7 +77,7 @@ namespace IntegrationTests.Steps
         {
             ScenarioContext = context;
             context.Set(string.Empty,TestConstants.PathParam);
-
+            context.Set(string.Empty, TestConstants.Content);
             CookieContainer = new CookieContainer();
             ClientHandler = new HttpClientHandler()
             {
@@ -82,9 +85,6 @@ namespace IntegrationTests.Steps
             };
 
             Client = new HttpClient(ClientHandler);
-
-            var jsonObject = new JsonObject();
-            ScenarioContext.Set<JsonObject>(jsonObject);
         }
 
         [AfterScenario]
@@ -107,6 +107,90 @@ namespace IntegrationTests.Steps
             ScenarioContext.Set(str, TestConstants.PathParam);
         }
 
+        [Given(@"there was a test villa owner with mail ""(.*)"" in database")]
+        public void ThereWasTestVillaOwnerWithMail(string mail)
+        {
+            var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var user = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Email == mail);
+
+            if (user == null)
+            {
+                uow.BeginTransaction();
+
+                user = new User()
+                {
+                    Email = mail,
+                    UserType = UserType.VillaOwner
+                };
+
+                uow.GetRepository<IUserWriteRepository>().Add(user);
+
+                uow.Commit();
+            }
+            else
+            {
+                if (user.UserType != UserType.VillaOwner)
+                {
+                    uow.BeginTransaction();
+                    user.UserType = UserType.VillaOwner;
+
+                    uow.GetRepository<IUserWriteRepository>().Update(user);
+                    uow.Commit();
+                }
+            }
+        }
+
+        [Given(@"there was a villa in the database named ""(.*)"" linked with villa owner with email ""(.*)""")]
+        public void ThereWasAVillaInTheDatabaseNamedLinkedWithTheOwner(string name, string email)
+        {
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var testVillaOwner = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Email == email);
+
+            uow.BeginTransaction();
+            if (testVillaOwner == null)
+            {
+                testVillaOwner = new User()
+                {
+                    Email = TestConstants.TestVillaOwnerMail,
+                    IsAccountVerified = true,
+                    IsAccountActive = true
+                };
+                uow.GetRepository<IUserWriteRepository>().Add(testVillaOwner);
+            }
+
+            var service = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == name && x.OwnerId == testVillaOwner.UserId);
+
+            if (service == null)
+            {
+                service = new Domain.Entities.Service()
+                {
+                    Name = name,
+                    Capacity = 1,
+                    Longitude = 0,
+                    Latitude = 0,
+                    OwnerId = testVillaOwner.UserId
+                };
+
+                uow.GetRepository<IServiceWriteRepository>().Add(service);
+
+                var adInfo = new AdditionalVillaServiceInfo()
+                {
+                    ServiceId = service.ServiceId
+                };
+                uow.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Add(adInfo);
+            }
+
+            uow.Commit();
+        }
+
         [When(@"a request is sent to the API")]
         public async Task ARequestIsSentToTheAPI(Table table)
         {
@@ -117,11 +201,16 @@ namespace IntegrationTests.Steps
             if (!string.IsNullOrEmpty(parameters.CookieEmail))
             {
                 CookieContainer.Add(new Cookie("email", parameters.CookieEmail) {Domain = TestConstants.Domain});
-            }
 
-            if (!string.IsNullOrEmpty(parameters.CookieUserId))
-            {
-                CookieContainer.Add(new Cookie("userId",parameters.CookieUserId) {Domain = TestConstants.Domain});
+                var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+                var user = uow.GetRepository<IUserReadRepository>()
+                    .GetAll()
+                    .FirstOrDefault(x => x.Email == parameters.CookieEmail);
+
+                if (user != null)
+                {
+                    CookieContainer.Add(new Cookie("userId", user.UserId.ToString()) { Domain = TestConstants.Domain });
+                }
             }
 
             await SendRequest(parameters.HttpMethod, parameters.RelativeResourceUrl);
@@ -168,6 +257,12 @@ namespace IntegrationTests.Steps
                     break;
                 case "post":
                     response = await Client.PostAsync(url + pathParams, content);
+                    break;
+                case "delete":
+                    response = await Client.DeleteAsync(url + pathParams);
+                    break;
+                case "put":
+                    response = await Client.PutAsync(url + pathParams, content);
                     break;
                 default:
                     throw new Exception("Method not recognized");

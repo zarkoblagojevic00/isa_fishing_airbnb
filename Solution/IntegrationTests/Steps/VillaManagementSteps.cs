@@ -58,10 +58,81 @@ namespace IntegrationTests.Steps
             uow.Commit();
         }
 
+        [Given(@"the villa with the name ""(.*)"" that is linked with test villa owner had no reservations")]
+        public void TheVillaThatIsLinkedHadNoReservations(string name)
+        {
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var owner = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .First(x => x.Email == TestConstants.TestVillaOwnerMail);
+
+            var service = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .First(x => x.Name == name && x.OwnerId == owner.UserId);
+
+            var reservations = uow.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == service.ServiceId && !x.IsCanceled);
+            foreach (var reservation in reservations)
+            {
+                reservation.IsCanceled = true;
+                uow.GetRepository<IReservationWriteRepository>().Update(reservation);
+            }
+        }
+
+
         [Given(@"a new villa DTO was created with the following properties")]
         public void NewVillaDTOWasCreatedWithFollowingProperties(Table table)
         {
             var villaDTO = table.CreateInstance<VillaDTO>();
+
+            var content = JsonConvert.SerializeObject(villaDTO);
+
+            CommonSteps.ScenarioContext.Set(content, TestConstants.Content);
+        }
+
+        [Given(@"an id of the villa named ""(.*)"" which is linked to the test owner is included as path parameter")]
+        public void AnIdOfVillaNamedIsIncludedAsPathParameter(string name)
+        {
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var testVillaOwner = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .First(x => x.Email == TestConstants.TestVillaOwnerMail);
+
+            var service = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .First(x => x.Name == name && x.OwnerId == testVillaOwner.UserId);
+
+            var pathParams = CommonSteps.ScenarioContext.Get<string>(TestConstants.PathParam);
+            if (string.IsNullOrEmpty(pathParams))
+            {
+                pathParams = "?villaId=" + service.ServiceId;
+            }
+            else
+            {
+                pathParams += "&villaId=" + service.ServiceId;
+            }
+
+            CommonSteps.ScenarioContext.Set(pathParams, TestConstants.PathParam);
+        }
+
+        [Given(@"a new villa DTO was formed based on the villa from the database that is linked with test owner")]
+        public void AVillaWasCreatedWithPropertiesFromTheDatabase(Table table)
+        {
+            var villaDTO = table.CreateInstance<VillaDTO>();
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            
+            var owner = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .First(x => x.Email == TestConstants.TestVillaOwnerMail);
+
+            var service = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .First(x => x.Name == villaDTO.Name && x.OwnerId == owner.UserId);
+
+            villaDTO.VillaId = service.ServiceId;
 
             var content = JsonConvert.SerializeObject(villaDTO);
 
@@ -85,6 +156,22 @@ namespace IntegrationTests.Steps
                 .FirstOrDefault(x => x.Name == villaName && x.OwnerId == user.UserId);
 
             villa.Should().NotBeNull();
+        }
+
+        [Then(@"the villa with the name ""(.*)"" will be deleted for the owner ""(.*)""")]
+        public void VillaWillBeDeleted(string name, string email)
+        {
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var user = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .First(x => x.Email == email);
+
+            var service = uow.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.OwnerId == user.UserId && x.Name == name);
+
+            service.Should().BeNull();
         }
     }
 }

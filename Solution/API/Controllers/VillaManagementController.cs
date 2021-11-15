@@ -91,9 +91,19 @@ namespace API.Controllers
                 }
             }
 
+            var existingVilla = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == newVilla.Name && x.OwnerId == GetUserIdFromCookie());
+
+            if (existingVilla != null)
+            {
+                ModelState.AddModelError("Name", "The service with that name for this user already exists!");
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
+                var currentUser = GetUserIdFromCookie();
                 var villa = CreateNewVilla(currentUser, newVilla);
                 var villaWriteRepo = UoW.GetRepository<IServiceWriteRepository>();
 

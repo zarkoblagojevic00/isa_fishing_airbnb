@@ -163,6 +163,156 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Delete Existing Villa", SourceLine=27)]
+        public virtual void DeleteExistingVilla()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete Existing Villa", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 28
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 29
+ testRunner.Given("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
+                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 30
+ testRunner.And("the villa with the name \"Test Villa\" that is linked with test villa owner had no " +
+                        "reservations", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 31
+ testRunner.And("an id of the villa named \"Test Villa\" which is linked to the test owner is includ" +
+                        "ed as path parameter", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table6.AddRow(new string[] {
+                            "HttpMethod",
+                            "delete"});
+                table6.AddRow(new string[] {
+                            "RelativeResourceUrl",
+                            "/VillaManagement/DeleteVilla"});
+                table6.AddRow(new string[] {
+                            "CookieEmail",
+                            "testvillaowner@gmail.com"});
+#line 33
+ testRunner.When("a request is sent to the API", ((string)(null)), table6, "When ");
+#line hidden
+#line 39
+ testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 40
+ testRunner.And("the villa with the name \"Test Villa\" will be deleted for the owner \"testvillaowne" +
+                        "r@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Villa Update With existing Reservations", SourceLine=41)]
+        public virtual void VillaUpdateWithExistingReservations()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Villa Update With existing Reservations", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 42
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 43
+ testRunner.Given("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
+                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Filed",
+                            "Value"});
+                table7.AddRow(new string[] {
+                            "Name",
+                            "Test Villa"});
+                table7.AddRow(new string[] {
+                            "PricePerDay",
+                            "20.00"});
+                table7.AddRow(new string[] {
+                            "Address",
+                            "Some Address 123"});
+                table7.AddRow(new string[] {
+                            "Longitude",
+                            "0"});
+                table7.AddRow(new string[] {
+                            "Lattitude",
+                            "0"});
+                table7.AddRow(new string[] {
+                            "PromoDescription",
+                            "Test description"});
+                table7.AddRow(new string[] {
+                            "TermsOfUse",
+                            "some changed terms"});
+                table7.AddRow(new string[] {
+                            "Capacitiy",
+                            "5"});
+                table7.AddRow(new string[] {
+                            "NumberOfBeds",
+                            "4"});
+                table7.AddRow(new string[] {
+                            "NumberOfRooms",
+                            "2"});
+#line 44
+ testRunner.And("a new villa DTO was formed based on the villa from the database that is linked wi" +
+                        "th test owner", ((string)(null)), table7, "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table8.AddRow(new string[] {
+                            "HttpMethod",
+                            "put"});
+                table8.AddRow(new string[] {
+                            "RelativeResourceUrl",
+                            "/VillaManagement/UpdateVilla"});
+#line 57
+ testRunner.When("a request is sent to the API", ((string)(null)), table8, "When ");
+#line hidden
+#line 62
+ testRunner.Then("a \"401\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

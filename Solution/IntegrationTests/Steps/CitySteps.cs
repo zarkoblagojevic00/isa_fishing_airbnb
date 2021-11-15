@@ -39,12 +39,12 @@ namespace IntegrationTests.Steps
                 uow.Commit();
             }
 
-            var pathParams = CommonSteps.ScenarioContext.Get<string>("pathParams");
+            var pathParams = CommonSteps.ScenarioContext.Get<string>(TestConstants.PathParam);
 
             if (pathParams == string.Empty)
                 pathParams = "?id=" + foundCity.CityId;
 
-            CommonSteps.ScenarioContext.Set(pathParams, "pathParams");
+            CommonSteps.ScenarioContext.Set(pathParams, TestConstants.PathParam);
         }
 
         [Then(@"the response should be an array of Cities")]

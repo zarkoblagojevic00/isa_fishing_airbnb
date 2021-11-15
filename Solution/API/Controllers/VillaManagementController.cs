@@ -7,8 +7,10 @@ using API.Attributes;
 using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
+using Domain.Entities.Abstractions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
+using FluentNHibernate.Utils;
 using Services;
 using Services.Constants;
 
@@ -20,6 +22,52 @@ namespace API.Controllers
     {
         public VillaManagementController(IUnitOfWork uow) : base(uow)
         {
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.VillaOwner })]
+        public IEnumerable<VillaDTO> GetOwnedVillas()
+        {
+            var ownerId = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId]);
+
+            var villas = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .Where(x => x.OwnerId == ownerId);
+            var additionalInformation = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId.In(villas.Select(y => y.ServiceId).ToArray()));
+            var images = UoW.GetRepository<IImageReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId.In(villas.Select(y => y.ServiceId).ToArray()));
+
+
+            var result = villas.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()
+            {
+                AdditionalEquipment = x.AdditionalEquipment,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Name = x.Name,
+                NumberOfBeds = y.NumberOfBeds,
+                NumberOfRooms = y.NumberOfRooms,
+                PercentageToTake = x.PercentageToTake,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                VillaId = x.ServiceId
+            });
+
+            foreach (var dto in result)
+            {
+                dto.ImageIds = images.Where(x => x.ServiceId == dto.VillaId.Value)
+                    .Select(x => x.ImageId);
+            }
+
+            return result;
         }
 
         [HttpPost]
@@ -43,9 +91,19 @@ namespace API.Controllers
                 }
             }
 
+            var existingVilla = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == newVilla.Name && x.OwnerId == GetUserIdFromCookie());
+
+            if (existingVilla != null)
+            {
+                ModelState.AddModelError("Name", "The service with that name for this user already exists!");
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
+                var currentUser = GetUserIdFromCookie();
                 var villa = CreateNewVilla(currentUser, newVilla);
                 var villaWriteRepo = UoW.GetRepository<IServiceWriteRepository>();
 
@@ -84,6 +142,15 @@ namespace API.Controllers
                 return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
 
+            var reservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && x.ServiceId == villa.VillaId && !x.IsCanceled);
+
+            if (reservationDates.Any())
+            {
+                return BadRequest(Responses.CannotChangeService);
+            }
+
             var villaService = UoW.GetRepository<IServiceReadRepository>().GetById(villa.VillaId.Value);
             var additionalVillaInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll().First(x => x.ServiceId == villa.VillaId.Value);
@@ -100,6 +167,55 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
 
+        [HttpDelete]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.VillaOwner })]
+        public IActionResult DeleteVilla(int villaId)
+        {
+            if (!CheckOwnerShip(villaId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            var reservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && !x.IsCanceled && x.ServiceId == villaId);
+            
+            if (reservationDates.Any())
+            {
+                return BadRequest(Responses.CannotChangeService);
+            }
+
+            try
+            {
+                UoW.BeginTransaction();
+
+                var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll()
+                    .First(x => x.ServiceId == villaId);
+                var service = UoW.GetRepository<IServiceReadRepository>().GetById(villaId);
+
+                var promoActions = UoW.GetRepository<IPromoActionReadRepository>()
+                    .GetAll()
+                    .Where(x => x.ServiceId == villaId);
+                foreach (var promoAction in promoActions)
+                {
+                    promoAction.IsTaken = true;
+                    UoW.GetRepository<IPromoActionWriteRepository>().Update(promoAction);
+                }
+
+                UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Delete(additionalServiceInfo);
+                UoW.GetRepository<IServiceWriteRepository>().Delete(service);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+
+            return Ok(Responses.Ok);
+        }
+        
         private Service CreateNewVilla(int currentUser, VillaDTO newVilla)
         {
             return new Service()

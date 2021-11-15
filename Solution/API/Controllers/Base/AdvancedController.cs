@@ -22,5 +22,17 @@ namespace API.Controllers.Base
             var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
             return new ValidateServiceOwnerService(UoW).ValidateOwnerShip(serviceId, currentUser);
         }
+
+        protected virtual int GetUserIdFromCookie()
+        {
+            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
+            return currentUser;
+        }
+
+        protected virtual string GetUserMailFromCookie()
+        {
+            var currentUser = Request.Cookies[CookieInformation.CookieInformation.Email];
+            return currentUser;
+        }
     }
 }

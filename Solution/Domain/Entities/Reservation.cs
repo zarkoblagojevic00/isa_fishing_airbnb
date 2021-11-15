@@ -16,8 +16,8 @@ namespace Domain.Entities
         public virtual bool IsPromo { get; set; }
         public virtual bool IsCanceled { get; set; }
         public virtual bool IsServiceUnavailableMarker { get; set; }
-        public virtual int ReportId { get; set; }
-        public virtual int MarkId { get; set; }
+        public virtual int? ReportId { get; set; }
+        public virtual int? MarkId { get; set; }
         public virtual string AdditionalEquipment { get; set; }
         public virtual double Price { get; set; }
     }

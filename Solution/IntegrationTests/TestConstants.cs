@@ -15,5 +15,12 @@ namespace IntegrationTests
 
         public static string TestVillaOwnerMail = "testvillaowner@gmail.com";
         public static string AnotherTestVillaOwnerMail = "anothertestvillaowner@gmail.com";
+
+        public static string TestPromoAction = "testPromoAction";
+        public static string TestReservation = "testReservation";
+
+        public static string PollingInterval = "PollingInterval";
+
+        public static string TestUser = "testUser";
     }
 }

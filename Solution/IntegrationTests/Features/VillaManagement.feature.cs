@@ -99,59 +99,59 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
  testRunner.Given("there was no villa with the name \"Test Villa\" linked with test villa owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
                             "Filed",
                             "Value"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Name",
                             "Test Villa"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "PricePerDay",
                             "10.00"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Address",
                             "Some Address 123"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Longitude",
                             "0"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Lattitude",
                             "0"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "PromoDescription",
                             "Test description"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "TermsOfUse",
                             "some terms"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Capacitiy",
                             "5"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "NumberOfBeds",
                             "4"});
-                table4.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "NumberOfRooms",
                             "2"});
 #line 5
- testRunner.And("a new villa DTO was created with the following properties", ((string)(null)), table4, "And ");
+ testRunner.And("a new villa DTO was created with the following properties", ((string)(null)), table18, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table5.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "HttpMethod",
                             "post"});
-                table5.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/VillaManagement/CreateVilla"});
-                table5.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "CookieUserId",
                             "2"});
-                table5.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 18
- testRunner.When("a request is sent to the API", ((string)(null)), table5, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table19, "When ");
 #line hidden
 #line 25
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -202,20 +202,20 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("an id of the villa named \"Test Villa\" which is linked to the test owner is includ" +
                         "ed as path parameter", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table6.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "HttpMethod",
                             "delete"});
-                table6.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/VillaManagement/DeleteVilla"});
-                table6.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 33
- testRunner.When("a request is sent to the API", ((string)(null)), table6, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table20, "When ");
 #line hidden
 #line 39
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -258,54 +258,54 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Given("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
                         " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
                             "Filed",
                             "Value"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "Name",
                             "Test Villa"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "PricePerDay",
                             "20.00"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "Address",
                             "Some Address 123"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "Longitude",
                             "0"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "Lattitude",
                             "0"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "PromoDescription",
                             "Test description"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "TermsOfUse",
                             "some changed terms"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "Capacitiy",
                             "5"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "NumberOfBeds",
                             "4"});
-                table7.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "NumberOfRooms",
                             "2"});
 #line 44
  testRunner.And("a new villa DTO was formed based on the villa from the database that is linked wi" +
-                        "th test owner", ((string)(null)), table7, "And ");
+                        "th test owner", ((string)(null)), table21, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table8.AddRow(new string[] {
+                table22.AddRow(new string[] {
                             "HttpMethod",
                             "put"});
-                table8.AddRow(new string[] {
+                table22.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/VillaManagement/UpdateVilla"});
 #line 57
- testRunner.When("a request is sent to the API", ((string)(null)), table8, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table22, "When ");
 #line hidden
 #line 62
  testRunner.Then("a \"401\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

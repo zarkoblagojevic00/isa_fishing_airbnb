@@ -120,5 +120,33 @@ namespace UnitTests
 
             validationResponse.Should().Be(true);
         }
+
+        [TestMethod]
+        public void SuspiciousTest()
+        {
+            var dateToCheck = new CalendarItem()
+            {
+                StartDateTime = DateTime.Now.AddDays(3),
+                EndDateTime = DateTime.Now.AddDays(6)
+            };
+
+            var listOfDates = new List<CalendarItem>()
+            {
+                new CalendarItem()
+                {
+                    StartDateTime = DateTime.Now.AddDays(1),
+                    EndDateTime = DateTime.Now.AddDays(5),
+                },
+                new CalendarItem()
+                {
+                    StartDateTime = DateTime.Now.AddDays(6),
+                    EndDateTime = DateTime.Now.AddDays(9)
+                }
+            };
+
+            var validationResponse = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(dateToCheck, listOfDates);
+
+            validationResponse.Should().Be(true);
+        }
     }
 }

@@ -11,7 +11,6 @@ namespace IntegrationTests.Parameters
         public string HttpMethod { get; set; }
         public string BaseUrl { get; set; } = TestConstants.Localhost;
         public string RelativeResourceUrl { get; set; }
-        public string CookieUserId { get; set; }
         public string CookieEmail { get; set; }
     }
 }

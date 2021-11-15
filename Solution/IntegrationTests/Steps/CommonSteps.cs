@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using NHibernate.Util;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+using Service = Domain.Entities.Service;
 
 namespace IntegrationTests.Steps
 {
@@ -63,7 +64,7 @@ namespace IntegrationTests.Steps
             var container = builder.Build();
 
             FeatureContext.Set<ILifetimeScope>(container);
-            FeatureContext.Set(10, "PollingInterval");
+            FeatureContext.Set(10, TestConstants.PollingInterval);
         }
 
         [AfterFeature]
@@ -189,6 +190,179 @@ namespace IntegrationTests.Steps
             }
 
             uow.Commit();
+            ScenarioContext.Set(service, name);
+        }
+
+        [Given(@"there were no quick actions nur reservations in past for the service ""(.*)""")]
+        public void ThereWereNoQuickActionsNurReservationsInPastDays(string name)
+        {
+            var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var service = ScenarioContext.Get<Service>(name);
+
+            var reservations = uow.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == service.ServiceId);
+            var promoActions = uow.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == service.ServiceId);
+
+            uow.BeginTransaction();
+            foreach (var reservation in reservations)
+            {
+                uow.GetRepository<IReservationWriteRepository>().Delete(reservation);
+            }
+
+            foreach (var promoAction in promoActions)
+            {
+                uow.GetRepository<IPromoActionWriteRepository>().Delete(promoAction);
+            }
+
+            uow.Commit();
+        }
+
+        [Given(@"there was a promo action for the service ""(.*)"" lasting from ""(.*)"" days from now until ""(.*)"" days from now")]
+        public void ThereWasAPromoActionForServiceLastingFromTo(string serviceName, int fromDays, int toDays)
+        {
+            if (toDays <= fromDays)
+            {
+                throw new Exception($"FromDays has to be lower than toDays! Found '{fromDays}' <= '{toDays}'");
+            }
+
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            var service = CommonSteps.ScenarioContext.Get<Service>(serviceName);
+
+            var newPromoAction = new PromoAction()
+            {
+                ServiceId = service.ServiceId,
+                Capacity = 1,
+                StartDateTime = DateTime.Now.AddDays(fromDays),
+                EndDateTime = DateTime.Now.AddDays(toDays)
+            };
+
+            uow.BeginTransaction();
+
+            uow.GetRepository<IPromoActionWriteRepository>().Add(newPromoAction);
+
+            uow.Commit();
+
+            CommonSteps.ScenarioContext.Set(newPromoAction, TestConstants.TestPromoAction);
+        }
+
+        [Given(@"there was a reservation for the service ""(.*)"" lasting from ""(.*)"" days from now until ""(.*)"" days from now")]
+        public void ThereWasAReservationForServiceLastingFromTo(string serviceName, int fromDays, int toDays)
+        {
+            if (toDays <= fromDays)
+            {
+                throw new Exception($"FromDays has to be lower than toDays! Found '{fromDays}' <= '{toDays}'");
+            }
+
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            var service = CommonSteps.ScenarioContext.Get<Service>(serviceName);
+
+            var newReservation = new Reservation()
+            {
+                ServiceId = service.ServiceId,
+                StartDateTime = DateTime.Now.AddDays(fromDays),
+                EndDateTime = DateTime.Now.AddDays(toDays)
+            };
+
+            uow.BeginTransaction();
+
+            uow.GetRepository<IReservationWriteRepository>().Add(newReservation);
+
+            uow.Commit();
+
+            ScenarioContext.Set(newReservation, TestConstants.TestReservation);
+        }
+
+        [Given(@"there was a reservation for previously created user lasting from ""(.*)"" days from now until ""(.*)"" days from now")]
+        public void ThereWasAReservationForPreviouslyCreatedUser(int fromDays, int toDays)
+        {
+            if (toDays <= fromDays)
+            {
+                throw new Exception($"FromDays has to be lower than toDays! Found '{fromDays}' <= '{toDays}'");
+            }
+
+            var user = ScenarioContext.Get<User>(TestConstants.TestUser);
+
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var newReservation = new Reservation()
+            {
+                UserId = user.UserId,
+                StartDateTime = DateTime.Now.AddDays(fromDays),
+                EndDateTime = DateTime.Now.AddDays(toDays)
+            };
+
+            uow.BeginTransaction();
+
+            uow.GetRepository<IReservationWriteRepository>().Add(newReservation);
+
+            uow.Commit();
+
+            ScenarioContext.Set(newReservation, TestConstants.TestReservation);
+        }
+
+        [Given(@"there were no reservations for previously created user")]
+        public void ThereWereNoReservationsForPreviouslyCreatedUser()
+        {
+            var user = ScenarioContext.Get<User>(TestConstants.TestUser);
+            var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+
+            var reservations = uow.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.UserId == user.UserId);
+
+            if (reservations.Any())
+            {
+                uow.BeginTransaction();
+
+                foreach (var reservation in reservations)
+                {
+                    uow.GetRepository<IReservationWriteRepository>().Delete(reservation);
+                }
+
+                uow.Commit();
+            }
+        }
+
+        [Given(@"there was a normal user in the database with the following information")]
+        public void ThereWasANormalUserInTheDatabaseWithTheFollowingInformation(Table table)
+        {
+            var user = table.CreateInstance<User>();
+            user.UserType = UserType.Registered;
+
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                throw new Exception($"Mail is mandatory for user");
+            }
+
+            var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            var foundUser = uow.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Email == user.Email);
+
+            uow.BeginTransaction();
+
+            if (foundUser == null)
+            {
+                user.IsAccountActive = true;
+                user.IsAccountVerified = true;
+                uow.GetRepository<IUserWriteRepository>().Add(user);
+            }
+            else
+            {
+                foundUser.IsAccountVerified = true;
+                foundUser.IsAccountActive = true;
+
+                foundUser.UserType = UserType.Registered;
+                user = foundUser;
+                uow.GetRepository<IUserWriteRepository>().Update(foundUser);
+            }
+            uow.Commit();
+
+            ScenarioContext.Set(user, TestConstants.TestUser);
         }
 
         [When(@"a request is sent to the API")]
@@ -217,11 +391,19 @@ namespace IntegrationTests.Steps
         }
 
         [Then(@"a ""(.*)"" status code should be received")]
-        public void AStatusCodeShouldBeReceivedWithData(HttpStatusCode statusCode)
+        public async Task AStatusCodeShouldBeReceivedWithData(HttpStatusCode statusCode)
         {
             var response = ScenarioContext.Get<HttpResponseMessage>();
 
-            response.StatusCode.Should().Be(statusCode);
+            try
+            {
+                response.StatusCode.Should().Be(statusCode);
+            }
+            catch (Exception e)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
         }
 
         [Then(@"the response will come with following json object")]

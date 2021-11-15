@@ -105,7 +105,7 @@ namespace API.Controllers
                 return BadRequest(Responses.ServiceOwnerNotLinked);
             }
 
-            if (reservation.EndDateTime < DateTime.Now && !reservation.IsCanceled)
+            if (reservation.EndDateTime > DateTime.Now && !reservation.IsCanceled)
             {
                 return BadRequest(Responses.OngoingReservation);
             }
@@ -156,7 +156,7 @@ namespace API.Controllers
 
             var userReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.UserId == user.UserId && !x.IsCanceled && x.EndDateTime < DateTime.Now)
+                .Where(x => x.UserId == user.UserId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
                 .Select(x => new CalendarItem()
                 {
                     StartDateTime = x.StartDateTime,
@@ -165,7 +165,7 @@ namespace API.Controllers
 
             var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == reservationDto.ServiceId && !x.IsCanceled && x.EndDateTime < DateTime.Now);
+                .Where(x => x.ServiceId == reservationDto.ServiceId && !x.IsCanceled && x.EndDateTime > DateTime.Now);
 
             var union = userReservations.Union(serviceReservations);
             var intervalToCheck = new CalendarItem()

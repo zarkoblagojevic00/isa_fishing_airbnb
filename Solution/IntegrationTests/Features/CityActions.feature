@@ -3,9 +3,9 @@
 Scenario: Get one city
 	Given a city with the name "Novi Sad" is found in the database
 	When a request is sent to the API
-	| Field               | Value         |
-	| HttpMethod          | get           |
-	| RelativeResourceUrl | /City/GetCity |
+	| Field               | Value             |
+	| HttpMethod          | get               |
+	| RelativeResourceUrl | /api/City/GetCity |
 	Then a "200" status code should be received
 	And the response will come with following json object
 	| Key       | Value    |
@@ -14,8 +14,8 @@ Scenario: Get one city
 
 Scenario: Get all cities
 	When a request is sent to the API
-	| Field               | Value           |
-	| HttpMethod          | get             |
-	| RelativeResourceUrl | /City/GetCities |
+	| Field               | Value               |
+	| HttpMethod          | get                 |
+	| RelativeResourceUrl | /api/City/GetCities |
 	
 	Then a "200" status code should be received

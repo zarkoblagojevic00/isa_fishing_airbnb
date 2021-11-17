@@ -19,7 +19,7 @@ using Services.Validators;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class GeneralServiceController : AdvancedController
     {
         public GeneralServiceController(IUnitOfWork uow) : base(uow)

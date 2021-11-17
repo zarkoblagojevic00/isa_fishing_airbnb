@@ -11,7 +11,7 @@ using Domain.UnitOfWork;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class CityController : AdvancedController
     {
         public CityController(IUnitOfWork uow) : base(uow)

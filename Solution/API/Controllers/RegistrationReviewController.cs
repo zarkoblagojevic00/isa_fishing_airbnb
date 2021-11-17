@@ -18,7 +18,7 @@ using Services.HtmlWriter;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class RegistrationReviewController : AdvancedController
     {
         public RegistrationReviewController(IUnitOfWork uow) : base(uow)

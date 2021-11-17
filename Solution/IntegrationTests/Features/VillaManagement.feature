@@ -16,11 +16,11 @@ Scenario: Create New Villa
 	| NumberOfRooms    | 2                |
 
 	When a request is sent to the API
-	| Field               | Value                        |
-	| HttpMethod          | post                         |
-	| RelativeResourceUrl | /VillaManagement/CreateVilla |
-	| CookieUserId        | 2                            |
-	| CookieEmail         | testvillaowner@gmail.com     |
+	| Field               | Value                            |
+	| HttpMethod          | post                             |
+	| RelativeResourceUrl | /api/VillaManagement/CreateVilla |
+	| CookieUserId        | 2                                |
+	| CookieEmail         | testvillaowner@gmail.com         |
 	
 	Then a "200" status code should be received
 	And a villa with the name "Test Villa" will be created and will be owned by "testvillaowner@gmail.com"
@@ -31,10 +31,10 @@ Scenario: Delete Existing Villa
 	And an id of the villa named "Test Villa" which is linked to the test owner is included as path parameter
 	
 	When a request is sent to the API
-	| Field               | Value                        |
-	| HttpMethod          | delete                       |
-	| RelativeResourceUrl | /VillaManagement/DeleteVilla |
-	| CookieEmail         | testvillaowner@gmail.com     |
+	| Field               | Value                            |
+	| HttpMethod          | delete                           |
+	| RelativeResourceUrl | /api/VillaManagement/DeleteVilla |
+	| CookieEmail         | testvillaowner@gmail.com         |
 	
 	Then a "200" status code should be received
 	And the villa with the name "Test Villa" will be deleted for the owner "testvillaowner@gmail.com"
@@ -55,9 +55,9 @@ Scenario: Villa Update With existing Reservations
 	| NumberOfRooms    | 2                  |
 
 	When a request is sent to the API
-	| Field               | Value                        |
-	| HttpMethod          | put                          |
-	| RelativeResourceUrl | /VillaManagement/UpdateVilla |
+	| Field               | Value                            |
+	| HttpMethod          | put                              |
+	| RelativeResourceUrl | /api/VillaManagement/UpdateVilla |
 
 	Then a "401" status code should be received
 	

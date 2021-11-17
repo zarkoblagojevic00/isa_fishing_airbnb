@@ -17,7 +17,7 @@ using Services.Constants;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class ImageController : AdvancedController
     {
         private readonly int _maxImageSize;

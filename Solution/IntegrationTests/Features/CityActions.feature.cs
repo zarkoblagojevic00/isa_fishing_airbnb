@@ -107,7 +107,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "get"});
                 table1.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/City/GetCity"});
+                            "/api/City/GetCity"});
 #line 5
  testRunner.When("a request is sent to the API", ((string)(null)), table1, "When ");
 #line hidden
@@ -164,7 +164,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "get"});
                 table3.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/City/GetCities"});
+                            "/api/City/GetCities"});
 #line 16
  testRunner.When("a request is sent to the API", ((string)(null)), table3, "When ");
 #line hidden

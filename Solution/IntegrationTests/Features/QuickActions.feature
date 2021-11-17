@@ -14,10 +14,10 @@ Scenario: Create new Promo action
 	| Capacity            | 3     |
 
 	When a request is sent to the API
-	| Field               | Value                             |
-	| HttpMethod          | post                              |
-	| RelativeResourceUrl | /QuickAction/CreateNewQuickAction |
-	| CookieEmail         | testvillaowner@gmail.com          |
+	| Field               | Value                                 |
+	| HttpMethod          | post                                  |
+	| RelativeResourceUrl | /api/QuickAction/CreateNewQuickAction |
+	| CookieEmail         | testvillaowner@gmail.com              |
 
 	Then a "200" status code should be received
 	And service with the name "Test Villa" should have the promo action with the properties from current content
@@ -37,10 +37,10 @@ Scenario: Update existing Promo action that wasn't taken
 	And that QuickActionDTO had the PromoActionId set previously
 
 	When a request is sent to the API
-	| Field               | Value                          |
-	| HttpMethod          | put                            |
-	| RelativeResourceUrl | /QuickAction/UpdateQuickAction |
-	| CookieEmail         | testvillaowner@gmail.com       |
+	| Field               | Value                              |
+	| HttpMethod          | put                                |
+	| RelativeResourceUrl | /api/QuickAction/UpdateQuickAction |
+	| CookieEmail         | testvillaowner@gmail.com           |
 
 	Then a "200" status code should be received
 	And service with the name "Test Villa" should have the promo action with the properties from current content
@@ -60,10 +60,10 @@ Scenario: Update existin Promo action that is taken
 	And that QuickActionDTO had the PromoActionId set previously
 
 	When a request is sent to the API
-	| Field               | Value                          |
-	| HttpMethod          | put                            |
-	| RelativeResourceUrl | /QuickAction/UpdateQuickAction |
-	| CookieEmail         | testvillaowner@gmail.com       |
+	| Field               | Value                              |
+	| HttpMethod          | put                                |
+	| RelativeResourceUrl | /api/QuickAction/UpdateQuickAction |
+	| CookieEmail         | testvillaowner@gmail.com           |
 
 	Then a "400" status code should be received
 	

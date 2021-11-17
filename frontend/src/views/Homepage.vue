@@ -9,6 +9,11 @@
         instructor homepage (temporary)
       </router-link>
     </div>
+    <div>
+      <router-link to="login">
+        Login
+      </router-link>
+    </div>
   </div>
   <!--<v-date-picker v-model="date" isRange="true" mode="dateTime" />-->
 </template>

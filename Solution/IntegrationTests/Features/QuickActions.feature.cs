@@ -142,7 +142,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table13.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/QuickAction/CreateNewQuickAction"});
+                            "/api/QuickAction/CreateNewQuickAction"});
                 table13.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
@@ -235,7 +235,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "put"});
                 table15.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/QuickAction/UpdateQuickAction"});
+                            "/api/QuickAction/UpdateQuickAction"});
                 table15.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
@@ -327,7 +327,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "put"});
                 table17.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/QuickAction/UpdateQuickAction"});
+                            "/api/QuickAction/UpdateQuickAction"});
                 table17.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});

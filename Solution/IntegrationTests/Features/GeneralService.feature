@@ -10,10 +10,10 @@ Scenario: Submitting a report
 	| ReportText | testing submitting report feature |
 
 	When a request is sent to the API
-	| Field               | Value                        |
-	| HttpMethod          | post                         |
-	| RelativeResourceUrl | /GeneralService/SubmitReport |
-	| CookieEmail         | testvillaowner@gmail.com     |
+	| Field               | Value                            |
+	| HttpMethod          | post                             |
+	| RelativeResourceUrl | /api/GeneralService/SubmitReport |
+	| CookieEmail         | testvillaowner@gmail.com         |
 
 	Then a "200" status code should be received
 	Then a new report will be created for the service with name "Test Villa" in "60" seconds
@@ -39,10 +39,10 @@ Scenario: Creating a reservation for user who has an overlapping reservation
 	| PricePerDay         | 10    |
 	
 	When a request is sent to the API
-	| Field               | Value                                    |
-	| HttpMethod          | post                                     |
-	| RelativeResourceUrl | /GeneralService/CreateReservationForUser |
-	| CookieEmail         | testvillaowner@gmail.com                 |
+	| Field               | Value                                        |
+	| HttpMethod          | post                                         |
+	| RelativeResourceUrl | /api/GeneralService/CreateReservationForUser |
+	| CookieEmail         | testvillaowner@gmail.com                     |
 
 	Then a "400" status code should be received
 
@@ -67,10 +67,10 @@ Scenario: Creating a reservation for user who has no overlapping reservations
 	| PricePerDay         | 10    |
 	
 	When a request is sent to the API
-	| Field               | Value                                    |
-	| HttpMethod          | post                                     |
-	| RelativeResourceUrl | /GeneralService/CreateReservationForUser |
-	| CookieEmail         | testvillaowner@gmail.com                 |
+	| Field               | Value                                        |
+	| HttpMethod          | post                                         |
+	| RelativeResourceUrl | /api/GeneralService/CreateReservationForUser |
+	| CookieEmail         | testvillaowner@gmail.com                     |
 
 	Then a "200" status code should be received
 	And there should be a new reservation based on sent content created for the previously created user and service with name "Test Villa"

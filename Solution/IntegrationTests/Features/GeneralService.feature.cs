@@ -129,7 +129,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table5.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/GeneralService/SubmitReport"});
+                            "/api/GeneralService/SubmitReport"});
                 table5.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
@@ -240,7 +240,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table8.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/GeneralService/CreateReservationForUser"});
+                            "/api/GeneralService/CreateReservationForUser"});
                 table8.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
@@ -347,7 +347,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table11.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/GeneralService/CreateReservationForUser"});
+                            "/api/GeneralService/CreateReservationForUser"});
                 table11.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});

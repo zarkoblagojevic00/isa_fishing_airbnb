@@ -143,7 +143,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table19.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/VillaManagement/CreateVilla"});
+                            "/api/VillaManagement/CreateVilla"});
                 table19.AddRow(new string[] {
                             "CookieUserId",
                             "2"});
@@ -210,7 +210,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "delete"});
                 table20.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/VillaManagement/DeleteVilla"});
+                            "/api/VillaManagement/DeleteVilla"});
                 table20.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
@@ -303,7 +303,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "put"});
                 table22.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/VillaManagement/UpdateVilla"});
+                            "/api/VillaManagement/UpdateVilla"});
 #line 57
  testRunner.When("a request is sent to the API", ((string)(null)), table22, "When ");
 #line hidden

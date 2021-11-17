@@ -9,6 +9,7 @@ import Homepage from "../views/Homepage.vue";
 import InstructorServices from "../views/InstructorServices.vue";
 import InstructorAvailability from "../views/InstructorAvailability.vue";
 import InstructorReservations from "../views/InstructorReservations.vue";
+import Login from "../views/Login.vue"; 
 
 const routes = [
   {
@@ -60,6 +61,11 @@ const routes = [
     path: "/instructor/reservations",
     name: "InstructorReservations",
     component: InstructorReservations,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
   },
 ];
 

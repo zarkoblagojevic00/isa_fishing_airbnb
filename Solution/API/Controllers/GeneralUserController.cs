@@ -15,7 +15,7 @@ using Services.Constants;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class GeneralUserController : AdvancedController
     {
         public GeneralUserController(IUnitOfWork uow) : base(uow)

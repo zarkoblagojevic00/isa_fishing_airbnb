@@ -14,6 +14,11 @@
         Login
       </router-link>
     </div>
+    <div>
+      <router-link to="TestPage">
+        TestPage
+      </router-link>
+    </div>
   </div>
   <!--<v-date-picker v-model="date" isRange="true" mode="dateTime" />-->
 </template>

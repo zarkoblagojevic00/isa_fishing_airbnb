@@ -9,7 +9,7 @@ import Homepage from "../views/Homepage.vue";
 import InstructorServices from "../views/InstructorServices.vue";
 import InstructorAvailability from "../views/InstructorAvailability.vue";
 import InstructorReservations from "../views/InstructorReservations.vue";
-import Login from "../views/Login.vue"; 
+import Login from "../views/LoginRegForgotPass.vue"; 
 import Testpage from "../views/TestPage.vue";
 
 const routes = [
@@ -65,7 +65,7 @@ const routes = [
   },
   {
     path: "/login",
-    name: "Login",
+    name: "LoginRegForgotPass",
     component: Login,
   },
   {

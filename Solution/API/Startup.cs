@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using API.Attributes;
+using API.ConfigurationObjects;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Domain.Entities;
@@ -37,6 +38,15 @@ namespace API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options =>
+                {
+                    options.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v3" });
@@ -78,6 +88,14 @@ namespace API
                 }
             });
 
+            FrontDetails details = new FrontDetails();
+            if (CurrentEnvironment.EnvironmentName == "Development")
+            {
+                Configuration.GetSection("FrontDetailsDev").Bind(details);
+            }
+
+            services.AddSingleton<FrontDetails>(details);
+
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
             builder.Populate(services);
 
@@ -95,6 +113,13 @@ namespace API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
+
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
             app.UseHttpsRedirection();
 

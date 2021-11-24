@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.ConfigurationObjects;
 using Domain.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -12,6 +13,14 @@ namespace API.Controllers.Base
     public abstract class AdvancedController : ControllerBase
     {
         protected readonly IUnitOfWork UoW;
+        protected readonly FrontDetails Details;
+
+        protected AdvancedController(IUnitOfWork uow, FrontDetails details)
+        {
+            UoW = uow;
+            Details = details;
+        }
+
         protected AdvancedController(IUnitOfWork uow)
         {
             UoW = uow;

@@ -10,14 +10,10 @@
       </router-link>
     </div>
     <div>
-      <router-link to="login">
-        Login
-      </router-link>
+      <router-link to="login"> Login </router-link>
     </div>
     <div>
-      <router-link to="TestPage">
-        TestPage
-      </router-link>
+      <router-link to="TestPage"> TestPage </router-link>
     </div>
   </div>
   <!--<v-date-picker v-model="date" isRange="true" mode="dateTime" />-->

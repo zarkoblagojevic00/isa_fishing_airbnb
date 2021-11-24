@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.ConfigurationObjects;
 using API.Controllers.Base;
 using API.DTOs;
 using API.Extensions;
@@ -23,7 +24,7 @@ namespace API.Controllers
     [Route("api/[controller]/[action]")]
     public class RegistrationController : AdvancedController
     {
-        public RegistrationController(IUnitOfWork uow) : base(uow) {}
+        public RegistrationController(IUnitOfWork uow, FrontDetails details) : base(uow, details) {}
 
         [HttpPost]
         public IActionResult RegisterServiceOwner(ServiceOwnerRegistrationDTO registrationForm)
@@ -99,7 +100,7 @@ namespace API.Controllers
 
             UoW.Commit();
 
-            return Ok(Responses.Ok);
+            return Redirect(Details.BaseUrl + "login");
         }
 
         private User ExtractUser(ServiceOwnerRegistrationDTO registrationForm)

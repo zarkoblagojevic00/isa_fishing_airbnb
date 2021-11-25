@@ -13,6 +13,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@popperjs/core": "^2.10.2",
     "core-js": "^3.6.5",
+    "jquery": "^3.6.0",
     "moment": "^2.29.1",
     "v-calendar": "^3.0.0-alpha.6",
     "v-viewer": "^3.0.10",

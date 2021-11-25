@@ -12,11 +12,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VCalendar from "v-calendar";
+import jQuery from "jquery";
 
 library.add(faTrash);
 library.add(faEdit);
 library.add(faPlus);
 library.add(faSearch);
+
+const $ = jQuery;
+window.$ = $;
 
 const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon);
 app.use(VueViewer);

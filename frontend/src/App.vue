@@ -1,11 +1,62 @@
 <template>
+  <GeneralHeader :menuitems="menuItems" v-if="ShouldNotTurnOffHeaderAndFooter()"/>
   <router-view />
+  <GeneralFooter v-if="ShouldNotTurnOffHeaderAndFooter()"/>
 </template>
 
 <script>
+import GeneralHeader from "@/components/GeneralHeader.vue";
+import GeneralFooter from "@/components/GeneralFooter.vue";
 export default {
   name: "App",
-  components: {},
+  components: {
+    GeneralHeader,
+    GeneralFooter,
+    },
+  data() {
+    return {
+      menuItems: [
+        {
+          text: "browse",
+          options: [
+            {
+              text: "villas",
+              invoke: () => (window.location.href = ""),
+            },
+            {
+              text: "boats",
+              invoke: () => (window.location.href = ""),
+            },
+            {
+              text: "adventures",
+              invoke: () => (window.location.href = ""),
+            },
+          ],
+        },
+        {
+          text: "account",
+          options: [
+            {
+              text: "login",
+              invoke: () => (window.location.href = "/Login"),
+            },
+            {
+              text: "register",
+              invoke: () => (window.location.href = ""),
+            },
+          ],
+        },
+      ],
+    };
+  },
+  methods: {
+    ShouldNotTurnOffHeaderAndFooter() {
+      if (window.location.href.indexOf('login') != -1){
+        return false;
+      }
+      return true;
+    }
+  },
 };
 </script>
 

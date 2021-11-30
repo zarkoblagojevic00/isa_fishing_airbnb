@@ -27,10 +27,68 @@ namespace API.Controllers
         public RegistrationController(IUnitOfWork uow, FrontDetails details) : base(uow, details) {}
 
         [HttpPost]
-        public IActionResult RegisterServiceOwner(ServiceOwnerRegistrationDTO registrationForm)
+        public IActionResult RegisterUser(UserRegistrationDTO userRegistrationData)
         {
             var emailValidationService = new EmailValidationService(UoW);
-            var serviceResponse = emailValidationService.CheckEmailDuplication(registrationForm.Email);
+            var serviceResponse = emailValidationService.CheckEmailDuplication(userRegistrationData.Email);
+            if (serviceResponse != Responses.Ok)
+            {
+                return BadRequest(serviceResponse);
+            }
+
+            var writeUserRepo = UoW.GetRepository<IUserWriteRepository>();
+            var writeUserVerificationRepo = UoW.GetRepository<IUserVerificationKeyWriteRepository>();
+
+            UoW.BeginTransaction();
+
+            var newUser = ExtractServiceUser(userRegistrationData);
+            writeUserRepo.Add(newUser);
+
+            var userRegistrationKey = new UserVerificationKey()
+            {
+                UserId = newUser.UserId,
+                VerificationKey = Guid.NewGuid(),
+                IsUsed = false
+            };
+
+            writeUserVerificationRepo.Add(userRegistrationKey);
+
+            UoW.Commit();
+
+            var mailService = new MailingService(UoW)
+            {
+                Body = GenerateMailForConfirmation(newUser.UserId, userRegistrationKey.VerificationKey.ToString()),
+                Receiver = newUser.Email,
+                Title = "Account verification"
+            };
+            mailService.Send();
+
+            return Ok(Responses.Ok);
+        }
+
+
+        private User ExtractServiceUser(UserRegistrationDTO userRegistrationData)
+        {
+            return new User()
+            {
+                UserType = UserType.Registered,
+                Name = userRegistrationData.Name,
+                Surname = userRegistrationData.Surname,
+                Password = userRegistrationData.Password,
+                Address = userRegistrationData.Address,
+                CityId = userRegistrationData.CityId,
+                PhoneNumber = userRegistrationData.PhoneNumber,
+                Email = userRegistrationData.Email,
+                IsAccountActive = true,
+                IsAccountVerified = false
+            };
+        }
+
+        [HttpPost]
+        public IActionResult RegisterServiceOwner(ServiceOwnerRegistrationDTO userRegistrationData)
+        {
+            var emailValidationService = new EmailValidationService(UoW);
+            var serviceResponse = emailValidationService.CheckEmailDuplication(userRegistrationData.Email);
             if (serviceResponse != Responses.Ok)
             {
                 return BadRequest(serviceResponse);
@@ -42,10 +100,10 @@ namespace API.Controllers
 
             UoW.BeginTransaction();
             
-            var newUser = ExtractUser(registrationForm);
+            var newUser = ExtractServiceOwner(userRegistrationData);
             writeUserRepo.Add(newUser);
 
-            var registrationReason = ExtractRegistrationReason(registrationForm);
+            var registrationReason = ExtractRegistrationReason(userRegistrationData);
             registrationReason.UserId = newUser.UserId;
             writeReasonRepo.Add(registrationReason);
 
@@ -103,28 +161,28 @@ namespace API.Controllers
             return Redirect(Details.BaseUrl + "login");
         }
 
-        private User ExtractUser(ServiceOwnerRegistrationDTO registrationForm)
+        private User ExtractServiceOwner(ServiceOwnerRegistrationDTO userRegistrationData)
         {
             return new User()
             {
-                UserType = registrationForm.UserType,
-                Name = registrationForm.Name,
-                Surname = registrationForm.Surname,
-                Password = registrationForm.Password,
-                Address = registrationForm.Address,
-                CityId = registrationForm.CityId,
-                PhoneNumber = registrationForm.PhoneNumber,
-                Email = registrationForm.Email,
+                UserType = userRegistrationData.UserType,
+                Name = userRegistrationData.Name,
+                Surname = userRegistrationData.Surname,
+                Password = userRegistrationData.Password,
+                Address = userRegistrationData.Address,
+                CityId = userRegistrationData.CityId,
+                PhoneNumber = userRegistrationData.PhoneNumber,
+                Email = userRegistrationData.Email,
                 IsAccountActive = false,
                 IsAccountVerified = false
             };
         }
 
-        private RegistrationReason ExtractRegistrationReason(ServiceOwnerRegistrationDTO registrationForm)
+        private RegistrationReason ExtractRegistrationReason(ServiceOwnerRegistrationDTO userRegistrationData)
         {
             return new RegistrationReason()
             {
-                Reason = registrationForm.Reason,
+                Reason = userRegistrationData.Reason,
                 IsReviewed = false
             };
         }

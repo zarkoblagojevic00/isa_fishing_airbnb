@@ -203,4 +203,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ReservationId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="684ef7fe-6d57-451e-948a-1f23f675e5c1" ChangeDateTime="11/30/2021 18:01:25">
+    <Property Name="ElementName" Value="[dbo].[AdditionalInstructorInfos].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AdditionalInstructorInfos]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="InstructorId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3bedd33e-13f6-464b-875e-18aa20ac6dbe" ChangeDateTime="11/30/2021 21:21:52">
+    <Property Name="ElementName" Value="[dbo].[PricelistItems].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PricelistItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PricelistItemId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b0c7409f-9438-4dbd-ae84-fab2a9adef5f" ChangeDateTime="11/30/2021 21:23:47">
+    <Property Name="ElementName" Value="[dbo].[AdditionalAdventureInfos].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AdditionalAdventureInfos]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AdventureId" />
+  </Operation>
 </Operations>

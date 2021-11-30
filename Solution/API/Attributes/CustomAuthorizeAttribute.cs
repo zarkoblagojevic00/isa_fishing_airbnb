@@ -29,6 +29,31 @@ namespace API.Attributes
             var email = context.HttpContext.Request.Cookies[CookieInformation.CookieInformation.Email];
             var userId = context.HttpContext.Request.Cookies[CookieInformation.CookieInformation.UserId];
 
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(userId))
+            {
+                if (context.HttpContext.Request.Headers.TryGetValue("set-cookie", out var cookieInfo))
+                {
+                    var values = cookieInfo.ToArray();
+                    var readCookie = values.FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(readCookie))
+                    {
+                        values = readCookie.Split("; ");
+                        foreach (var value in values)
+                        {
+                            if (value.StartsWith(CookieInformation.CookieInformation.Email))
+                            {
+                                email = value.Split("=")[1];
+                            }
+                            else if (value.StartsWith(CookieInformation.CookieInformation.UserId))
+                            {
+                                userId = value.Split("=")[1];
+                            }
+                        }
+                    }
+                }
+            }
+
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(userId))
             {
                 if (int.TryParse(userId, out int id))

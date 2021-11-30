@@ -8,17 +8,17 @@
                     </span>
                 </div>
                 <div class="submenu" id="sub-villa">
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('AddNewVilla')">
                         <span class="menu-text">
                             Add new villa
                         </span>
                     </div>
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('ViewVilla')">
                         <span class="menu-text">
                             View villas
                         </span>
                     </div>
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('CheckVillaSchedule')">
                         <span class="menu-text">
                             Check villa schedule
                         </span>
@@ -30,18 +30,18 @@
                         Profile
                     </span>
                 </div>
-                <div class="submenu" id="sub-profile">
+                <div class="submenu" id="sub-profile" @click="ChangeMode('ViewProfile')">
                     <div class="submenu-item">
                         <span class="menu-text">
                             View profile
                         </span>
                     </div>
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('ChangePass')">
                         <span class="menu-text">
                             Change password
                         </span>
                     </div>
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('RequestDeletion')">
                         <span class="menu-text">
                             Request account deletion
                         </span>
@@ -55,11 +55,11 @@
                 </div>
                 <div class="submenu" id="sub-report">
                     <div class="submenu-item">
-                        <span class="menu-text">
+                        <span class="menu-text" @click="ChangeMode('VillaReport')">
                             Report for villa
                         </span>
                     </div>
-                    <div class="submenu-item">
+                    <div class="submenu-item" @click="ChangeMode('GeneralReport')">
                         <span class="menu-text">
                             Report for all villas
                         </span>
@@ -68,26 +68,32 @@
             </div>
 
             <div class="content">
-
+                <AddNewVilla v-if="mode == 'AddNewVilla'"/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import AddNewVilla from "../components/AddNewVilla.vue";
+
 export default {
   name: "VillaProflie",
   components: {
+      AddNewVilla
   },
   data() {
     return {
-      
+        mode: "AddNewVilla"
     };
   },
   methods: {
       ToggleSubmenu(name) {
             let newname = "sub-" + name;
             window.$("#" + newname).slideToggle();
+      },
+      ChangeMode(newMode){
+          this.mode = newMode;
       }
   },
 };
@@ -153,8 +159,8 @@ export default {
 }
 
 .content {
-    background-color: red;
     width: 100%;
+    overflow: auto;
 }
 
 .submenu {

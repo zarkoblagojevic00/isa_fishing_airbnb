@@ -26,3 +26,8 @@ const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon);
 app.use(VueViewer);
 app.use(VCalendar, {});
 app.use(router).mount("#app");
+
+if (process.env.VUE_APP_ENV == 'development'){
+  document.cookie = "userId=2; domain=localhost";
+  document.cookie = "email=testvillaowner@gmail.com; domain=localhost";
+}

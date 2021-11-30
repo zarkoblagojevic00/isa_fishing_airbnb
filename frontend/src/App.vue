@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     ShouldNotTurnOffHeaderAndFooter() {
-      if (window.location.href.indexOf('login') != -1){
+      if (window.location.href.indexOf('Login') != -1){
         return false;
       }
       return true;

@@ -42,26 +42,25 @@ namespace API
             {
                 c.AddPolicy("AllowOrigin", options =>
                 {
-                    options.AllowAnyOrigin()
+                    options
+                        .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowCredentials()
+                        .SetIsOriginAllowed(origin =>
+                        {
+                            if (origin.ToLower().StartsWith("http://localhost"))
+                                return true;
+                            if (origin.ToLower().StartsWith("http://heroku..."))
+                                return true;
+
+                            return false;
+                        });
                 });
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v3" });
-                c.AddSecurityDefinition("emailAuth", new OpenApiSecurityScheme()
-                {
-                    Type = SecuritySchemeType.ApiKey,
-                    In = ParameterLocation.Cookie,
-                    Name = "email"
-                });
-                c.AddSecurityDefinition("userIdAuth", new OpenApiSecurityScheme()
-                {
-                    Type = SecuritySchemeType.ApiKey,
-                    In = ParameterLocation.Cookie,
-                    Name = "userId"
-                });
             });
 
             services.AddMvcCore(options =>
@@ -114,17 +113,13 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
-            app.UseCors(options =>
-            {
-                options.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
+            app.UseCors("AllowOrigin");
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

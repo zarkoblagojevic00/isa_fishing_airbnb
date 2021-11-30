@@ -13,11 +13,14 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@popperjs/core": "^2.10.2",
     "core-js": "^3.6.5",
+    "jquery": "^3.6.0",
     "moment": "^2.29.1",
     "v-calendar": "^3.0.0-alpha.6",
     "v-viewer": "^3.0.10",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-cookies": "^1.7.4",
+    "vue-router": "^4.0.0-0",
+    "vue3-cookies": "^1.0.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

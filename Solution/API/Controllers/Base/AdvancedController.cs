@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.ConfigurationObjects;
 using Domain.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Ocsp;
 using Services;
 
 namespace API.Controllers.Base
@@ -34,12 +35,32 @@ namespace API.Controllers.Base
 
         protected virtual int GetUserIdFromCookie()
         {
-            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
+            var userId = Request.Cookies[CookieInformation.CookieInformation.UserId];
+
+            if (userId == null)
+            {
+                var cookieFromHeader = Request.Headers["set-cookie"];
+                var readCookie = cookieFromHeader.ToArray().First();
+                var cookieValues = readCookie.Split("; ");
+                userId = cookieValues.First(x => x.StartsWith(CookieInformation.CookieInformation.UserId)).Split("=")[1];
+            }
+
+            var currentUser = int.Parse(userId);
             return currentUser;
         }
 
         protected virtual string GetUserMailFromCookie()
         {
+            var email = Request.Cookies[CookieInformation.CookieInformation.Email];
+
+            if (email == null)
+            {
+                var cookieFromHeader = Request.Headers["set-cookie"];
+                var readCookie = cookieFromHeader.ToArray().First();
+                var cookieValues = readCookie.Split("; ");
+                email = cookieValues.First(x => x.StartsWith(CookieInformation.CookieInformation.Email)).Split("=")[1];
+            }
+
             var currentUser = Request.Cookies[CookieInformation.CookieInformation.Email];
             return currentUser;
         }

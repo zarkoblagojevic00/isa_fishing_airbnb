@@ -210,7 +210,7 @@ namespace API.Controllers
 
             var ongoingReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId && x.EndDateTime < DateTime.Now)
+                .Where(x => x.ServiceId == serviceId && x.StartDateTime < DateTime.Now && x.EndDateTime > DateTime.Now)
                 .OrderBy(x => x.StartDateTime);
 
             return Ok(ongoingReservations);

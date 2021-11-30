@@ -11,6 +11,7 @@ import InstructorAvailability from "../views/InstructorAvailability.vue";
 import InstructorReservations from "../views/InstructorReservations.vue";
 import Login from "../views/LoginRegForgotPass.vue";
 import Testpage from "../views/TestPage.vue";
+import VillaProfile from "../views/VillaProfile.vue";
 
 const routes = [
   {
@@ -73,6 +74,11 @@ const routes = [
     name: "TestPage",
     component: Testpage,
   },
+  {
+    path: "/villaprofile",
+    name: "VillaProfile",
+    component: VillaProfile,
+  }
 ];
 
 const router = createRouter({

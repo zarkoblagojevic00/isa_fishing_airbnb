@@ -72,6 +72,9 @@
 
 export default {
     name: "AndNewVilla",
+    props: {
+        changeMode: Function,
+    },
     data() {
         return {
             name: "",
@@ -189,7 +192,7 @@ export default {
             }
 
             let vue = this;
-            fetch(process.env.VUE_APP_BASE_API_URL + "api/VillaManagement/CreateVilla", {
+            fetch("/api/VillaManagement/CreateVilla", {
                 method: 'POST',
                 redirect: 'follow',
                 headers: {
@@ -203,6 +206,7 @@ export default {
                     return;
                 }
                 alert('Success! New villa has been created!');
+                vue.changeMode("ViewVillas");
                 return response.json();
             }).catch(data => {
                 vue.errors = new Array();

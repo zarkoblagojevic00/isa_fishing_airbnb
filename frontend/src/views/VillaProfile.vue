@@ -13,7 +13,7 @@
                             Add new villa
                         </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('ViewVilla')">
+                    <div class="submenu-item" @click="ChangeMode('ViewVillas')">
                         <span class="menu-text">
                             View villas
                         </span>
@@ -68,7 +68,8 @@
             </div>
 
             <div class="content">
-                <AddNewVilla v-if="mode == 'AddNewVilla'"/>
+                <AddNewVilla v-if="mode == 'AddNewVilla'" :changeMode="ChangeMode"/>
+                <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode"/>
             </div>
         </div>
     </div>
@@ -76,15 +77,17 @@
 
 <script>
 import AddNewVilla from "../components/AddNewVilla.vue";
+import ViewVillas from "../components/ViewVillas.vue";
 
 export default {
-  name: "VillaProflie",
+  name: "VillaProfile",
   components: {
-      AddNewVilla
+      AddNewVilla,
+      ViewVillas,
   },
   data() {
     return {
-        mode: "AddNewVilla"
+        mode: "ViewVillas"
     };
   },
   methods: {
@@ -162,6 +165,11 @@ export default {
     width: 100%;
     overflow: auto;
 }
+
+.content::-webkit-scrollbar{
+    display: none;
+}
+
 
 .submenu {
     width: 100%;

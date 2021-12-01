@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ using Domain.Entities;
 using Domain.Mappings;
 using Domain.UnitOfWork;
 using Infrastructure;
+using VueCliMiddleware;
 
 namespace API
 {
@@ -66,6 +69,13 @@ namespace API
             services.AddMvcCore(options =>
             {
                 options.Filters.Add(new CookieMapGlobalAttribute());
+            });
+
+            //In production the vue files will be saved to this dir -> probably /frontend/dist
+            //In dev should be .\..\..\frontend
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = Environment.GetEnvironmentVariable("ISA_FRONT_DIR") + "/dist";
             });
 
             var builder = new ContainerBuilder();
@@ -115,6 +125,9 @@ namespace API
 
             app.UseCors("AllowOrigin");
 
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -125,6 +138,19 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api") || !x.Request.Path.Value.StartsWith("/swagger"), builder =>
+            {
+                builder.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = Environment.GetEnvironmentVariable("ISA_FRONT_DIR");
+
+                    if (env.IsDevelopment())
+                    {
+                        spa.UseVueCli(npmScript: "serve");
+                    }
+                });
             });
         }
     }

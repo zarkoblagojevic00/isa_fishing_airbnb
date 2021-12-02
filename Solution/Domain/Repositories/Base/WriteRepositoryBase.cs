@@ -30,5 +30,9 @@ namespace Domain.Repositories.Base
         {
             Session.Delete(entity);
         }
+        public virtual int AddAndGetInsertedId(TEntity entity)
+        {
+            return (int)Session.Save(entity);
+        }
     }
 }

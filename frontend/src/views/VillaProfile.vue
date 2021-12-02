@@ -88,7 +88,7 @@ export default {
   },
   data() {
     return {
-        mode: "ViewVillas",
+        mode: "UpdateVilla",
         chosenVilla: 1,
     };
   },

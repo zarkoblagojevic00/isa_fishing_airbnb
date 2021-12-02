@@ -55,8 +55,9 @@
                 <span class="label">Additional equipment:</span>
                 <textarea class="input-textarea" type="text" v-model="additionalEquipment" placeholder="Not required"></textarea>
             </div>
-            <div class="input-wrapper" v-if="mode == 'Editing'">
+            <div class="horizontal-wrapper" v-if="mode == 'Editing'">
                 <button class="submit-btn">View images</button>
+                <button class="delete-btn" @click="DeleteVilla()">Delete villa</button>
             </div>
             <div class="input-wrapper" v-if="errors.length > 0">
                 <span class="label red">Errors:</span>
@@ -126,7 +127,7 @@ export default {
             if (input == undefined || input == null)
                 return false;
             
-            if (input < 0)
+            if (input <= 0)
                 return false;
 
             return true;
@@ -262,6 +263,37 @@ export default {
                 vue.additionalEquipment = data.additionalEquipment;
             });
         },
+        DeleteVilla(){
+            if (this.mode == 'Adding')
+                return;
+
+            let vue = this;
+            fetch("/api/VillaManagement/DeleteVilla?villaId=" + this.$props.villaId, {
+                method: 'DELETE',
+                redirect: 'follow',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Set-Cookie': document.cookie
+                }
+            }).then(response => {
+                if (response.status != 200){
+                    return response.text();
+                }
+                else {
+                    alert("Success! The villa has been deleted!");
+                    vue.changeMode("ViewVillas");
+                }
+                return "";
+            }).then(data => {
+                if (data == undefined || data == ''){
+                    return;
+                }
+                
+                alert(data);
+                vue.errors = new Array();
+                vue.errors.push(data);
+            })
+        }
     },
 }
 </script>
@@ -358,10 +390,28 @@ export default {
 
 .submit-btn:hover {
   background-color: #54cc39;
+    color: black;
 }
 
 .red {
     color: red !important;
+}
+
+.delete-btn {
+    background: red;
+    outline: none;
+    margin-left: 10px;
+    border-radius: 15px;
+    border: none;
+    color: white;
+    font-size: 18px;
+    transition: background-color 300ms linear;
+}
+
+.delete-btn:hover {
+    background-color: rgb(255,184,24);
+    color: black;
+    cursor: pointer;
 }
 
 li {

@@ -16,10 +16,11 @@ Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje poda
 :r .\Countries.Table.sql
 :r .\Cities.Table.sql
 :r .\Users.Table.sql
-:r .\Services.Table.sql
 
 IF '$(Environment)' = 'LOCAL'
 	BEGIN
 		-- Scripts run for local configurations 
 		:r .\LOCAL\SystemConfiguration.Table.sql
+		:r .\LOCAL\Services.Table.sql
+		:r .\LOCAL\Reservations.Table.sql
 	END

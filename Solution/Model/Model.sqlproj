@@ -104,8 +104,8 @@
     <None Include="MasterData\Cities.Table.sql" />
     <None Include="MasterData\LOCAL\SystemConfiguration.Table.sql" />
     <None Include="MasterData\Users.Table.sql" />
-    <None Include="MasterData\Services.Table.sql" />
     <None Include="MasterData\ClearAndReseed.sql" />
+    <None Include="MasterData\LOCAL\Reservations.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />
@@ -121,5 +121,6 @@
     <Build Include="Tables\AdditionalInstructorInfos.sql" />
     <Build Include="Tables\PricelistItems.sql" />
     <Build Include="Tables\AdditionalAdventureInfos.sql" />
+    <None Include="MasterData\LOCAL\Services.Table.sql" />
   </ItemGroup>
 </Project>

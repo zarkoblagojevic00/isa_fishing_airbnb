@@ -68,8 +68,9 @@
             </div>
 
             <div class="content">
-                <AddNewVilla v-if="mode == 'AddNewVilla'" :changeMode="ChangeMode"/>
-                <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode"/>
+                <AddNewVilla v-if="mode == 'AddNewVilla'" :changeMode="ChangeMode" :villaId="0"/>
+                <AddNewVilla v-if="mode == 'UpdateVilla'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
+                <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode" :changeChosenVilla="ChangeSelectedVilla"/>
             </div>
         </div>
     </div>
@@ -87,7 +88,8 @@ export default {
   },
   data() {
     return {
-        mode: "ViewVillas"
+        mode: "ViewVillas",
+        chosenVilla: 1,
     };
   },
   methods: {
@@ -96,7 +98,13 @@ export default {
             window.$("#" + newname).slideToggle();
       },
       ChangeMode(newMode){
+          if (newMode == 'AddNewVilla'){
+              this.chosenVilla = 0;
+          }
           this.mode = newMode;
+      },
+      ChangeSelectedVilla(newVilla){
+          this.chosenVilla = newVilla;
       }
   },
 };

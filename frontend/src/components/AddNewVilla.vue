@@ -55,6 +55,9 @@
                 <span class="label">Additional equipment:</span>
                 <textarea class="input-textarea" type="text" v-model="additionalEquipment" placeholder="Not required"></textarea>
             </div>
+            <div class="input-wrapper" v-if="mode == 'Editing'">
+                <button class="submit-btn">View images</button>
+            </div>
             <div class="input-wrapper" v-if="errors.length > 0">
                 <span class="label red">Errors:</span>
                 <ul>
@@ -64,7 +67,7 @@
         </div>
     </div>
     <div class="submit-div">
-        <button class="submit-btn" @click="SendRequest()">Create Villa!</button>
+        <button class="submit-btn" @click="SendRequest()">{{mode == 'Adding' ? 'Create villa!' : 'Update Villa!'}}</button>
     </div>
 </template>
 
@@ -74,6 +77,7 @@ export default {
     name: "AndNewVilla",
     props: {
         changeMode: Function,
+        villaId: Number,
     },
     data() {
         return {
@@ -92,15 +96,19 @@ export default {
             percentageToTake: 0,
             numberOfBeds: 0,
             numberOfRooms: 0,
-            errors : []
+            errors : [],
+            mode: this.$props.villaId == 0 ? 'Adding' : 'Editing',
         }
+    },
+    mounted () {
+        this.PullData();
     },
     methods: {
         isNumber(evt) {
             evt = (evt) ? evt : window.event;
             var charCode = (evt.which) ? evt.which : evt.keyCode;
             if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-                evt.preventDefault();;
+                evt.preventDefault();
             } else {
                 return true;
             }
@@ -114,15 +122,7 @@ export default {
             if (this.pricePerDay.length == 0)
                 return false;
 
-            let input = this.pricePerDay.trim();
-            input = input.split(" ");
-
-            if (input.length > 1)
-                return false;
-            
-            input = input[0];
-
-            input = parseFloat(input);
+            let input = parseFloat(input);
             if (input == undefined || input == null)
                 return false;
             
@@ -182,7 +182,7 @@ export default {
                 Longitude: this.longitude,
                 Latitude: this.latitude,
                 PromoDescription: this.promoDescription,
-                TermsOfUser: this.termsOfUse,
+                TermsOfUse: this.termsOfUse,
                 AdditionalEquipment: this.additionalEquipment,
                 Capacity: this.capacity,
                 IsPercentageTakenFromCanceledReservations: this.percentageTakenFromCancelation,
@@ -192,8 +192,12 @@ export default {
             }
 
             let vue = this;
-            fetch("/api/VillaManagement/CreateVilla", {
-                method: 'POST',
+            let url = this.mode == 'Adding' ? "/api/VillaManagement/CreateVilla" : "/api/VillaManagement/UpdateVilla";
+            if (this.mode == 'Editing'){
+                dto.villaId = this.$props.villaId;
+            }
+            fetch(url, {
+                method: vue.mode == 'Adding' ? 'POST' : 'PUT',
                 redirect: 'follow',
                 headers: {
                     'Content-type': 'application/json',
@@ -205,7 +209,12 @@ export default {
                     alert("Something went wrong!\nStatus code: " + response.status);
                     return;
                 }
-                alert('Success! New villa has been created!');
+                if (vue.mode == 'Adding'){
+                    alert('Success! New villa has been created!');
+                }
+                else {
+                    alert('Success! Villa has been updated!');
+                }
                 vue.changeMode("ViewVillas");
                 return response.json();
             }).catch(data => {
@@ -217,9 +226,42 @@ export default {
                 }
             });
 
-
             return true;
-        }
+        },
+        PullData(){
+            if (this.mode == 'Adding')
+                return;
+            
+            let vue = this;
+            fetch("/api/VillaManagement/GetVillaInfo?villaId=" + this.$props.villaId, {
+                method: 'GET',
+                redirect: 'follow',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Set-Cookie': document.cookie
+                }
+            }).then(response => {
+                if (response.status != 200){
+                    alert("Something went wrong!\nStatus code: " + response.status);
+                    throw '';
+                }
+                return response.json();
+            }).then(data => {
+                vue.name = data.name;
+                vue.pricePerDay = data.pricePerDay;
+                vue.address = data.address;
+                vue.longitude = data.longitude;
+                vue.latitude = data.latitude;
+                vue.capacity = data.capacity;
+                vue.percentageTakenFromCancelation = data.isPercentageTakenFromCanceledReservations;
+                vue.percentageToTake = data.percentageToTake;
+                vue.numberOfRooms = data.numberOfRooms;
+                vue.numberOfBeds = data.numberOfBeds;
+                vue.promoDescription = data.promoDescription;
+                vue.termsOfUse = data.termsOfUse;
+                vue.additionalEquipment = data.additionalEquipment;
+            });
+        },
     },
 }
 </script>

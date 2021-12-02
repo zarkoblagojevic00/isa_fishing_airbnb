@@ -29,7 +29,7 @@ namespace API.Controllers.Base
 
         protected virtual bool CheckOwnerShip(int serviceId)
         {
-            var currentUser = int.Parse(Request.Cookies[CookieInformation.CookieInformation.UserId] ?? string.Empty);
+            var currentUser = GetUserIdFromCookie();
             return new ValidateServiceOwnerService(UoW).ValidateOwnerShip(serviceId, currentUser);
         }
 

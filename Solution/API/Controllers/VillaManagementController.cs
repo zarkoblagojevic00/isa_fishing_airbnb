@@ -25,6 +25,41 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] {false, UserType.VillaOwner})]
+        public IActionResult GetVillaInfo(int villaId)
+        {
+            if (!CheckOwnerShip(villaId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            var service = UoW.GetRepository<IServiceReadRepository>().GetById(villaId);
+            var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
+                .GetAll()
+                .First(x => x.ServiceId == villaId);
+            
+            return Ok(new VillaDTO()
+            {
+                VillaId = villaId,
+                Name = service.Name,
+                PricePerDay = service.PricePerDay,
+                Address = service.Address,
+                Longitude = service.Longitude,
+                Latitude = service.Latitude,
+                PromoDescription = service.PromoDescription,
+                TermsOfUse = service.TermsOfUse,
+                AdditionalEquipment = service.AdditionalEquipment,
+                AvailableFrom = service.AvailableFrom,
+                AvailableTo = service.AvailableTo,
+                Capacity = service.Capacity,
+                IsPercentageTakenFromCanceledReservations = service.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = service.PercentageToTake,
+                NumberOfBeds = additionalServiceInfo.NumberOfBeds,
+                NumberOfRooms = additionalServiceInfo.NumberOfRooms
+            });
+        }
+
+        [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.VillaOwner })]
         public IEnumerable<VillaDTO> GetOwnedVillas()
         {

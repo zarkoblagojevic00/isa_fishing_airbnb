@@ -6,7 +6,7 @@
         </div>
 
         <div class="with-villas" v-if="villas.length != 0">
-            <div class="my-card" v-for="villa in villas" :key="villa.villaId">
+            <div class="my-card" v-for="villa in villas" :key="villa.villaId" @click="ClickedOnVilla(villa.villaId)">
                 <div class="cover-img">
                     <div class="shading"></div>
                     <img src="../assets/missing-img.png" class="image" v-if="villa.imageIds == undefined || villa.imageIds.length == 0">
@@ -38,6 +38,7 @@ export default {
     name: "ViewVillas",
     props: {
         changeMode: Function,
+        changeChosenVilla: Function,
     },
     mounted() {
         this.GetVillas();
@@ -66,6 +67,10 @@ export default {
             }).then(data => {
                 vue.villas = data;
             });
+        },
+        ClickedOnVilla(villaId){
+            this.$props.changeChosenVilla(villaId);
+            this.$props.changeMode("UpdateVilla");
         }
     },
 }

@@ -37,6 +37,9 @@ namespace API.Controllers
             var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll()
                 .First(x => x.ServiceId == villaId);
+            var images = UoW.GetRepository<IImageReadRepository>().GetAll()
+                .Where(x => x.ServiceId == villaId)
+                .Select(x => x.ImageId);
             
             return Ok(new VillaDTO()
             {
@@ -55,7 +58,8 @@ namespace API.Controllers
                 IsPercentageTakenFromCanceledReservations = service.IsPercentageTakenFromCanceledReservations,
                 PercentageToTake = service.PercentageToTake,
                 NumberOfBeds = additionalServiceInfo.NumberOfBeds,
-                NumberOfRooms = additionalServiceInfo.NumberOfRooms
+                NumberOfRooms = additionalServiceInfo.NumberOfRooms,
+                ImageIds = images
             });
         }
 
@@ -69,9 +73,6 @@ namespace API.Controllers
                 .GetAll()
                 .Where(x => x.OwnerId == ownerId);
             var additionalInformation = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
-                .GetAll()
-                .Where(x => x.ServiceId.In(villas.Select(y => y.ServiceId).ToArray()));
-            var images = UoW.GetRepository<IImageReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId.In(villas.Select(y => y.ServiceId).ToArray()));
 
@@ -93,14 +94,9 @@ namespace API.Controllers
                 PricePerDay = x.PricePerDay,
                 PromoDescription = x.PromoDescription,
                 TermsOfUse = x.PromoDescription,
-                VillaId = x.ServiceId
+                VillaId = x.ServiceId,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId)
             });
-
-            foreach (var dto in result)
-            {
-                dto.ImageIds = images.Where(x => x.ServiceId == dto.VillaId.Value)
-                    .Select(x => x.ImageId);
-            }
 
             return result;
         }

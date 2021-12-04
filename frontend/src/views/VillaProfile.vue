@@ -71,6 +71,7 @@
                 <AddNewVilla v-if="mode == 'AddNewVilla'" :changeMode="ChangeMode" :villaId="0"/>
                 <AddNewVilla v-if="mode == 'UpdateVilla'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
                 <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode" :changeChosenVilla="ChangeSelectedVilla"/>
+                <VillaImages v-if="mode == 'VillaImages'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
             </div>
         </div>
     </div>
@@ -79,12 +80,14 @@
 <script>
 import AddNewVilla from "../components/AddNewVilla.vue";
 import ViewVillas from "../components/ViewVillas.vue";
+import VillaImages from "../components/VillaImages.vue";
 
 export default {
   name: "VillaProfile",
   components: {
       AddNewVilla,
       ViewVillas,
+      VillaImages,
   },
   data() {
     return {

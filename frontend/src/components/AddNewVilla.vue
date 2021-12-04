@@ -56,7 +56,7 @@
                 <textarea class="input-textarea" type="text" v-model="additionalEquipment" placeholder="Not required"></textarea>
             </div>
             <div class="horizontal-wrapper" v-if="mode == 'Editing'">
-                <button class="submit-btn">View images</button>
+                <button class="submit-btn" @click="changeMode('VillaImages')">View images</button>
                 <button class="delete-btn" @click="DeleteVilla()">Delete villa</button>
             </div>
             <div class="input-wrapper" v-if="errors.length > 0">
@@ -99,6 +99,7 @@ export default {
             numberOfRooms: 0,
             errors : [],
             mode: this.$props.villaId == 0 ? 'Adding' : 'Editing',
+            imageIds: []
         }
     },
     mounted () {
@@ -261,6 +262,7 @@ export default {
                 vue.promoDescription = data.promoDescription;
                 vue.termsOfUse = data.termsOfUse;
                 vue.additionalEquipment = data.additionalEquipment;
+                vue.imageIds = data.imageIds;
             });
         },
         DeleteVilla(){
@@ -289,7 +291,7 @@ export default {
                     return;
                 }
                 
-                alert(data);
+                alert(data);    
                 vue.errors = new Array();
                 vue.errors.push(data);
             })

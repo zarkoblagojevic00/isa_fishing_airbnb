@@ -5,11 +5,8 @@
       <h4>
         <b>{{ service.name }}</b>
       </h4>
-      <p>{{ service.description }}</p>
+      <p>{{ service.promoDescription }}</p>
       <p>{{ service.address }}</p>
-    </div>
-    <div class="delete">
-      <font-awesome-icon icon="trash" />
     </div>
   </div>
 </template>
@@ -31,6 +28,7 @@ export default {
   min-width: 350px;
   max-width: 350px;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 .card:hover {
@@ -39,15 +37,5 @@ export default {
 
 .container {
   padding: 2px 16px;
-}
-
-.delete {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  color: red;
-  height: 20px;
-  width: 20px;
 }
 </style>

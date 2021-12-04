@@ -1,8 +1,12 @@
 <template>
   <div class="search-container">
     <form>
-      <input type="text" :placeholder="searchPlaceholder" />
-      <button type="submit">
+      <input
+        type="text"
+        :placeholder="searchPlaceholder"
+        v-model="searchParam"
+      />
+      <button type="submit" @click="onSearch">
         <font-awesome-icon icon="search"></font-awesome-icon>
       </button>
     </form>
@@ -10,11 +14,33 @@
 </template>
 
 <script>
+import axios from "../api/api.js";
+
 export default {
   props: {
     searchPlaceholder: String,
   },
-  methods: {},
+  data() {
+    return {
+      searchParam: "",
+    };
+  },
+  methods: {
+    onSearch(e) {
+      e.preventDefault();
+      axios
+        .get("/api/Adventure/FilterOwnedAdventures", {
+          params: {
+            name: this.searchParam,
+          },
+        })
+        .then((res) => {
+          console.log(this.searchParam);
+          console.log(res.data);
+          this.$emit("filtered", res.data);
+        });
+    },
+  },
 };
 </script>
 

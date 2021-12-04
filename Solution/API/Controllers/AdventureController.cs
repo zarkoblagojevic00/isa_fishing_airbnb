@@ -109,7 +109,7 @@ namespace API.Controllers
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
-        public IEnumerable<AdventureDTO> FilterOwnedAdventures(string name, string address)
+        public IEnumerable<AdventureDTO> FilterOwnedAdventures(string name)
         {
             int ownerId = GetUserIdFromCookie();
             var adventures = UoW.GetRepository<IServiceReadRepository>()
@@ -148,8 +148,7 @@ namespace API.Controllers
                     .Select(x => x.ImageId);
             }
 
-            return ownedAdventures.Where(adventure => String.IsNullOrEmpty(name) || adventure.Name.Contains(name))
-                                  .Where(adventure => String.IsNullOrEmpty(address) || adventure.Address.Contains(address));
+            return ownedAdventures.Where(adventure => String.IsNullOrEmpty(name) || adventure.Name.Contains(name));
         }
 
 

@@ -1,7 +1,10 @@
 <template>
-  <GeneralHeader :menuitems="menuItems" v-if="ShouldNotTurnOffHeaderAndFooter()"/>
+  <GeneralHeader
+    :menuitems="menuItems"
+    v-if="ShouldNotTurnOffHeaderAndFooter()"
+  />
   <router-view />
-  <GeneralFooter v-if="ShouldNotTurnOffHeaderAndFooter()"/>
+  <GeneralFooter v-if="ShouldNotTurnOffHeaderAndFooter()" />
 </template>
 
 <script>
@@ -12,7 +15,7 @@ export default {
   components: {
     GeneralHeader,
     GeneralFooter,
-    },
+  },
   data() {
     return {
       menuItems: [
@@ -51,11 +54,14 @@ export default {
   },
   methods: {
     ShouldNotTurnOffHeaderAndFooter() {
-      if (window.location.href.indexOf('Login') != -1 || window.location.href.indexOf('login') != -1){
+      if (
+        window.location.href.indexOf("Login") != -1 ||
+        window.location.href.indexOf("login") != -1
+      ) {
         return false;
       }
       return true;
-    }
+    },
   },
 };
 </script>

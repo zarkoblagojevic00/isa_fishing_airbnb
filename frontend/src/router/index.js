@@ -12,6 +12,7 @@ import InstructorReservations from "../views/InstructorReservations.vue";
 import Login from "../views/LoginRegForgotPass.vue";
 import Testpage from "../views/TestPage.vue";
 import VillaProfile from "../views/VillaProfile.vue";
+import NewAdventure from "../views/NewAdventure.vue";
 
 const routes = [
   {
@@ -78,6 +79,11 @@ const routes = [
     path: "/villaprofile",
     name: "VillaProfile",
     component: VillaProfile,
+  },
+  {
+    path: "/instructor/new-adventure",
+    name: "NewAdventure",
+    component: NewAdventure,
   }
 ];
 

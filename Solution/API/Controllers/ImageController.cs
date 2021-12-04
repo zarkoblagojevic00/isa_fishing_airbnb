@@ -69,6 +69,10 @@ namespace API.Controllers
         public IActionResult DeleteImage(int id)
         {
             var image = UoW.GetRepository<IImageReadRepository>().GetById(id);
+            if (image == null)
+            {
+                return NotFound(Responses.NotFound);
+            }
             if (!CheckOwnerShip(image.ServiceId))
             {
                 return Unauthorized(Responses.ServiceOwnerNotLinked);

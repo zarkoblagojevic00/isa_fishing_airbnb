@@ -15,7 +15,6 @@ namespace Domain.Mappings
         public ImageMap()
         {
             Table("Images");
-            Lazy(true);
 
             Id(x => x.ImageId, map =>
             {
@@ -23,7 +22,11 @@ namespace Domain.Mappings
                 map.Generator(Generators.Identity);
             });
 
-            Property(x => x.Bytes, map => map.Column("Bytes"));
+            Property(x => x.Bytes, map =>
+            {
+                map.Column("Bytes");
+                map.Length(Int32.MaxValue);
+            });
             Property(x => x.ServiceId, map => map.Column("ServiceId"));
         }
     }

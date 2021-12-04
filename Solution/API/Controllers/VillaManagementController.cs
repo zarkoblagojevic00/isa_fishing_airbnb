@@ -209,7 +209,7 @@ namespace API.Controllers
 
             var reservationDates = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && !x.IsCanceled && x.ServiceId == villaId);
+                .Where(x => x.EndDateTime >= DateTime.Now && !x.IsCanceled && x.ServiceId == villaId && !x.IsServiceUnavailableMarker);
             
             if (reservationDates.Any())
             {
@@ -222,19 +222,9 @@ namespace API.Controllers
 
                 var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll()
                     .First(x => x.ServiceId == villaId);
-                var service = UoW.GetRepository<IServiceReadRepository>().GetById(villaId);
-
-                var promoActions = UoW.GetRepository<IPromoActionReadRepository>()
-                    .GetAll()
-                    .Where(x => x.ServiceId == villaId);
-                foreach (var promoAction in promoActions)
-                {
-                    promoAction.IsTaken = true;
-                    UoW.GetRepository<IPromoActionWriteRepository>().Update(promoAction);
-                }
-
                 UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Delete(additionalServiceInfo);
-                UoW.GetRepository<IServiceWriteRepository>().Delete(service);
+                
+                new DeleteService().DeleteAllInfoForService(villaId, UoW);
 
                 UoW.Commit();
             }

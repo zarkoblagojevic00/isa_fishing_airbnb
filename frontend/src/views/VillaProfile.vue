@@ -23,6 +23,16 @@
                             Check villa schedule
                         </span>
                     </div>
+                    <div class="submenu-item" @click="ChangeMode('AddPromoAction')">
+                        <span class="menu-text">
+                            Add promo action
+                        </span>
+                    </div>
+                    <div class="submenu-item" @click="ChangeMode('ReserveForUser')">
+                        <span class="menu-text">
+                            Create a reservation
+                        </span>
+                    </div>
                 </div>
 
                 <div class="menu-item user-icon" @click="ToggleSubmenu('profile')">
@@ -72,6 +82,7 @@
                 <AddNewVilla v-if="mode == 'UpdateVilla'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
                 <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode" :changeChosenVilla="ChangeSelectedVilla"/>
                 <VillaImages v-if="mode == 'VillaImages'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
+                <VillaCalendar v-if="mode == 'CheckVillaSchedule'"/>
             </div>
         </div>
     </div>
@@ -81,6 +92,7 @@
 import AddNewVilla from "../components/AddNewVilla.vue";
 import ViewVillas from "../components/ViewVillas.vue";
 import VillaImages from "../components/VillaImages.vue";
+import VillaCalendar from "../components/VillaCalendar.vue"
 
 export default {
   name: "VillaProfile",
@@ -88,10 +100,11 @@ export default {
       AddNewVilla,
       ViewVillas,
       VillaImages,
+      VillaCalendar
   },
   data() {
     return {
-        mode: "UpdateVilla",
+        mode: "ViewVillas",
         chosenVilla: 1,
     };
   },

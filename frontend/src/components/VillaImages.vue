@@ -116,6 +116,7 @@ export default {
             }
 
             this.PullData();
+            this.images = new Array();
         }
     },   
 }

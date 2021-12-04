@@ -37,35 +37,15 @@ namespace API.Controllers
 
             var reservationHistory = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId);
-
-            var marks = UoW.GetRepository<IMarkReadRepository>()
-                .GetAll()
-                .Where(x => x.MarkId.In(reservationHistory
-                    .Where(x => x.MarkId != null)
-                    .Select(x => x.MarkId.Value)
-                    .Distinct()
-                    .ToArray()));
-            var reports = UoW.GetRepository<IReportReadRepository>()
-                .GetAll()
-                .Where(x => x.ReportId.In(reservationHistory
-                    .Where(x => x.ReportId != null)
-                    .Select(x => x.ReportId.Value)
-                    .Distinct()
-                    .ToArray()));
-
-            var result = reservationHistory.Join(marks, x => x.MarkId, y => y.MarkId, (x, y) =>
-                new ReservationHistoryDTO()
+                .Where(x => x.ServiceId == serviceId)
+                .Select(x => new ReservationHistoryDTO()
                 {
                     Reservation = x,
-                    Mark = y
-                }).Join(reports, x => x.Reservation.ReportId, y => y.ReportId, (x, y) =>
-                {
-                    x.Report = y;
-                    return x;
+                    Report = x.ReportId == null ? null : UoW.GetRepository<IReportReadRepository>().GetAll().First(y => y.ReportId == x.ReportId),
+                    Mark = x.MarkId == null ? null : UoW.GetRepository<IMarkReadRepository>().GetAll().First(y => y.MarkId == x.MarkId)
                 });
 
-            return Ok(result);
+            return Ok(reservationHistory);
         }
 
         [HttpGet]

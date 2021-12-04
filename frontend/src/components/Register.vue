@@ -49,7 +49,7 @@
       v-model="password"
       :class="[ValidatePassword() == '' ? 'error-input' : '']"
     />
-	<input
+    <input
       type="password"
       class="input-field input-password"
       placeholder="Confirm Password"
@@ -104,8 +104,8 @@
     <textarea
       placeholder="Registration reason"
       v-show="usertype != 'regular-user'"
-	  v-model="regreason"
-	  :class="[ValidateReason() == '' ? 'error-input' : '']"
+      v-model="regreason"
+      :class="[ValidateReason() == '' ? 'error-input' : '']"
     ></textarea>
   </div>
 
@@ -126,6 +126,7 @@
 </template>
 
 <script>
+import registrationService from "../services/registration-service.js";
 export default {
   name: "Register",
   props: {
@@ -135,7 +136,7 @@ export default {
     return {
       email: "",
       password: "",
-	  confirmPassword: "",
+      confirmPassword: "",
       error: "",
       usertype: "regular-user",
       cities: [],
@@ -147,8 +148,8 @@ export default {
       regreason: "",
     };
   },
-  mounted () {
-	  this.GetCities();
+  mounted() {
+    this.GetCities();
   },
   methods: {
     ChangeUserType(newType) {
@@ -166,9 +167,12 @@ export default {
 
       return true;
     },
-	ValidateConfirmPassword() {
-      if (this.confirmPassword.length < 8 || this.password != this.confirmPassword) 
-	  		return false;
+    ValidateConfirmPassword() {
+      if (
+        this.confirmPassword.length < 8 ||
+        this.password != this.confirmPassword
+      )
+        return false;
 
       return true;
     },
@@ -188,71 +192,109 @@ export default {
       if (this.regreason == "" && this.usertype != "regular-user") return false;
       return true;
     },
-	//City getter
-	GetCities() {
-		fetch(process.env.VUE_APP_BASE_API_URL + "api/City/GetCities")
-			.then(response => response.json())
-			.then(data => (this.cities = data));
-	},
-	SubmitRegistration() {
-		if (!this.ValidateEmail() || !this.ValidatePassword() || !this.ValidateCity() || !this.ValidatePhone() || !this.ValidateReason())
-		{
-			alert("Error in validation!");
-			return false;
-		}
+    //City getter
+    GetCities() {
+      fetch(process.env.VUE_APP_BASE_API_URL + "api/City/GetCities")
+        .then((response) => response.json())
+        .then((data) => (this.cities = data));
+    },
+    SubmitRegistration() {
+      if (
+        !this.ValidateEmail() ||
+        !this.ValidatePassword() ||
+        !this.ValidateCity() ||
+        !this.ValidatePhone() ||
+        !this.ValidateReason()
+      ) {
+        alert("Error in validation!");
+        return false;
+      }
 
-		if (this.usertype != 'regular-user'){
-			let userType = 1;
-			if (userType == 'boat-owner')
-				userType = 2;
-			else if (userType == 'instructor')
-				userType = 3;
+      if (this.usertype != "regular-user") {
+        let userType = 1;
+        if (userType == "boat-owner") userType = 2;
+        else if (userType == "instructor") userType = 3;
 
-			let cityId = 0;
-			for (let city of this.cities){
-				if (city.name == this.city){
-					cityId = city.id;
-				}
-			}
+        let cityId = this.GetCityId();
 
-			let dto = {
-				UserType: userType,
-				Name: this.firstname,
-				Surname: this.lastname,
-				Password: this.password,
-				ConfirmPassword: this.confirmPassword,
-				Address: this.address,
-				CityId: cityId,
-				PhoneNumber: this.phone,
-				Email: this.email,
-				Reason: this.regreason
-			}
+        let dto = {
+          UserType: userType,
+          Name: this.firstname,
+          Surname: this.lastname,
+          Password: this.password,
+          ConfirmPassword: this.confirmPassword,
+          Address: this.address,
+          CityId: cityId,
+          PhoneNumber: this.phone,
+          Email: this.email,
+          Reason: this.regreason,
+        };
 
-			console.log(dto);
+        console.log(dto);
 
-			fetch(process.env.VUE_APP_BASE_API_URL + "api/Registration/RegisterServiceOwner", {
-				method: 'POST',
-				redirect: 'follow',
-				body: JSON.stringify(dto),
-				headers: {
-      				'Content-Type': 'application/json'
-    			},
-			}).then(response => {
-				alert("Success! You should receive the confirmation link in the mailbox!");
-				return response.json();
-			}).catch(data => {
-				console.log(data);
-				if (data.errors != undefined && data.errors.length > 0){
-					let message = ""
-					for (let key of data.errors){
-						message += key + ": " + data.errors[key];
-					}
-					alert(message);
-				}
-			});
-		}
-	}
-  }
+        fetch(
+          process.env.VUE_APP_BASE_API_URL +
+            "api/Registration/RegisterServiceOwner",
+          {
+            method: "POST",
+            redirect: "follow",
+            body: JSON.stringify(dto),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((response) => {
+            alert(
+              "Success! You should receive the confirmation link in the mailbox!"
+            );
+            return response.json();
+          })
+          .catch((data) => {
+            console.log(data);
+            if (data.errors != undefined && data.errors.length > 0) {
+              let message = "";
+              for (let key of data.errors) {
+                message += key + ": " + data.errors[key];
+              }
+              alert(message);
+            }
+          });
+      } else {
+        this.RegisterServiceUser();
+      }
+    },
+
+    GetCityId() {
+      for (let city of this.cities) {
+        if (city.name == this.city) {
+          return city.cityId;
+        }
+      }
+    },
+
+    async RegisterServiceUser() {
+      const cityId = this.GetCityId();
+      let data = {
+        Name: this.firstname,
+        Surname: this.lastname,
+        Password: this.password,
+        ConfirmPassword: this.confirmPassword,
+        Address: this.address,
+        CityId: cityId,
+        PhoneNumber: this.phone,
+        Email: this.email,
+      };
+      try {
+        await registrationService.registerServiceUser(data);
+        alert(
+          "Your registration has been sub successfully. You should receive the confirmation link in the mailbox!"
+        );
+      } catch (e) {
+        alert(e.response.data);
+      }
+    },
+  },
 };
 </script>
 

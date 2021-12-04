@@ -78,7 +78,7 @@ const routes = [
     path: "/villaprofile",
     name: "VillaProfile",
     component: VillaProfile,
-  }
+  },
 ];
 
 const router = createRouter({

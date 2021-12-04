@@ -50,13 +50,11 @@ export default {
   },
   methods: {
     ValidateUser() {
-      if (this.email.indexOf("@") == -1) 
-        return false;
+      if (this.email.indexOf("@") == -1) return false;
       return true;
     },
     ValidatePassword() {
-      if (this.password.length < 8) 
-        return false;
+      if (this.password.length < 8) return false;
 
       return true;
     },

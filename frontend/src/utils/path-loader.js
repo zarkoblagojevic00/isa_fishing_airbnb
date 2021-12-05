@@ -8,4 +8,4 @@ const isDevMode = () => location.port.startsWith("8");
 
 // for requests
 export const initEndPointCreator = (resource) => (relPath) =>
-  `${getRoot()}${resource}/${relPath}`;
+    `${getRoot()}${resource}/${relPath}`;

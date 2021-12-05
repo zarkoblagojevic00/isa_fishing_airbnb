@@ -2,155 +2,116 @@
     <div class="whole-page">
         <div class="wrapper">
             <div class="menu">
-                <div class="menu-item villa-icon" @click="ToggleSubmenu('villa')">
-                    <span class="menu-text">
-                        Villas
-                    </span>
+                <div
+                    class="menu-item villa-icon"
+                    @click="ToggleSubmenu('villa')"
+                >
+                    <span class="menu-text"> Villas </span>
                 </div>
                 <div class="submenu" id="sub-villa">
-                    <div class="submenu-item" @click="ChangeMode('AddNewVilla')">
-                        <span class="menu-text">
-                            Add new villa
-                        </span>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('AddNewVilla')"
+                    >
+                        <span class="menu-text"> Add new villa </span>
                     </div>
                     <div class="submenu-item" @click="ChangeMode('ViewVillas')">
-                        <span class="menu-text">
-                            View villas
-                        </span>
+                        <span class="menu-text"> View villas </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('CheckVillaSchedule')">
-                        <span class="menu-text">
-                            Check villa schedule
-                        </span>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('CheckVillaSchedule')"
+                    >
+                        <span class="menu-text"> Check villa schedule </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('AddPromoAction')">
-                        <span class="menu-text">
-                            Add promo action
-                        </span>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('AddPromoAction')"
+                    >
+                        <span class="menu-text"> Add promo action </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('ReserveForUser')">
-                        <span class="menu-text">
-                            Create a reservation
-                        </span>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('ReserveForUser')"
+                    >
+                        <span class="menu-text"> Create a reservation </span>
                     </div>
                 </div>
 
-                <div class="menu-item user-icon" @click="ToggleSubmenu('profile')">
-                    <span class="menu-text">
-                        Profile
-                    </span>
+                <div
+                    class="menu-item user-icon"
+                    @click="ToggleSubmenu('profile')"
+                >
+                    <span class="menu-text"> Profile </span>
                 </div>
-                <div class="submenu" id="sub-profile" @click="ChangeMode('ViewProfile')">
+                <div
+                    class="submenu"
+                    id="sub-profile"
+                    @click="ChangeMode('ViewProfile')"
+                >
                     <div class="submenu-item">
-                        <span class="menu-text">
-                            View profile
-                        </span>
+                        <span class="menu-text"> View profile </span>
                     </div>
                     <div class="submenu-item" @click="ChangeMode('ChangePass')">
-                        <span class="menu-text">
-                            Change password
-                        </span>
+                        <span class="menu-text"> Change password </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('RequestDeletion')">
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('RequestDeletion')"
+                    >
                         <span class="menu-text">
                             Request account deletion
                         </span>
                     </div>
                 </div>
 
-                <div class="menu-item report-icon" @click="ToggleSubmenu('report')">
-                    <span class="menu-text">
-                        Reports
-                    </span>
+                <div
+                    class="menu-item report-icon"
+                    @click="ToggleSubmenu('report')"
+                >
+                    <span class="menu-text"> Reports </span>
                 </div>
                 <div class="submenu" id="sub-report">
                     <div class="submenu-item">
-                        <span class="menu-text" @click="ChangeMode('VillaReport')">
+                        <span
+                            class="menu-text"
+                            @click="ChangeMode('VillaReport')"
+                        >
                             Report for villa
                         </span>
                     </div>
-                    <div class="submenu-item" @click="ChangeMode('GeneralReport')">
-                        <span class="menu-text">
-                            Report for all villas
-                        </span>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('GeneralReport')"
+                    >
+                        <span class="menu-text"> Report for all villas </span>
                     </div>
                 </div>
             </div>
 
             <div class="content">
-                <AddNewVilla v-if="mode == 'AddNewVilla'" :changeMode="ChangeMode" :villaId="0"/>
-                <AddNewVilla v-if="mode == 'UpdateVilla'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
-                <ViewVillas v-if="mode == 'ViewVillas'" :changeMode="ChangeMode" :changeChosenVilla="ChangeSelectedVilla"/>
-                <VillaImages v-if="mode == 'VillaImages'" :changeMode="ChangeMode" :villaId="chosenVilla"/>
-                <VillaCalendar v-if="mode == 'CheckVillaSchedule'"/>
+                <AddNewVilla
+                    v-if="mode == 'AddNewVilla'"
+                    :changeMode="ChangeMode"
+                    :villaId="0"
+                />
+                <AddNewVilla
+                    v-if="mode == 'UpdateVilla'"
+                    :changeMode="ChangeMode"
+                    :villaId="chosenVilla"
+                />
+                <ViewVillas
+                    v-if="mode == 'ViewVillas'"
+                    :changeMode="ChangeMode"
+                    :changeChosenVilla="ChangeSelectedVilla"
+                />
+                <VillaImages
+                    v-if="mode == 'VillaImages'"
+                    :changeMode="ChangeMode"
+                    :villaId="chosenVilla"
+                />
+                <VillaCalendar v-if="mode == 'CheckVillaSchedule'" />
             </div>
-        </div>
-        <div class="submenu" id="sub-villa">
-          <div class="submenu-item" @click="ChangeMode('AddNewVilla')">
-            <span class="menu-text"> Add new villa </span>
-          </div>
-          <div class="submenu-item" @click="ChangeMode('ViewVillas')">
-            <span class="menu-text"> View villas </span>
-          </div>
-          <div class="submenu-item" @click="ChangeMode('CheckVillaSchedule')">
-            <span class="menu-text"> Check villa schedule </span>
-          </div>
-        </div>
-
-        <div class="menu-item user-icon" @click="ToggleSubmenu('profile')">
-          <span class="menu-text"> Profile </span>
-        </div>
-        <div
-          class="submenu"
-          id="sub-profile"
-          @click="ChangeMode('ViewProfile')"
-        >
-          <div class="submenu-item">
-            <span class="menu-text"> View profile </span>
-          </div>
-          <div class="submenu-item" @click="ChangeMode('ChangePass')">
-            <span class="menu-text"> Change password </span>
-          </div>
-          <div class="submenu-item" @click="ChangeMode('RequestDeletion')">
-            <span class="menu-text"> Request account deletion </span>
-          </div>
-        </div>
-
-        <div class="menu-item report-icon" @click="ToggleSubmenu('report')">
-          <span class="menu-text"> Reports </span>
-        </div>
-        <div class="submenu" id="sub-report">
-          <div class="submenu-item">
-            <span class="menu-text" @click="ChangeMode('VillaReport')">
-              Report for villa
-            </span>
-          </div>
-          <div class="submenu-item" @click="ChangeMode('GeneralReport')">
-            <span class="menu-text"> Report for all villas </span>
-          </div>
-        </div>
-
-        <div class="content">
-          <AddNewVilla
-            v-if="mode == 'AddNewVilla'"
-            :changeMode="ChangeMode"
-            :villaId="0"
-          />
-          <AddNewVilla
-            v-if="mode == 'UpdateVilla'"
-            :changeMode="ChangeMode"
-            :villaId="chosenVilla"
-          />
-          <ViewVillas
-            v-if="mode == 'ViewVillas'"
-            :changeMode="ChangeMode"
-            :changeChosenVilla="ChangeSelectedVilla"
-          />
-          <VillaImages
-            v-if="mode == 'VillaImages'"
-            :changeMode="ChangeMode"
-            :villaId="chosenVilla"
-          />
         </div>
     </div>
 </template>
@@ -159,125 +120,125 @@
 import AddNewVilla from "../components/AddNewVilla.vue";
 import ViewVillas from "../components/ViewVillas.vue";
 import VillaImages from "../components/VillaImages.vue";
-import VillaCalendar from "../components/VillaCalendar.vue"
+import VillaCalendar from "../components/VillaCalendar.vue";
 
 export default {
-  name: "VillaProfile",
-  components: {
-      AddNewVilla,
-      ViewVillas,
-      VillaImages,
-      VillaCalendar
-  },
-  data() {
-    return {
-        mode: "ViewVillas",
-        chosenVilla: 1,
-    };
-  },
-  methods: {
-    ToggleSubmenu(name) {
-      let newname = "sub-" + name;
-      window.$("#" + newname).slideToggle();
+    name: "VillaProfile",
+    components: {
+        AddNewVilla,
+        ViewVillas,
+        VillaImages,
+        VillaCalendar,
     },
-    ChangeMode(newMode) {
-      if (newMode == "AddNewVilla") {
-        this.chosenVilla = 0;
-      }
-      this.mode = newMode;
+    data() {
+        return {
+            mode: "ViewVillas",
+            chosenVilla: 1,
+        };
     },
-    ChangeSelectedVilla(newVilla) {
-      this.chosenVilla = newVilla;
+    methods: {
+        ToggleSubmenu(name) {
+            let newname = "sub-" + name;
+            window.$("#" + newname).slideToggle();
+        },
+        ChangeMode(newMode) {
+            if (newMode == "AddNewVilla") {
+                this.chosenVilla = 0;
+            }
+            this.mode = newMode;
+        },
+        ChangeSelectedVilla(newVilla) {
+            this.chosenVilla = newVilla;
+        },
     },
-  },
 };
 </script>
 
 <style scoped>
 .whole-page {
-  height: 1000px;
-  padding: 20px;
-  background-color: #cecece;
-  display: flex;
-  justify-content: center;
-  position: relative;
+    height: 1000px;
+    padding: 20px;
+    background-color: #cecece;
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 
 .wrapper {
-  height: 100%;
-  width: 1400px;
-  display: flex;
-  flex-direction: row;
+    height: 100%;
+    width: 1400px;
+    display: flex;
+    flex-direction: row;
 }
 
 .menu {
-  background-color: gray;
-  height: 100%;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  margin-right: 10px;
+    background-color: gray;
+    height: 100%;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
 }
 
 .menu-item {
-  height: 70px;
-  border-bottom: 1px solid #c3c3c3;
-  background-position: left 25px center;
-  background-repeat: no-repeat;
-  padding-left: 90px;
-  width: 100%;
-  box-sizing: border-box;
-  cursor: pointer;
+    height: 70px;
+    border-bottom: 1px solid #c3c3c3;
+    background-position: left 25px center;
+    background-repeat: no-repeat;
+    padding-left: 90px;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
 }
 
 .menu-item:hover {
-  background-color: #a5978b;
+    background-color: #a5978b;
 }
 
 .menu-text {
-  display: flex;
-  height: 100%;
-  justify-content: start;
-  align-items: center;
-  color: white;
+    display: flex;
+    height: 100%;
+    justify-content: start;
+    align-items: center;
+    color: white;
 }
 
 .villa-icon {
-  background-image: url("../assets/villa-white-outline.png");
+    background-image: url("../assets/villa-white-outline.png");
 }
 .user-icon {
-  background-image: url("../assets/user-white-outline.png");
+    background-image: url("../assets/user-white-outline.png");
 }
 .report-icon {
-  background-image: url("../assets/report-white-outline.png");
+    background-image: url("../assets/report-white-outline.png");
 }
 
 .content {
-  width: 100%;
-  overflow: auto;
+    width: 100%;
+    overflow: auto;
 }
 
 .content::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 .submenu {
-  width: 100%;
-  border-bottom: 1px solid #c3c3c3;
-  flex-direction: column;
-  display: none;
+    width: 100%;
+    border-bottom: 1px solid #c3c3c3;
+    flex-direction: column;
+    display: none;
 }
 
 .submenu-item {
-  width: 100%;
-  padding-left: 20px;
-  box-sizing: border-box;
-  height: 60px;
+    width: 100%;
+    padding-left: 20px;
+    box-sizing: border-box;
+    height: 60px;
 }
 
 .submenu-item:hover {
-  background-color: #a5978b;
-  cursor: pointer;
+    background-color: #a5978b;
+    cursor: pointer;
 }
 
 @media (max-width: 500px) {

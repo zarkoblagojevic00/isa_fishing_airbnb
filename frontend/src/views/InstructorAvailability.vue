@@ -1,14 +1,12 @@
 <template>
-    <Header
-        headerText="Sunrise adventure"
-        subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
-    />
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="flexbox-container">
         <h1>Availability overview</h1>
-        <button>Edit availability</button>
+        <button @click="$router.push('/instructor/availability/edit')">
+            Edit availability
+        </button>
     </div>
-    <!-- use custom calendar with template -->
+    <!-- use custom calendar with template  -->
     <div class="flexbox-container">
         <v-calendar
             class="custom-calendar max-w-full"
@@ -38,13 +36,10 @@
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
-
 export default {
     name: "InstructorServices",
     components: {
-        Header,
         Navbar,
     },
     data() {
@@ -142,20 +137,16 @@ export default {
     padding-bottom: 20px;
     padding-top: 20px;
 }
-
 .calendar {
     min-height: 400px;
     min-width: 400px;
 }
-
 .booked-slot {
     background: rgb(248, 125, 150);
 }
-
 .free-slot {
     background: rgb(20, 220, 110);
 }
-
 button {
     background-color: #fff000;
     border-radius: 12px;
@@ -174,7 +165,6 @@ button {
     touch-action: manipulation;
     margin-top: 7px;
 }
-
 button:hover {
     background-color: #ccbf05;
 }

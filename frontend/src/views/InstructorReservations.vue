@@ -1,16 +1,7 @@
 <template>
-    <Header
-        headerText="Sunrise adventure"
-        subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
-    />
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="flexbox-container-reservations">
         <h1>Reservations</h1>
-        <!-- <ul>
-      <li>New reservation</li>
-      <li>Quick reservation</li>
-      <li>Generate report</li>
-    </ul> -->
     </div>
 
     <div class="flexbox-container">
@@ -40,13 +31,11 @@
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
 
 export default {
     name: "InstructorServices",
     components: {
-        Header,
         Navbar,
     },
     computed: {},

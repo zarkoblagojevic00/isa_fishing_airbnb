@@ -106,6 +106,7 @@
     <None Include="MasterData\Users.Table.sql" />
     <None Include="MasterData\ClearAndReseed.sql" />
     <None Include="MasterData\LOCAL\Reservations.Table.sql" />
+    <None Include="MasterData\LOCAL\PromoActions.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />

@@ -1,8 +1,4 @@
 <template>
-  <Header
-    headerText="Sunrise adventure"
-    subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
-  />
   <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
   <div class="flexbox-container-reservations">
     <h1>Reservations</h1>
@@ -25,13 +21,17 @@
           <th>Price</th>
         </tr>
       </thead>
-      <tbody v-for="res in reservations" :key="res.id">
+      <tbody v-for="res in reservations" :key="res.serviceId">
         <tr>
-          <td class="left">{{ res.service }}</td>
-          <td class="left">{{ res.from }}</td>
-          <td class="left">{{ res.to }}</td>
-          <td class="left">{{ res.client }}</td>
-          <td class="left">{{ res.numberOfGuests }}</td>
+          <td class="left">{{ res.serviceName }}</td>
+          <td class="left">
+            {{ res.serviceFrom ? dateFormat(res.serviceFrom) : "/" }}
+          </td>
+          <td class="left">
+            {{ res.serviceTo ? dateFormat(res.serviceTo) : "/" }}
+          </td>
+          <td class="left">{{ res.usersName }} {{ res.usersSurname }}</td>
+          <td class="left">{{ res.capacity }}</td>
           <td class="left">{{ res.price }}</td>
         </tr>
       </tbody>
@@ -40,16 +40,24 @@
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
+import axios from "../api/api.js";
+import moment from "moment";
 
 export default {
   name: "InstructorServices",
   components: {
-    Header,
     Navbar,
   },
   computed: {},
+  mounted() {
+    axios
+      .get("/api/Instructor/GetReservationsWithBasicUserInfo")
+      .then((res) => {
+        this.reservations = res.data;
+        console.log(res.data);
+      });
+  },
   data() {
     return {
       navbarItems: [
@@ -60,45 +68,13 @@ export default {
         "My profile",
       ],
       baseUrlInstructor: "/instructor/",
-      reservations: [
-        {
-          id: 1,
-          service: "Sunset adventure",
-          from: "01.01.2021 12:00h",
-          to: "02.01.2021 12:00h",
-          client: "Aco Pejovic",
-          numberOfGuests: 10,
-          price: 400,
-        },
-        {
-          id: 2,
-          service: "Sunrise adventure",
-          from: "01.01.2021 12:00h",
-          to: "02.01.2021 12:00h",
-          client: "Slavko Banjac",
-          numberOfGuests: 10,
-          price: 500,
-        },
-        {
-          id: 3,
-          service: "Sunset fishing",
-          from: "01.01.2021 12:00h",
-          to: "02.01.2021 12:00h",
-          client: "Aca Lukas",
-          numberOfGuests: 3,
-          price: 350,
-        },
-        {
-          id: 1,
-          service: "Crazy barbeque adventure",
-          from: "01.01.2021 12:00h",
-          to: "02.01.2021 12:00h",
-          client: "Zdravko Colic",
-          numberOfGuests: 2,
-          price: 1500,
-        },
-      ],
+      reservations: [],
     };
+  },
+  methods: {
+    dateFormat(value) {
+      return moment(value).format("YYYY-MM-DD HH:mm");
+    },
   },
 };
 </script>

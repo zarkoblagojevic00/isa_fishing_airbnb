@@ -1,12 +1,10 @@
 <template>
-  <Header
-    headerText="Sunrise adventure"
-    subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
-  />
   <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
   <div class="flexbox-container">
     <h1>Availability overview</h1>
-    <button>Edit availability</button>
+    <button @click="$router.push('/instructor/availability/edit')">
+      Edit availability
+    </button>
   </div>
   <!-- use custom calendar with template -->
   <div class="flexbox-container">
@@ -38,13 +36,11 @@
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
 
 export default {
   name: "InstructorServices",
   components: {
-    Header,
     Navbar,
   },
   data() {

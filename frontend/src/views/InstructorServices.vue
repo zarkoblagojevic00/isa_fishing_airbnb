@@ -11,8 +11,9 @@
   <div class="flexbox-container">
     <InstructorServiceCard
       v-for="service in services"
-      :key="service.id"
+      :key="service.adventureId"
       :service="service"
+      @click="$router.push('/adventure/' + service.adventureId)"
     />
   </div>
 </template>

@@ -2,15 +2,34 @@
   <div class="card">
     <img src="../assets/map.png" style="width: 100%" />
     <div class="container">
-      <h4><b>Address placeholder</b></h4>
-      <p>StreetName 65</p>
+      <h4>
+        <b> {{ addressInfo.address }} </b>
+      </h4>
+      <p>({{ addressInfo.longitude }}, {{ addressInfo.latitude }})</p>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "../api/api.js";
 export default {
   name: "Map",
+  data() {
+    return {
+      addressInfo: {},
+    };
+  },
+  mounted() {
+    axios
+      .get(
+        "/api/Adventure/GetAddressInfoByAdventureId?adventureId=" +
+          this.$route.params.id
+      )
+      .then((res) => {
+        this.addressInfo = res.data;
+        console.log(res.data);
+      });
+  },
 };
 </script>
 

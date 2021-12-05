@@ -1,9 +1,5 @@
 <template>
   <div>
-    <Header
-      headerText="Sunrise adventure"
-      subtitleText="Come and enjoy this adventure with us. Fishing in the sunrise is one of the most exciting experiences!"
-    />
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="images">
       <h1>Images from previous adventures</h1>
@@ -19,13 +15,11 @@
   </div>
 </template>
 <script>
-import Header from "@/components/Header.vue";
 import Navbar from "@/components/Navbar.vue";
 
 export default {
   name: "Gallery",
   components: {
-    Header,
     Navbar,
   },
   data() {
@@ -36,7 +30,7 @@ export default {
         "Price list",
         "Rules of conduct",
       ],
-      baseUrlInstructor: "/adventure/",
+      baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
       images: [
         "gallery-item-1.jpg",
         "gallery-item-2.jpg",

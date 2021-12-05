@@ -27,7 +27,9 @@ namespace API.Mappers
                 Capacity = dto.Capacity,
                 IsPercentageTakenFromCanceledReservations = dto.IsPercentageTakenFromCanceledReservations,
                 PercentageToTake = dto.PercentageToTake,
-                OwnerId = dto.OwnerId
+                OwnerId = dto.OwnerId,
+                AvailableFrom = dto.AvailableFrom,
+                AvailableTo = dto.AvailableTo
             };
         }
 

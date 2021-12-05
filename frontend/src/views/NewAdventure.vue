@@ -9,11 +9,11 @@
         type="text"
         class="field"
         placeholder="Adventure name"
-        v-model="v$.name.$model"
+        v-model="v$.newAdventure.name.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.name.$errors"
+        v-for="(error, index) of v$.newAdventure.name.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -22,11 +22,11 @@
         type="text"
         class="field"
         placeholder="Address"
-        v-model="v$.address.$model"
+        v-model="v$.newAdventure.address.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.address.$errors"
+        v-for="(error, index) of v$.newAdventure.address.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -35,11 +35,11 @@
         type="number"
         class="field"
         placeholder="Longitude"
-        v-model="v$.longitude.$model"
+        v-model="v$.newAdventure.longitude.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.longitude.$errors"
+        v-for="(error, index) of v$.newAdventure.longitude.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -48,11 +48,11 @@
         type="number"
         class="field"
         placeholder="Latitude"
-        v-model="v$.latitude.$model"
+        v-model="v$.newAdventure.latitude.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.latitude.$errors"
+        v-for="(error, index) of v$.newAdventure.latitude.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -61,11 +61,11 @@
         type="text"
         class="field"
         placeholder="Promo description"
-        v-model="v$.promoDescription.$model"
+        v-model="v$.newAdventure.promoDescription.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.promoDescription.$errors"
+        v-for="(error, index) of v$.newAdventure.promoDescription.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -74,11 +74,11 @@
         type="number"
         class="field"
         placeholder="Price per day"
-        v-model="v$.pricePerDay.$model"
+        v-model="v$.newAdventure.pricePerDay.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.pricePerDay.$errors"
+        v-for="(error, index) of v$.newAdventure.pricePerDay.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -87,11 +87,11 @@
         type="number"
         class="field"
         placeholder="Maximum number of people"
-        v-model="v$.capacity.$model"
+        v-model="v$.newAdventure.capacity.$model"
       />
       <div
         class="input-errors"
-        v-for="(error, index) of v$.capacity.$errors"
+        v-for="(error, index) of v$.newAdventure.capacity.$errors"
         :key="index"
       >
         <div class="error-msg">{{ error.$message }}</div>
@@ -100,19 +100,19 @@
         type="text"
         class="field"
         placeholder="Terms of use"
-        v-model="termsOfUse"
+        v-model="newAdventure.termsOfUse"
       />
       <input
         type="text"
         class="field"
         placeholder="Additional equipment"
-        v-model="additionalEquipment"
+        v-model="newAdventure.additionalEquipment"
       />
       <input
         type="text"
         class="field"
         placeholder="Additional offers"
-        v-model="additionalOffers"
+        v-model="newAdventure.additionalOffers"
       />
       <fieldset
         id="group1"
@@ -124,7 +124,7 @@
           type="radio"
           value="value1"
           name="group1"
-          @click="isPercentageTakenFromCanceledReservations = true"
+          @click="newAdventure.isPercentageTakenFromCanceledReservations = true"
         />
         <label for="group2"> No </label>
         <input type="radio" value="value2" name="group1" @click="noClicked" />
@@ -133,22 +133,34 @@
         type="number"
         class="field"
         placeholder="If yes, how much?"
-        v-model="percentageToTake"
-        :disabled="isPercentageTakenFromCanceledReservations == false"
+        v-model="v$.newAdventure.percentageToTake.$model"
+        :disabled="
+          newAdventure.isPercentageTakenFromCanceledReservations == false
+        "
       />
+      <div
+        class="input-errors"
+        v-for="(error, index) of v$.newAdventure.percentageToTake.$errors"
+        :key="index"
+      >
+        <div class="error-msg">{{ error.$message }}</div>
+      </div>
     </form>
     <div>
       <h3>Set initial availability period</h3>
       <v-date-picker v-model="range" mode="dateTime" is-range />
     </div>
   </div>
-  <button @click="onSubmit" :disabled="v$.$invalid">Create adventure</button>
+  <button @click="onSubmit" :disabled="v$.newAdventure.$invalid">
+    Create adventure
+  </button>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minValue, maxValue } from "@vuelidate/validators";
+import axios from "../api/api.js";
 
 export default {
   name: "New adventure",
@@ -169,20 +181,23 @@ export default {
         "My profile",
       ],
       baseUrlInstructor: "/instructor/",
-      name: "",
-      address: "",
-      longitude: 0,
-      latitude: 0,
-      promoDescription: "",
-      pricePerDay: 0,
-      capacity: 0,
-      termsOfUse: "",
-      additionalEquipment: "",
-      additionalOffers: "",
-      isPercentageTakenFromCanceledReservations: false,
-      percentageToTake: 0,
-      availableFrom: new Date(),
-      availableTo: new Date(),
+      newAdventure: {
+        name: "",
+        address: "",
+        longitude: "",
+        latitude: "",
+        promoDescription: "",
+        pricePerDay: "",
+        capacity: "",
+        termsOfUse: "",
+        additionalEquipment: "",
+        additionalOffers: "",
+        isPercentageTakenFromCanceledReservations: false,
+        percentageToTake: "",
+        availableFrom: new Date(),
+        availableTo: new Date(),
+      },
+
       range: {
         start: new Date(),
         end: new Date(),
@@ -191,13 +206,16 @@ export default {
   },
   validations() {
     return {
-      name: { required },
-      address: { required },
-      longitude: { required, min: minValue(-180), max: maxValue(0) },
-      latitude: { required, min: minValue(-90), max: maxValue(90) },
-      promoDescription: { required },
-      pricePerDay: { required, min: minValue(0) },
-      capacity: { required, min: minValue(0) },
+      newAdventure: {
+        name: { required },
+        address: { required },
+        longitude: { required, min: minValue(-180), max: maxValue(0) },
+        latitude: { required, min: minValue(-90), max: maxValue(90) },
+        promoDescription: { required },
+        pricePerDay: { required, min: minValue(0) },
+        capacity: { required, min: minValue(0) },
+        percentageToTake: { min: minValue(0), max: maxValue(100) },
+      },
     };
   },
   methods: {
@@ -206,7 +224,18 @@ export default {
       this.percentageToTake = 0;
     },
     onSubmit() {
-      console.log("submit");
+      console.log(this.newAdventure);
+      const adventure = Object.assign({}, this.newAdventure);
+      adventure.availableFrom = this.range.start;
+      adventure.availableTo = this.range.end;
+      console.log(adventure);
+
+      axios
+        .post("/api/Adventure/AddAdventure", adventure)
+        .then((res) => {
+          console.log("OK ", res.data);
+        })
+        .catch((err) => console.log(err));
     },
   },
 };
@@ -260,7 +289,8 @@ button {
   font-size: 10px;
 }
 
-.button:disabled {
-  color: rgb(74, 75, 77);
+button[disabled="disabled"],
+button:disabled {
+  background-color: rgb(74, 75, 77);
 }
 </style>

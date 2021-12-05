@@ -69,7 +69,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Instructor })]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
         public IActionResult GetReservationsWithBasicUserInfo()
         {
             int ownerId = GetUserIdFromCookie();
@@ -78,12 +78,23 @@ namespace API.Controllers
                .GetAll()
                .Where(x => x.OwnerId == ownerId);
 
-
+            var bla = adventures.Select(y => y.ServiceId).ToArray();
             var reservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId.In(adventures.Select(y => y.ServiceId).ToArray()));
+                .Where(x => x.ServiceId.In(bla));
+
+
 
             IEnumerable<ReservationUserDTO> userReservations = MapReservationsAndUsers(reservations);
+
+            foreach (var reservation in userReservations)
+            {
+                var adventure = UoW.GetRepository<IServiceReadRepository>().GetById(reservation.ServiceId);
+                reservation.ServiceName = adventure.Name;
+                reservation.ServiceFrom = adventure.AvailableFrom;
+                reservation.ServiceTo = adventure.AvailableTo;
+                reservation.Capacity = adventure.Capacity;
+            }
 
             if (!userReservations.Any())
             {
@@ -92,6 +103,35 @@ namespace API.Controllers
 
             return Ok(userReservations);
         }
+
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult UpdateAdditionalInstructorInfo(AdditionalInstructorInfoDTO availability)
+        {
+            var userId = GetUserIdFromCookie();
+
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
+                .Where(x => x.InstructorId == userId).FirstOrDefault();
+
+            additionalInstructorInfo.AvailableFrom = availability.Start;
+            additionalInstructorInfo.AvailableTo = availability.End;
+
+            try
+            {
+                UoW.BeginTransaction();
+                UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>().Update(additionalInstructorInfo);
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+
+            return Ok(Responses.Ok);
+        }
+
 
         private IEnumerable<ReservationUserDTO> MapReservationsAndUsers(IEnumerable<Reservation> reservations)
         {

@@ -13,6 +13,7 @@ import Login from "../views/LoginRegForgotPass.vue";
 import Testpage from "../views/TestPage.vue";
 import VillaProfile from "../views/VillaProfile.vue";
 import NewAdventure from "../views/NewAdventure.vue";
+import InstructorEditAvailability from "../views/InstructorEditAvailability.vue";
 
 const routes = [
   {
@@ -21,27 +22,27 @@ const routes = [
     component: Homepage,
   },
   {
-    path: "/adventure/gallery",
+    path: "/adventure/:id/gallery",
     name: "Gallery",
     component: Gallery,
   },
   {
-    path: "/adventure",
+    path: "/adventure/:id",
     name: "AdventureProfile",
     component: AdventureProfile,
   },
   {
-    path: "/adventure/rules-of-conduct",
+    path: "/adventure/:id/rules-of-conduct",
     name: "AdventureRulesOfConduct",
     component: AdventureRulesOfConduct,
   },
   {
-    path: "/adventure/price-list",
+    path: "/adventure/:id/price-list",
     name: "PriceList",
     component: PriceList,
   },
   {
-    path: "/adventure/quick-reservation",
+    path: "/adventure/:id/quick-reservation",
     name: "AdventureQuickReservation",
     component: AdventureQuickReservation,
   },
@@ -84,7 +85,12 @@ const routes = [
     path: "/instructor/new-adventure",
     name: "NewAdventure",
     component: NewAdventure,
-  }
+  },
+  {
+    path: "/instructor/availability/edit",
+    name: "InstructorEditAvailability",
+    component: InstructorEditAvailability,
+  },
 ];
 
 const router = createRouter({

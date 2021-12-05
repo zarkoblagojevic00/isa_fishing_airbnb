@@ -28,6 +28,9 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Instructor })]
         public IActionResult AddAdventure(AdventureDTO adventure)
         {
+            var ownerId = GetUserIdFromCookie();
+            adventure.OwnerId = ownerId;
+
             var serviceRepository = UoW.GetRepository<IServiceWriteRepository>();
             var adventureAdditionalInfoRepository = UoW.GetRepository<IAdditionalAdventureInfoWriteRepository>();
 
@@ -254,6 +257,57 @@ namespace API.Controllers
             }
 
             return Ok(Responses.Ok);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetAddressInfoByAdventureId(int adventureId)
+        {
+            if (!CheckOwnerShip(adventureId))
+            {
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
+            }
+
+            var serviceRepo = UoW.GetRepository<IServiceReadRepository>();
+            var adventure = serviceRepo.GetById(adventureId);
+
+            if(adventure == null)
+            {
+                return NotFound();
+            }
+
+            AddresInfoDTO addressInfo = new AddresInfoDTO() { Address = adventure.Address, Latitude = adventure.Latitude, Longitude = adventure.Longitude };
+
+            return Ok(addressInfo);
+            
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetBasicInfo(int adventureId)
+        {
+            var userId = GetUserIdFromCookie();
+            if (!CheckOwnerShip(adventureId))
+            {
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
+            }
+
+            var userInfo = UoW.GetRepository<IUserReadRepository>().GetById(userId);
+            var city = UoW.GetRepository<ICityReadRepository>().GetById(userInfo.CityId);
+            var country = UoW.GetRepository<ICountryReadRepository>().GetById(city.CountryId);
+
+            var dto = new UserInfoDTO()
+            {
+                Name = userInfo.Name,
+                Surname = userInfo.Surname,
+                Address = userInfo.Address,
+                Phone = userInfo.PhoneNumber,
+                Email = userInfo.Email,
+                City = city.Name,
+                Country = country.Name
+            };
+
+            return Ok(dto);
         }
 
 

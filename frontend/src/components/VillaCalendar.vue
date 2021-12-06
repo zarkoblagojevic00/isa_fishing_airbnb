@@ -239,13 +239,13 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    height: auto;
     margin-left: auto;
     margin-right: auto;
 }
 .calendar-parent {
     display: flex;
-    max-height: 50%;
+    min-height: 450px;
     flex-direction: column;
     flex-grow: 1;
     overflow-x: hidden;

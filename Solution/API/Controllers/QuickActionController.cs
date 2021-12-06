@@ -85,7 +85,7 @@ namespace API.Controllers
         {
             if (action.PromoActionId == null)
             {
-                ModelState.AddModelError("ReservationId", "The action to be updated is not specified!");
+                ModelState.AddModelError("PromoActionId", "The action to be updated is not specified!");
                 return BadRequest(ModelState);
             }
 
@@ -162,7 +162,7 @@ namespace API.Controllers
         {
             var existingActionsForService = UoW.GetRepository<IPromoActionReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId && x.EndDateTime < DateTime.Now)
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime > DateTime.Now)
                 .Select(x => new CalendarItem()
                 {
                     StartDateTime = x.StartDateTime,
@@ -171,14 +171,14 @@ namespace API.Controllers
 
             var existingReservationsForService = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime < DateTime.Now)
+                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
                 .Select(x => new CalendarItem()
                 {
                     StartDateTime = x.StartDateTime,
                     EndDateTime = x.EndDateTime
                 });
 
-            return existingActionsForService.Union(existingActionsForService);
+            return existingActionsForService.Union(existingReservationsForService);
         }
 
         private void MapToExistingAction(QuickActionDTO dto, PromoAction action)

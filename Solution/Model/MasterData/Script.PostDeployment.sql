@@ -23,4 +23,5 @@ IF '$(Environment)' = 'LOCAL'
 		:r .\LOCAL\SystemConfiguration.Table.sql
 		:r .\LOCAL\Services.Table.sql
 		:r .\LOCAL\Reservations.Table.sql
+		:r .\LOCAL\PromoActions.Table.sql
 	END

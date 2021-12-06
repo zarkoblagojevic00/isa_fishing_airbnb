@@ -198,6 +198,23 @@ namespace API.Controllers
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
+        public IActionResult GetNonPromoReservations(int serviceId)
+        {
+            if (!CheckOwnerShip(serviceId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            var ongoingReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && !x.IsPromo)
+                .OrderBy(x => x.StartDateTime);
+
+            return Ok(ongoingReservations);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult GetBusinessSummary(int serviceId)
         {
             if (!CheckOwnerShip(serviceId))

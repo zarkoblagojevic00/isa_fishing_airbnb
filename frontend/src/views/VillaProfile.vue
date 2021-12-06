@@ -111,6 +111,7 @@
                     :villaId="chosenVilla"
                 />
                 <VillaCalendar v-if="mode == 'CheckVillaSchedule'" />
+                <AddPromoAction v-if="mode == 'AddPromoAction'" />
             </div>
         </div>
     </div>
@@ -121,6 +122,7 @@ import AddNewVilla from "../components/AddNewVilla.vue";
 import ViewVillas from "../components/ViewVillas.vue";
 import VillaImages from "../components/VillaImages.vue";
 import VillaCalendar from "../components/VillaCalendar.vue";
+import AddPromoAction from "../components/AddPromoAction.vue";
 
 export default {
     name: "VillaProfile",
@@ -129,6 +131,7 @@ export default {
         ViewVillas,
         VillaImages,
         VillaCalendar,
+        AddPromoAction,
     },
     data() {
         return {

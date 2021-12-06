@@ -16,6 +16,7 @@ import NewAdventure from "../views/NewAdventure.vue";
 import InstructorEditAvailability from "../views/InstructorEditAvailability.vue";
 import AdminHomepage from "../views/AdminHomepage.vue";
 import AdminRequests from "../views/AdminRequests.vue";
+import AdminProfile from "../views/AdminProfile.vue";
 
 const routes = [
     {
@@ -102,6 +103,11 @@ const routes = [
         path: "/admin/requests",
         name: "AdminRequests",
         component: AdminRequests,
+    },
+    {
+        path: "/admin/my-profile",
+        name: "AdminProfile",
+        component: AdminProfile,
     },
 ];
 

@@ -6,26 +6,60 @@
         </div>
 
         <div class="with-villas" v-if="villas.length != 0">
-            <div class="my-card" v-for="villa in villas" :key="villa.villaId" @click="ClickedOnVilla(villa.villaId)">
+            <div
+                class="my-card"
+                v-for="villa in villas"
+                :key="villa.villaId"
+                @click="ClickedOnVilla(villa.villaId)"
+            >
                 <div class="cover-img">
                     <div class="shading"></div>
-                    <img src="../assets/missing-img.png" class="image" v-if="villa.imageIds == undefined || villa.imageIds.length == 0">
-                    <img v-bind:src="'/api/Image/GetImage?id=' + villa.imageIds[0]" class="image" v-if="villa.imageIds != undefined && villa.imageIds.length > 0">
+                    <img
+                        src="../assets/missing-img.png"
+                        class="image"
+                        v-if="
+                            villa.imageIds == undefined ||
+                            villa.imageIds.length == 0
+                        "
+                    />
+                    <img
+                        v-bind:src="
+                            '/api/Image/GetImage?id=' + villa.imageIds[0]
+                        "
+                        class="image"
+                        v-if="
+                            villa.imageIds != undefined &&
+                            villa.imageIds.length > 0
+                        "
+                    />
                 </div>
                 <div class="card-content">
-                    <span class="header-text">{{villa.name}}</span>
+                    <span class="header-text">{{ villa.name }}</span>
                     <div class="normal-text">
-                        Address: <span class="normal-content-text">{{villa.address}}</span>
+                        Address:
+                        <span class="normal-content-text">{{
+                            villa.address
+                        }}</span>
                     </div>
                     <div class="normal-text">
-                        Price per day: <span class="normal-content-text">{{villa.pricePerDay}}&euro;</span>
+                        Price per day:
+                        <span class="normal-content-text"
+                            >{{ villa.pricePerDay }}&euro;</span
+                        >
                     </div>
                     <div class="normal-text">
-                        Capacity: <span class="normal-content-text">{{villa.capacity}}</span>
+                        Capacity:
+                        <span class="normal-content-text">{{
+                            villa.capacity
+                        }}</span>
                     </div>
                     <div class="lonlat">
-                        <span class="normal-content-text">Longitude: {{villa.longitude}};</span>
-                        <span class="normal-content-text"> Lattitude: {{villa.latitude}}</span>
+                        <span class="normal-content-text"
+                            >Longitude: {{ villa.longitude }};</span
+                        >
+                        <span class="normal-content-text">
+                            Lattitude: {{ villa.latitude }}</span
+                        >
                     </div>
                 </div>
             </div>
@@ -45,39 +79,43 @@ export default {
     },
     data() {
         return {
-            villas : []
-        }
+            villas: [],
+        };
     },
     methods: {
-        GetVillas(){
+        GetVillas() {
             let vue = this;
             fetch("/api/VillaManagement/GetOwnedVillas", {
-                method: 'GET',
-                redirect: 'follow',
+                method: "GET",
+                redirect: "follow",
                 headers: {
-                    'Content-type': 'application/json',
-                    'Set-Cookie': document.cookie
+                    "Content-type": "application/json",
+                    "Set-Cookie": document.cookie,
                 },
-            }).then(response => {
-                if (response.status != 200){
-                    alert("Something went wrong!\nStatus code: " + response.status);
-                    return;
-                }
-                return response.json();
-            }).then(data => {
-                vue.villas = data;
-            });
+            })
+                .then((response) => {
+                    if (response.status != 200) {
+                        alert(
+                            "Something went wrong!\nStatus code: " +
+                                response.status
+                        );
+                        return;
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    vue.villas = data;
+                });
         },
-        ClickedOnVilla(villaId){
+        ClickedOnVilla(villaId) {
             this.$props.changeChosenVilla(villaId);
             this.$props.changeMode("UpdateVilla");
-        }
+        },
     },
-}
+};
 </script>
 
 <style scoped>
-
 .wrapperdiv {
     width: 100%;
     box-sizing: border-box;

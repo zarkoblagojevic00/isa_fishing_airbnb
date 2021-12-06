@@ -14,76 +14,76 @@ import Testpage from "../views/TestPage.vue";
 import VillaProfile from "../views/VillaProfile.vue";
 
 const routes = [
-  {
-    path: "/",
-    name: "Homepage",
-    component: Homepage,
-  },
-  {
-    path: "/adventure/gallery",
-    name: "Gallery",
-    component: Gallery,
-  },
-  {
-    path: "/adventure",
-    name: "AdventureProfile",
-    component: AdventureProfile,
-  },
-  {
-    path: "/adventure/rules-of-conduct",
-    name: "AdventureRulesOfConduct",
-    component: AdventureRulesOfConduct,
-  },
-  {
-    path: "/adventure/price-list",
-    name: "PriceList",
-    component: PriceList,
-  },
-  {
-    path: "/adventure/quick-reservation",
-    name: "AdventureQuickReservation",
-    component: AdventureQuickReservation,
-  },
-  {
-    path: "/instructor",
-    name: "InstructorHomePage",
-    component: InstructorHomePage,
-  },
-  {
-    path: "/instructor/services",
-    name: "InstructorServices",
-    component: InstructorServices,
-  },
-  {
-    path: "/instructor/availability",
-    name: "InstructorAvailability",
-    component: InstructorAvailability,
-  },
-  {
-    path: "/instructor/reservations",
-    name: "InstructorReservations",
-    component: InstructorReservations,
-  },
-  {
-    path: "/login",
-    name: "LoginRegForgotPass",
-    component: Login,
-  },
-  {
-    path: "/testpage",
-    name: "TestPage",
-    component: Testpage,
-  },
-  {
-    path: "/villaprofile",
-    name: "VillaProfile",
-    component: VillaProfile,
-  }
+    {
+        path: "/",
+        name: "Homepage",
+        component: Homepage,
+    },
+    {
+        path: "/adventure/gallery",
+        name: "Gallery",
+        component: Gallery,
+    },
+    {
+        path: "/adventure",
+        name: "AdventureProfile",
+        component: AdventureProfile,
+    },
+    {
+        path: "/adventure/rules-of-conduct",
+        name: "AdventureRulesOfConduct",
+        component: AdventureRulesOfConduct,
+    },
+    {
+        path: "/adventure/price-list",
+        name: "PriceList",
+        component: PriceList,
+    },
+    {
+        path: "/adventure/quick-reservation",
+        name: "AdventureQuickReservation",
+        component: AdventureQuickReservation,
+    },
+    {
+        path: "/instructor",
+        name: "InstructorHomePage",
+        component: InstructorHomePage,
+    },
+    {
+        path: "/instructor/services",
+        name: "InstructorServices",
+        component: InstructorServices,
+    },
+    {
+        path: "/instructor/availability",
+        name: "InstructorAvailability",
+        component: InstructorAvailability,
+    },
+    {
+        path: "/instructor/reservations",
+        name: "InstructorReservations",
+        component: InstructorReservations,
+    },
+    {
+        path: "/login",
+        name: "LoginRegForgotPass",
+        component: Login,
+    },
+    {
+        path: "/testpage",
+        name: "TestPage",
+        component: Testpage,
+    },
+    {
+        path: "/villaprofile",
+        name: "VillaProfile",
+        component: VillaProfile,
+    },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
+    history: createWebHistory(process.env.BASE_URL),
+    routes,
 });
 
 export default router;

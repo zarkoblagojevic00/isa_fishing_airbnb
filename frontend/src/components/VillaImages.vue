@@ -2,26 +2,38 @@
     <div class="add-img-div">
         <h4>Add images here:</h4>
         <div class="drop-div" :class="images.length == 0 ? 'drop-img' : ''">
-            <input type="file" class="file" aria-hidden="true"  multiple="multiple" accept="image/*" ref="myInput" @change="ChangeImages()">
+            <input
+                type="file"
+                class="file"
+                aria-hidden="true"
+                multiple="multiple"
+                accept="image/*"
+                ref="myInput"
+                @change="ChangeImages()"
+            />
             <h5 class="drop-hint" v-if="images.length == 0">Drop pics here</h5>
 
-            <div class="image-label" v-for="image in images" :key="image.name"> 
-                {{image.name}}
+            <div class="image-label" v-for="image in images" :key="image.name">
+                {{ image.name }}
             </div>
-
         </div>
-        <button class="add-img-btn" v-if="images.length != 0" @click="SendImages()">Send images</button>
+        <button
+            class="add-img-btn"
+            v-if="images.length != 0"
+            @click="SendImages()"
+        >
+            Send images
+        </button>
     </div>
     <div class="wrapperdiv">
         <div class="singleimage" v-for="img in existingImages" :key="img">
             <button class="delbtn" @click="DeleteImage(img)"></button>
-            <img :src="'/api/Image/GetImage?id=' + img">
+            <img :src="'/api/Image/GetImage?id=' + img" />
         </div>
     </div>
 </template>
 
 <script>
-
 export default {
     name: "VillaImages",
     props: {
@@ -32,13 +44,13 @@ export default {
         return {
             images: [],
             existingImages: [],
-        }
+        };
     },
     mounted() {
         this.PullData();
     },
     methods: {
-        ChangeImages(){
+        ChangeImages() {
             this.images = this.$refs.myInput.files;
         },
         GetBase64(file) {
@@ -46,84 +58,95 @@ export default {
                 let reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
+                reader.onerror = (error) => reject(error);
             });
         },
-        PullData(){
-            if (this.mode == 'Adding')
-                return;
-            
+        PullData() {
+            if (this.mode == "Adding") return;
+
             let vue = this;
-            fetch("/api/VillaManagement/GetVillaInfo?villaId=" + this.$props.villaId, {
-                method: 'GET',
-                redirect: 'follow',
-                headers: {
-                    'Content-type': 'application/json',
-                    'Set-Cookie': document.cookie
+            fetch(
+                "/api/VillaManagement/GetVillaInfo?villaId=" +
+                    this.$props.villaId,
+                {
+                    method: "GET",
+                    redirect: "follow",
+                    headers: {
+                        "Content-type": "application/json",
+                        "Set-Cookie": document.cookie,
+                    },
                 }
-            }).then(response => {
-                if (response.status != 200){
-                    alert("Something went wrong!\nStatus code: " + response.status);
-                    throw '';
-                }
-                return response.json();
-            }).then(data => {
-                vue.existingImages = data.imageIds;
-            });
+            )
+                .then((response) => {
+                    if (response.status != 200) {
+                        alert(
+                            "Something went wrong!\nStatus code: " +
+                                response.status
+                        );
+                        throw "";
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    vue.existingImages = data.imageIds;
+                });
         },
-        DeleteImage(imageId){
+        DeleteImage(imageId) {
             let vue = this;
             fetch("/api/Image/DeleteImage?id=" + imageId, {
-                method: 'DELETE',
-                redirect: 'follow',
+                method: "DELETE",
+                redirect: "follow",
                 headers: {
-                    'Content-type': 'application/json',
-                    'Set-Cookie': document.cookie
-                }
-            }).then(response => {
-                if (response.status == 200){
+                    "Content-type": "application/json",
+                    "Set-Cookie": document.cookie,
+                },
+            }).then((response) => {
+                if (response.status == 200) {
                     vue.PullData();
+                } else {
+                    alert(
+                        "Something went wrong!\nStatus code: " + response.status
+                    );
                 }
-                else {
-                    alert("Something went wrong!\nStatus code: " + response.status);
-                }
-            })
+            });
         },
-        async SendImages(){
+        async SendImages() {
             let newImages = new Array();
-            for(let img of this.images){
+            for (let img of this.images) {
                 let temp = await this.GetBase64(img);
                 newImages.push({
                     serviceId: this.$props.villaId,
-                    imageAsBase64: temp
+                    imageAsBase64: temp,
                 });
             }
 
-            for (let img of newImages){
+            for (let img of newImages) {
                 await fetch("/api/Image/AddImage", {
-                    method: 'POST',
-                    redirect: 'follow',
+                    method: "POST",
+                    redirect: "follow",
                     headers: {
-                        'Content-type': 'application/json',
-                        'Set-Cookie': document.cookie
+                        "Content-type": "application/json",
+                        "Set-Cookie": document.cookie,
                     },
-                    body: JSON.stringify(img)
-                }).then(response => {
-                    if (response.status != 200){
-                        alert("Something went wrong!\nStatus code: " + response.status);
+                    body: JSON.stringify(img),
+                }).then((response) => {
+                    if (response.status != 200) {
+                        alert(
+                            "Something went wrong!\nStatus code: " +
+                                response.status
+                        );
                     }
                 });
             }
 
             this.PullData();
             this.images = new Array();
-        }
-    },   
-}
+        },
+    },
+};
 </script>
 
 <style scoped>
-
 .wrapperdiv {
     height: 100%;
     width: 100%;
@@ -189,7 +212,7 @@ img {
     overflow: auto;
 }
 
-.drop-div::-webkit-scrollbar{
+.drop-div::-webkit-scrollbar {
     display: none;
 }
 
@@ -206,7 +229,7 @@ img {
 }
 
 .add-img-btn:hover {
-  background-color: #54cc39;
+    background-color: #54cc39;
     color: black;
 }
 
@@ -220,11 +243,11 @@ img {
     z-index: 1;
 }
 
-.file:hover{
+.file:hover {
     cursor: pointer;
 }
 
-.drop-hint{
+.drop-hint {
     position: relative;
     top: calc(50% + 10px);
 }

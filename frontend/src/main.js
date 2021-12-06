@@ -15,6 +15,8 @@ import VCalendar from "v-calendar";
 import jQuery from "jquery";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import VueSweetalert2 from "vue-sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 library.add(faTrash);
 library.add(faEdit);
@@ -29,6 +31,7 @@ app.use(VueViewer);
 
 app.use(VCalendar, {});
 app.use(VueAxios, axios);
+app.use(VueSweetalert2);
 app.use(router).mount("#app");
 
 if (process.env.VUE_APP_ENV == "development") {
@@ -36,7 +39,7 @@ if (process.env.VUE_APP_ENV == "development") {
         document.cookie = "userId=2; domain=localhost";
         document.cookie = "email=testvillaowner@gmail.com; domain=localhost";
     } else if (process.env.VUE_APP_USER == "suki") {
-        document.cookie = "userId=4; domain=localhost";
-        document.cookie = "email=stef@gmail.com; domain=localhost";
+        document.cookie = "userId=1; domain=localhost";
+        document.cookie = "email=nikolamilosa20@gmail.com; domain=localhost";
     }
 }

@@ -30,7 +30,10 @@
                     <td class="left">{{ req.email }}</td>
                     <td class="left">{{ req.userType }}</td>
                     <td class="left">{{ req.reason }}</td>
-                    <td class="left" v-if="!req.isAccountVerified">
+                    <td
+                        class="left"
+                        v-if="!req.isAccountVerified && !req.denialReason"
+                    >
                         <button
                             class="button-accept"
                             @click="onAcceptRequest(req.userId)"
@@ -38,7 +41,10 @@
                             Accept
                         </button>
                     </td>
-                    <td class="left" v-if="!req.isAccountVerified">
+                    <td
+                        class="left"
+                        v-if="!req.isAccountVerified && !req.denialReason"
+                    >
                         <button
                             class="button-decline"
                             @click="onDeclineRequest(req.userId)"
@@ -48,6 +54,9 @@
                     </td>
                     <td class="left" v-if="req.isAccountVerified">
                         Account is verified.
+                    </td>
+                    <td class="left" v-if="req.denialReason">
+                        Request denied.
                     </td>
                 </tr>
             </tbody>
@@ -81,16 +90,48 @@ export default {
                     result: true,
                     reason: "Meets all conditions.",
                 })
-                .catch((err) => console.log(err));
+                .then(() => {
+                    this.$swal.fire("Successfully saved.");
+                    this.loadRequests();
+                });
         },
         onDeclineRequest(userId) {
-            axios
-                .put("/api/RegistrationReview/ReviewRequest", {
-                    userId: userId,
-                    result: false,
-                    reason: "Does not meet all conditions.",
+            // axios
+            //     .put("/api/RegistrationReview/ReviewRequest", {
+            //         userId: userId,
+            //         result: false,
+            //         reason: "Does not meet all conditions.",
+            //     })
+            //     .catch((err) => console.log(err));
+
+            this.$swal
+                .fire({
+                    title: "Enter reason for declining request.",
+                    input: "text",
+                    inputAttributes: {
+                        autocapitalize: "off",
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    showLoaderOnConfirm: true,
+                    preConfirm: (reason) => {
+                        console.log("reason", reason);
+                        axios
+                            .put("/api/RegistrationReview/ReviewRequest", {
+                                userId: userId,
+                                result: false,
+                                reason: reason,
+                            })
+                            .then(() => this.loadRequests());
+                    },
+                    allowOutsideClick: () => !this.$swal.isLoading(),
                 })
-                .catch((err) => console.log(err));
+                .then((result) => {
+                    console.log("result", result);
+                    if (result.isConfirmed) {
+                        this.$swal.fire("Successfully saved.");
+                    }
+                });
         },
     },
     data() {

@@ -1,11 +1,20 @@
 <template>
     <div class="wrapperdiv">
-        <div class="no-villas" v-if="villas.length == 0">
+        <div class="no-villas" v-if="receivedVillas.length == 0">
             <h1>You dont have any villas right now!</h1>
             <h2>To add one checkout Add villa from the Villas submenu!</h2>
         </div>
 
-        <div class="with-villas" v-if="villas.length != 0">
+        <div class="search-box" v-if="receivedVillas.length != 0">
+            <input
+                type="text"
+                class="input-field"
+                placeholder="Search by name"
+                v-model="searchField"
+            />
+        </div>
+
+        <div class="with-villas" v-if="receivedVillas.length != 0">
             <div
                 class="my-card"
                 v-for="villa in villas"
@@ -79,7 +88,9 @@ export default {
     },
     data() {
         return {
+            receivedVillas: [],
             villas: [],
+            searchField: "",
         };
     },
     methods: {
@@ -104,12 +115,23 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    vue.villas = data;
+                    vue.receivedVillas = data;
+                    vue.villas = vue.receivedVillas;
                 });
         },
         ClickedOnVilla(villaId) {
             this.$props.changeChosenVilla(villaId);
             this.$props.changeMode("UpdateVilla");
+        },
+    },
+    watch: {
+        searchField: function () {
+            this.villas = this.receivedVillas.filter(
+                (villa) =>
+                    villa.name
+                        .toLowerCase()
+                        .indexOf(this.searchField.toLowerCase()) != -1
+            );
         },
     },
 };
@@ -201,5 +223,27 @@ export default {
 
 .lonlat {
     flex-flow: row wrap;
+}
+
+.search-box {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.input-field {
+    height: 50px;
+    border-radius: 15px;
+    outline: none;
+    border: 1px solid #c3c3c3;
+    max-width: 400px;
+    min-width: 200px;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    font-size: 15px;
 }
 </style>

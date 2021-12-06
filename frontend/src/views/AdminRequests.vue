@@ -14,6 +14,9 @@
                     <th>Email</th>
                     <th>User type</th>
                     <th>Reason</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody v-for="req in requests" :key="req.userId">
@@ -27,6 +30,25 @@
                     <td class="left">{{ req.email }}</td>
                     <td class="left">{{ req.userType }}</td>
                     <td class="left">{{ req.reason }}</td>
+                    <td class="left" v-if="!req.isAccountVerified">
+                        <button
+                            class="button-accept"
+                            @click="onAcceptRequest(req.userId)"
+                        >
+                            Accept
+                        </button>
+                    </td>
+                    <td class="left" v-if="!req.isAccountVerified">
+                        <button
+                            class="button-decline"
+                            @click="onDeclineRequest(req.userId)"
+                        >
+                            Decline
+                        </button>
+                    </td>
+                    <td class="left" v-if="req.isAccountVerified">
+                        Account is verified.
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -43,10 +65,33 @@ export default {
         Navbar,
     },
     mounted() {
-        axios.get("/api/RegistrationReview/GetAll").then((res) => {
-            this.requests = res.data;
-            console.log(res.data);
-        });
+        this.loadRequests();
+    },
+    methods: {
+        loadRequests() {
+            axios.get("/api/RegistrationReview/GetAll").then((res) => {
+                this.requests = res.data;
+                console.log(res.data);
+            });
+        },
+        onAcceptRequest(userId) {
+            axios
+                .put("/api/RegistrationReview/ReviewRequest", {
+                    userId: userId,
+                    result: true,
+                    reason: "Meets all conditions.",
+                })
+                .catch((err) => console.log(err));
+        },
+        onDeclineRequest(userId) {
+            axios
+                .put("/api/RegistrationReview/ReviewRequest", {
+                    userId: userId,
+                    result: false,
+                    reason: "Does not meet all conditions.",
+                })
+                .catch((err) => console.log(err));
+        },
     },
     data() {
         return {
@@ -74,6 +119,11 @@ export default {
                 isAccountVerified: false,
             },
             requests: [],
+            review: {
+                userId: "",
+                result: false,
+                reason: "",
+            },
         };
     },
 };
@@ -123,5 +173,45 @@ h1 {
 .left {
     text-align: left;
     width: 250px;
+}
+
+.button-accept {
+    background-color: #15ff00;
+    border-radius: 12px;
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 10px;
+    text-align: center;
+    transition: 200ms;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.button-decline {
+    background-color: #eb1414;
+    border-radius: 12px;
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 10px;
+    text-align: center;
+    transition: 200ms;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+button:hover {
+    background-color: #2843d8;
 }
 </style>

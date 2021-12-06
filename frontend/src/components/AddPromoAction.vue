@@ -25,6 +25,7 @@
 				:current-period-label="useTodayIcons ? 'icons' : ''"
 				:displayWeekNumbers="displayWeekNumbers"
 				:enable-date-selection="false"
+                @click-item="ClickItem"
 			>
 				<template #header="{ headerProps }">
 					<calendar-view-header :header-props="headerProps" @input="setShowDate" />
@@ -35,7 +36,8 @@
             <div class="action-form">
                 <div class="input-wrapper">
                     <span class="label">Date range:</span>
-                    <Datepicker class="date-range"
+                    <Datepicker class="date-range" :modelValue="selectedDate"
+                        @update:modelValue="UpdateDate"
                         :range="true"
                         :twoCalendars="true"
                         :placeholder="'Select a date range'"/>
@@ -48,6 +50,7 @@
                     <span class="label">Capacity:</span>
                     <input class="input-field" type="number" min="0" v-model="capacity" :class="[ValidateNumber(capacity) ? '' : 'error-outline']">
                 </div>
+                <button v-if="mode == 'Editing'" class="submit-btn" @click="SwitchToAddingMode">Return to adding mode</button>
             </div>
             <div class="action-form">
                 <div class="input-wrapper">
@@ -60,7 +63,7 @@
             </div>
         </div>
         <div class="submit-div">
-            <button class="submit-btn" @click="SendRequest()">{{mode == 'Adding' ? 'Create promo action!' : 'Update promo action!'}}</button>
+            <button class="submit-btn" @click="Submit()">{{mode == 'Adding' ? 'Create promo action!' : 'Update promo action!'}}</button>
         </div>
 	</div>
 </template>
@@ -90,7 +93,7 @@ export default {
 			showDate: this.thisMonth(1),
 			message: "",
 			startingDayOfWeek: 0,
-			disablePast: false,
+			disablePast: true,
 			disableFuture: false,
 			displayPeriodUom: "month",
 			displayPeriodCount: 1,
@@ -107,10 +110,14 @@ export default {
             allVillas: [],
 			items: [],
 
+            receivedItems: [],
+
             mode: 'Adding',
             pricePerDay: 0,
             capacity: 0,
             additionalBenefits: "",
+            selectedDate: ["", ""],
+            selectedAction: {},
             errors: []
 		}
 	},
@@ -182,9 +189,10 @@ export default {
                     }
                 })
             },
-        RefreshCalendar() {
+        async RefreshCalendar() {
             let vue = this;
-            fetch("/api/QuickAction/GetQuickActions?serviceId=" + this.selectedVilla, {
+            this.items = new Array();
+            await fetch("/api/QuickAction/GetQuickActions?serviceId=" + this.selectedVilla, {
                 method: 'GET',
                 header: {
                     'Content-type' : 'application-json',
@@ -202,8 +210,9 @@ export default {
                     return;
                 }
 
-                vue.items = new Array();
+                vue.receivedItems = new Array();
                 for (let i = 0; i < data.length; i++){
+                    vue.receivedItems.push(data[i]);
                     let promo = data[i];
 
                     let style = 'cursor: pointer; background-color: ';
@@ -216,9 +225,49 @@ export default {
 
                     let item = {
                         id: i,
-                        startDate: promo.startDateTime.split("T")[0] + " " + promo.startDateTime.split("T")[1].split(".")[0],
-                        endDate: promo.endDateTime.split("T")[0] + " " + promo.startDateTime.split("T")[1].split(".")[0],
+                        startDate: promo.startDateTime,
+                        endDate: promo.endDateTime,
                         title: promo.isTaken ? 'Taken' : 'Available',
+                        style: style
+                    }
+                    vue.items.push(item);
+                }
+            });
+
+            fetch("/api/GeneralService/GetNonPromoReservations?serviceId=" + this.selectedVilla, {
+                method: 'GET',
+                header: {
+                    'Content-type' : 'application-json',
+                    'Set-Cookie': document.cookie
+                }
+            }).then(response => {
+                if (response.status == 200){
+                    return response.json();
+                }
+                return response.text();
+            }).then(data => {
+                let strconst = "test".constructor;
+                if (data.constructor == strconst){
+                    alert("Something went wrong!\nError message: " + data);
+                    return;
+                }
+                let beginingNum = vue.items.length;
+                for (let i = 0; i < data.length; i++){
+                    let reservation = data[i];
+
+                    let style = 'cursor: pointer; background-color: ';
+                    if (reservation.isServiceUnavailableMarker){
+                        style += "#456990";
+                    }
+                    else {
+                        style += "#EEB868";
+                    }
+
+                    let item = {
+                        id: beginingNum + i,
+                        startDate: reservation.startDateTime,
+                        endDate: reservation.endDateTime,
+                        title: reservation.isServiceUnavailableMarker ? 'Unavailable' : 'Reservation',
                         style: style
                     }
                     vue.items.push(item);
@@ -234,11 +283,11 @@ export default {
             if (this.pricePerDay.length == 0)
                 return false;
 
-            let input = parseFloat(input);
+            let input = parseFloat(this.pricePerDay);
             if (input == undefined || input == null)
                 return false;
             
-            if (input <= 0)
+            if (input == 0)
                 return false;
 
             return true;
@@ -258,6 +307,101 @@ export default {
 
             return true;
         },
+        ClickItem(evt) {
+            let relevantAction = this.receivedItems[evt.id];
+            if (relevantAction == null || relevantAction.isTaken){
+                return;
+            }
+
+            this.mode = "Editing";
+
+            this.pricePerDay = relevantAction.pricePerDay;
+            this.capacity = relevantAction.capacity;
+            this.additionalBenefits = relevantAction.addedBenefits;
+
+            this.selectedDate = [relevantAction.startDateTime, relevantAction.endDateTime];
+            this.selectedAction = relevantAction;
+        },
+        SwitchToAddingMode() {
+            this.mode = "Adding";
+
+            this.pricePerDay = 0,
+            this.capacity = 0,
+            this.additionalBenefits = ""
+            this.selectedDate = ["", ""]
+        },
+        UpdateDate(evt) {
+            this.selectedDate = [evt[0], evt[1]];
+        },
+        async Submit() {
+            this.errors = new Array();
+            if (this.selectedDate.length != 2 ||
+                this.selectedDate[0] == "" || this.selectedDate[1] == ""){
+                this.errors.push("You need to specify the date range");
+            }
+            if (this.selectedVilla == ""){
+                this.errors.push("You need to select a villa first");
+            }
+            if (!this.ValidatePrice()){
+                this.errors.push("Price isn't valid");
+            }
+            if (!this.ValidateNumber(this.capacity)){
+                this.errors.push("Capacity isn't valid");
+            }
+
+            if (this.errors.length > 0){
+                return;
+            }
+
+            let dto = {
+                serviceId: this.selectedVilla,
+                startDateTime: this.selectedDate[0],
+                endDateTime: this.selectedDate[1],
+                pricePerDay: this.pricePerDay,
+                addedBenefits: this.additionalBenefits,
+                capacity: this.capacity,
+            }
+
+            let url = "/api/QuickAction/";
+            if (this.mode == "Adding"){
+                url += "CreateNewQuickAction";
+            } else {
+                url += "UpdateQuickAction";
+                dto.promoActionId = this.selectedAction.promoActionId;
+            }
+
+            let vue = this;
+
+            let response = await fetch(url, {
+                method: vue.mode == 'Adding' ? 'POST' : 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Set-Cookie': document.cookie
+                },
+                body: JSON.stringify(dto),
+            });
+            if (response.status == 200){
+                this.RefreshCalendar();
+                this.SwitchToAddingMode();
+                return;
+            }
+
+            let error = await response.text();
+            let parsed = "";
+            try {   
+                parsed = JSON.parse(error);
+            } catch(err){
+                parsed = error;
+            }
+
+            let strconst = "test".constructor;
+            if (parsed.constructor == strconst){
+                this.errors.push(parsed);
+            }
+            else {
+                console.log(parsed);
+            }
+        }
 	},
     watch: {
         selectedVilla: function() {

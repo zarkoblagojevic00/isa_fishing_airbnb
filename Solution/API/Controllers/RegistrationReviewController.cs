@@ -41,7 +41,7 @@ namespace API.Controllers
                 .Join(allUsers, x => x.UserId, y => y.UserId, (x, y) => new UserAndRegistrationReasonDTO()
                 {
                     UserId = y.UserId,
-                    Result = x.Reason,
+                    Reason = x.Reason,
                     DenialReason = x.DenialReason,
                     IsReviewed = x.IsReviewed,
                     UserType = y.UserType,

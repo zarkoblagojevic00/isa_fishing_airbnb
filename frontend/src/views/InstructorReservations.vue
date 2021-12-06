@@ -16,13 +16,21 @@
                     <th>Price</th>
                 </tr>
             </thead>
-            <tbody v-for="res in reservations" :key="res.id">
+            <tbody v-for="res in reservations" :key="res.serviceId">
                 <tr>
-                    <td class="left">{{ res.service }}</td>
-                    <td class="left">{{ res.from }}</td>
-                    <td class="left">{{ res.to }}</td>
-                    <td class="left">{{ res.client }}</td>
-                    <td class="left">{{ res.numberOfGuests }}</td>
+                    <td class="left">{{ res.serviceName }}</td>
+                    <td class="left">
+                        {{
+                            res.serviceFrom ? dateFormat(res.serviceFrom) : "/"
+                        }}
+                    </td>
+                    <td class="left">
+                        {{ res.serviceTo ? dateFormat(res.serviceTo) : "/" }}
+                    </td>
+                    <td class="left">
+                        {{ res.usersName }} {{ res.usersSurname }}
+                    </td>
+                    <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
                 </tr>
             </tbody>
@@ -32,13 +40,22 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
-
+import axios from "../api/api.js";
+import moment from "moment";
 export default {
     name: "InstructorServices",
     components: {
         Navbar,
     },
     computed: {},
+    mounted() {
+        axios
+            .get("/api/Instructor/GetReservationsWithBasicUserInfo")
+            .then((res) => {
+                this.reservations = res.data;
+                console.log(res.data);
+            });
+    },
     data() {
         return {
             navbarItems: [
@@ -49,45 +66,13 @@ export default {
                 "My profile",
             ],
             baseUrlInstructor: "/instructor/",
-            reservations: [
-                {
-                    id: 1,
-                    service: "Sunset adventure",
-                    from: "01.01.2021 12:00h",
-                    to: "02.01.2021 12:00h",
-                    client: "Aco Pejovic",
-                    numberOfGuests: 10,
-                    price: 400,
-                },
-                {
-                    id: 2,
-                    service: "Sunrise adventure",
-                    from: "01.01.2021 12:00h",
-                    to: "02.01.2021 12:00h",
-                    client: "Slavko Banjac",
-                    numberOfGuests: 10,
-                    price: 500,
-                },
-                {
-                    id: 3,
-                    service: "Sunset fishing",
-                    from: "01.01.2021 12:00h",
-                    to: "02.01.2021 12:00h",
-                    client: "Aca Lukas",
-                    numberOfGuests: 3,
-                    price: 350,
-                },
-                {
-                    id: 1,
-                    service: "Crazy barbeque adventure",
-                    from: "01.01.2021 12:00h",
-                    to: "02.01.2021 12:00h",
-                    client: "Zdravko Colic",
-                    numberOfGuests: 2,
-                    price: 1500,
-                },
-            ],
+            reservations: [],
         };
+    },
+    methods: {
+        dateFormat(value) {
+            return moment(value).format("YYYY-MM-DD HH:mm");
+        },
     },
 };
 </script>
@@ -99,7 +84,6 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
 }
-
 .flexbox-container-reservations {
     padding: 50px;
     padding-bottom: 1px;
@@ -108,14 +92,12 @@ export default {
     align-items: flex-start;
     flex-direction: column;
 }
-
 .reservations-table {
     border: solid 1px #ddeeee;
     border-collapse: collapse;
     border-spacing: 0;
     font: normal 13px Arial, sans-serif;
 }
-
 .reservations-table thead th {
     background-color: #ddefef;
     border: solid 1px #ddeeee;
@@ -124,19 +106,16 @@ export default {
     text-align: left;
     text-shadow: 1px 1px 1px #fff;
 }
-
 .reservations-table tbody td {
     border: solid 1px #ddeeee;
     color: #333;
     padding: 10px;
     text-shadow: 1px 1px 1px #fff;
 }
-
 .left {
     text-align: left;
     width: 250px;
 }
-
 button {
     background-color: #fff000;
     border-radius: 12px;
@@ -154,21 +133,17 @@ button {
     -webkit-user-select: none;
     touch-action: manipulation;
 }
-
 button:hover {
     background-color: #ccbf05;
 }
-
 ul li {
     list-style: none;
     position: relative;
     padding: 10px;
 }
-
 li:hover {
     background-color: #c8e6e4;
 }
-
 h1 {
     padding: 0px;
 }

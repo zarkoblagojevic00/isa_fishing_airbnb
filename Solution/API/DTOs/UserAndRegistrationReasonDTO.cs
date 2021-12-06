@@ -13,6 +13,7 @@ namespace API.DTOs
         public string DenialReason { get; set; }
         public bool IsReviewed { get; set; }
         public UserType UserType { get; set; }
+        public string Role { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Address { get; set; }
@@ -24,5 +25,6 @@ namespace API.DTOs
         public string Email { get; set; }
         public bool IsAccountActive { get; set; }
         public bool IsAccountVerified { get; set; }
+        public string Reason { get; set; }
     }
 }

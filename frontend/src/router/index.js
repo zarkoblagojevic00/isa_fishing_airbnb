@@ -14,6 +14,8 @@ import Testpage from "../views/TestPage.vue";
 import VillaProfile from "../views/VillaProfile.vue";
 import NewAdventure from "../views/NewAdventure.vue";
 import InstructorEditAvailability from "../views/InstructorEditAvailability.vue";
+import AdminHomepage from "../views/AdminHomepage.vue";
+import AdminRequests from "../views/AdminRequests.vue";
 
 const routes = [
     {
@@ -90,6 +92,16 @@ const routes = [
         path: "/instructor/availability/edit",
         name: "InstructorEditAvailability",
         component: InstructorEditAvailability,
+    },
+    {
+        path: "/admin",
+        name: "AdminHomepage",
+        component: AdminHomepage,
+    },
+    {
+        path: "/admin/requests",
+        name: "AdminRequests",
+        component: AdminRequests,
     },
 ];
 

@@ -41,7 +41,7 @@
                 </template>
             </calendar-view>
         </div>
-        <div class="form-wrapper">
+        <div class="form-wrapper" v-if="currentMode == 'AddPromoAction'">
             <div class="action-form">
                 <div class="input-wrapper">
                     <span class="label">Date range:</span>
@@ -52,6 +52,7 @@
                         :range="true"
                         :twoCalendars="true"
                         :placeholder="'Select a date range'"
+                        :minDate="new Date()"
                     />
                 </div>
                 <div class="input-wrapper">
@@ -104,13 +105,82 @@
                 </div>
             </div>
         </div>
-        <div class="submit-div">
+        <div class="submit-div" v-if="currentMode == 'AddPromoAction'">
             <button class="submit-btn" @click="Submit()">
                 {{
                     mode == "Adding"
                         ? "Create promo action!"
                         : "Update promo action!"
                 }}
+            </button>
+        </div>
+        <div class="form-wrapper" v-if="currentMode == 'ReserveForUser'">
+            <div class="action-form">
+                <div class="input-wrapper">
+                    <span class="label">Date range:</span>
+                    <Datepicker
+                        class="date-range"
+                        :modelValue="selectedDate"
+                        @update:modelValue="UpdateDate"
+                        :range="true"
+                        :twoCalendars="true"
+                        :placeholder="'Select a date range'"
+                        :minDate="new Date()"
+                    />
+                </div>
+                <div class="input-wrapper">
+                    <span class="label">Price per day:</span>
+                    <input
+                        class="input-field"
+                        type="text"
+                        v-model="pricePerDayReservation"
+                        v-on:keypress="isNumber($event)"
+                        :class="[ValidatePrice() ? '' : 'error-outline']"
+                    />
+                </div>
+                <div class="input-wrapper">
+                    <span class="label">Email of user:</span>
+                    <input
+                        class="input-field"
+                        type="email"
+                        min="0"
+                        v-model="emailOfUser"
+                        :class="[
+                            ValidateMail(emailOfUser) ? '' : 'error-outline',
+                        ]"
+                    />
+                </div>
+                <button
+                    v-if="mode == 'Editing'"
+                    class="submit-btn"
+                    @click="SwitchToAddingMode"
+                >
+                    Return to adding mode
+                </button>
+            </div>
+            <div class="action-form">
+                <div class="input-wrapper">
+                    <span class="label">Additional equipment:</span>
+                    <textarea
+                        class="input-textarea"
+                        type="text"
+                        v-model="additionalEquipment"
+                        placeholder="Not required"
+                    ></textarea>
+                </div>
+                <div class="input-wrapper" v-if="errors.length != 0">
+                    <span
+                        class="error-text"
+                        v-for="error in errors"
+                        :key="error"
+                        >*{{ error }}</span
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="submit-div" v-if="currentMode == 'ReserveForUser'">
+            <button class="submit-btn" @click="CreateReservation">
+                Create reservation!
             </button>
         </div>
     </div>
@@ -138,6 +208,7 @@ export default {
     },
     props: {
         villaHook: String,
+        currentMode: String,
     },
     data() {
         return {
@@ -170,6 +241,11 @@ export default {
             selectedDate: ["", ""],
             selectedAction: {},
             errors: [],
+
+            selectedDateReservation: ["", ""],
+            emailOfUser: "",
+            pricePerDayReservation: "",
+            additionalEquipment: "",
         };
     },
     computed: {
@@ -354,9 +430,15 @@ export default {
             return true;
         },
         ValidatePrice() {
-            if (this.pricePerDay.length == 0) return false;
+            let input = "";
+            if (this.currentMode == "AddPromoAction") {
+                input = this.pricePerDay;
+            } else {
+                input = this.pricePerDayReservation;
+            }
+            if (input.length == 0) return false;
 
-            let input = parseFloat(this.pricePerDay);
+            input = parseFloat(input);
             if (input == undefined || input == null) return false;
 
             if (input == 0) return false;
@@ -408,7 +490,11 @@ export default {
             this.selectedDate = ["", ""];
         },
         UpdateDate(evt) {
-            this.selectedDate = [evt[0], evt[1]];
+            if (this.currentMode == "AddPromoAction") {
+                this.selectedDate = [evt[0], evt[1]];
+            } else {
+                this.selectedDateReservation = [evt[0], evt[1]];
+            }
         },
         async Submit() {
             this.errors = new Array();
@@ -479,6 +565,82 @@ export default {
                 this.errors.push(parsed);
             } else {
                 console.log(parsed);
+            }
+        },
+        ValidateMail() {
+            if (!this.ValidateString(this.emailOfUser)) return false;
+
+            let format =
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (!this.emailOfUser.match(format)) {
+                return false;
+            }
+            return true;
+        },
+        async CreateReservation() {
+            this.errors = new Array();
+            if (this.selectedVilla == undefined || this.selectedVilla == "") {
+                this.errors.push("A villa needs to be chosen first!");
+            }
+            if (!this.ValidateMail()) {
+                this.errors.push("Mail isn't in correct format!");
+            }
+            if (!this.ValidatePrice()) {
+                this.errors.push("Price isn't in correct format!");
+            }
+            if (
+                this.selectedDateReservation[0] == "" ||
+                this.selectedDateReservation[1] == ""
+            ) {
+                this.errors.push("Date needs to be specified!");
+            }
+            if (this.errors.length > 0) {
+                return;
+            }
+
+            let dto = {
+                userMail: this.emailOfUser,
+                serviceId: this.selectedVilla,
+                price: this.pricePerDayReservation,
+                additionalEquipment: this.additionalEquipment,
+                startDateTime: this.selectedDateReservation[0],
+                endDateTime: this.selectedDateReservation[1],
+            };
+
+            let response = await fetch(
+                "/api/GeneralService/CreateReservationForUser",
+                {
+                    method: "POST",
+                    redirect: "follow",
+                    headers: {
+                        "Content-type": "application/json",
+                        "Set-Cookie": document.cookie,
+                    },
+                    body: JSON.stringify(dto),
+                }
+            );
+
+            if (response.ok) {
+                this.RefreshCalendar();
+                this.selectedDateReservation = ["", ""];
+                this.emailOfUser = "";
+                this.additionalEquipment = "";
+                this.pricePerDayReservation = "";
+                return;
+            }
+
+            let message = await response.text();
+            let error = "";
+            try {
+                error = JSON.parse(message);
+            } catch {
+                error = message;
+            }
+
+            let strconst = "".constructor;
+            if (strconst == error.constructor) {
+                this.errors.push(error);
+                alert("Something went wrong!\nError message: " + error);
             }
         },
     },

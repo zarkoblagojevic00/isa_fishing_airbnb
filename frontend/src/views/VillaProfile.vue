@@ -111,7 +111,10 @@
                     :villaId="chosenVilla"
                 />
                 <VillaCalendar v-if="mode == 'CheckVillaSchedule'" />
-                <AddPromoAction v-if="mode == 'AddPromoAction'" />
+                <AddPromoAction
+                    v-if="mode == 'AddPromoAction' || mode == 'ReserveForUser'"
+                    :currentMode="mode"
+                />
             </div>
         </div>
     </div>
@@ -135,7 +138,7 @@ export default {
     },
     data() {
         return {
-            mode: "ViewVillas",
+            mode: "ReserveForUser",
             chosenVilla: 1,
         };
     },

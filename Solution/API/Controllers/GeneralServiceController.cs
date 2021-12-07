@@ -135,7 +135,7 @@ namespace API.Controllers
         {
             var user = UoW.GetRepository<IUserReadRepository>()
                 .GetAll()
-                .FirstOrDefault(x => x.Email == reservationDto.UserMail);
+                .FirstOrDefault(x => x.Email == reservationDto.UserMail && x.UserType == UserType.Registered && x.IsAccountVerified && x.IsAccountActive);
             if (user == null)
             {
                 return BadRequest(Responses.NotFound);

@@ -134,5 +134,75 @@ namespace API.Controllers
 
             return Ok(Responses.Ok);
         }
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult UpdateMoneyPercentageSystemTakes(MoneyPercentageSystemMakesDTO systemConfigDTO)
+        {
+            double moneyPercentage;
+            bool moneyValid = Double.TryParse(systemConfigDTO.Value, out moneyPercentage);
+            if (!moneyValid)
+            {
+                return BadRequest("Invalid money format.");
+            }
+
+            var systemConfig = UoW.GetRepository<ISystemConfigReadRepository>().GetAll()
+                .Where(x => x.Name == "MoneyPercentageSystemTakes").FirstOrDefault();
+
+            if(systemConfig == null)
+            {
+                try
+                {
+                    UoW.BeginTransaction();
+
+                    systemConfig = new SystemConfig
+                    {
+                        Name = "MoneyPercentageSystemTakes",
+                        Value = systemConfigDTO.Value,
+                    };
+
+                    UoW.GetRepository<ISystemConfigWriteRepository>().Add(systemConfig);
+                    UoW.Commit();
+                }
+                catch (Exception e)
+                {
+                    UoW.Rollback();
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                try
+                {
+                    systemConfig.Value = systemConfigDTO.Value;
+
+                    UoW.BeginTransaction();
+                    UoW.GetRepository<ISystemConfigWriteRepository>().Update(systemConfig);
+                    UoW.Commit();
+                }
+                catch(Exception e)
+                {
+                    UoW.Rollback();
+                    return BadRequest();
+                }
+            }
+
+            return Ok(systemConfig);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetMoneyPercentageSystemTakes()
+        {
+            var systemConfig = UoW.GetRepository<ISystemConfigReadRepository>().GetAll()
+                .Where(x => x.Name == "MoneyPercentageSystemTakes").FirstOrDefault();
+
+            if(systemConfig == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(systemConfig);
+        }
     }
 }

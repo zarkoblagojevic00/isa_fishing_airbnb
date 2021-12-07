@@ -19,6 +19,7 @@ import AdminRequests from "../views/AdminRequests.vue";
 import AdminProfile from "../views/AdminProfile.vue";
 import NewAdmin from "../views/NewAdmin.vue";
 import AdminEntities from "../views/AdminEntities.vue";
+import AdminAnalytics from "../views/AdminAnalytics.vue";
 
 const routes = [
     {
@@ -120,6 +121,11 @@ const routes = [
         path: "/admin/entities",
         name: "AdminEntities",
         component: AdminEntities,
+    },
+    {
+        path: "/admin/analytics",
+        name: "AdminAnalytics",
+        component: AdminAnalytics,
     },
 ];
 

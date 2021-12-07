@@ -46,15 +46,15 @@
                 User information for selected reservation lasting from
                 <span class="emphasise">
                     {{
-                        moment(selectedReservation.startDate).format(
-                            "ddd MMM DD, YYYY"
-                        )
+                        moment(
+                            selectedReservation.reservation.startDate
+                        ).format("ddd MMM DD, YYYY")
                     }}
                 </span>
                 to
                 <span class="emphasise">
                     {{
-                        moment(selectedReservation.endDate).format(
+                        moment(selectedReservation.reservation.endDate).format(
                             "ddd MMM DD, YYYY"
                         )
                     }}
@@ -87,6 +87,35 @@
             <div class="info-wrapper">
                 <span>City: </span>
                 <span class="emphasise">{{ user.city }}</span>
+            </div>
+            <div
+                class="info-wrapper"
+                v-if="
+                    selectedReservation.report != undefined &&
+                    selectedReservation.report.reportText.length != 0
+                "
+            >
+                <span>Report: </span>
+                <span class="emphasise max-width">{{
+                    selectedReservation.report.reportText
+                }}</span>
+            </div>
+            <div
+                class="report-wrapper"
+                v-if="
+                    (selectedReservation.report == undefined ||
+                        selectedReservation.report.reportText.length == 0) &&
+                    selectedReservation.reservation.endDate < new Date()
+                "
+            >
+                <div>Write a report!</div>
+                <textarea
+                    class="input-textarea"
+                    v-model="reportText"
+                ></textarea>
+                <button class="report-submit" @click="Submit">
+                    Submit report
+                </button>
             </div>
         </div>
     </div>
@@ -130,10 +159,17 @@ export default {
             items: [],
 
             user: {},
-            selectedReservation: {},
+            selectedReservation: {
+                reservation: {},
+                report: {
+                    text: "",
+                },
+            },
             displayUserInfo: false,
             receivedHistory: [],
             moment: moment,
+
+            reportText: "",
         };
     },
     computed: {
@@ -283,8 +319,10 @@ export default {
                 });
         },
         async GetUserForReservation(evt) {
-            this.selectedReservation.startDate = evt.startDate;
-            this.selectedReservation.endDate = evt.endDate;
+            if (evt.title == "Service unavailable") {
+                return;
+            }
+            this.selectedReservation = this.receivedHistory[evt.id];
 
             let vue = this;
             let response = await fetch(
@@ -313,6 +351,72 @@ export default {
             }
             this.user = parsed;
             this.displayUserInfo = true;
+        },
+        async Submit() {
+            let dto = {
+                reservationId:
+                    this.selectedReservation.reservation.reservationId,
+                reportText: this.reportText,
+            };
+
+            if (dto.reservationId == undefined) {
+                alert("You need to select the reservation first!");
+                return;
+            }
+            if (dto.reportText == undefined || dto.reportText.length == 0) {
+                alert("Report text cannot be empty!");
+                return;
+            }
+
+            let response = await fetch("/api/GeneralService/SubmitReport", {
+                method: "POST",
+                redirect: "follow",
+                headers: {
+                    "Content-type": "application/json",
+                    "Set-Cookie": document.cookie,
+                },
+                body: JSON.stringify(dto),
+            }).then((response) => {
+                if (!response.ok) {
+                    let err = new Error("HTTP status code: " + response.status);
+                    err.response = response;
+                    err.status = response.status;
+                    return err;
+                }
+                return response;
+            });
+            if (response.status != 200) {
+                let response = await response.text();
+                let error = "";
+                let strconst = "".constructor;
+                try {
+                    error = JSON.parse(response);
+                } catch {
+                    error = response;
+                }
+
+                if (error.constructor == strconst) {
+                    alert("Something went wrong!\nError message: " + error);
+                }
+            } else {
+                this.selectedReservation.report = {
+                    reportText: this.reportText,
+                };
+                for (let history of this.receivedHistory) {
+                    if (
+                        history.reservation.reservation !=
+                        this.selectedReservation.reservation.reservationId
+                    ) {
+                        continue;
+                    }
+                    history.report = {
+                        reportText: this.reportText,
+                    };
+                    break;
+                }
+
+                this.reportText = "";
+            }
         },
     },
     watch: {
@@ -396,11 +500,62 @@ export default {
     margin-top: 10px;
     font-size: 18px;
     font-weight: 100;
+    margin-left: 25px;
 }
 .emphasise {
     font-style: italic;
     margin-left: 5px;
     margin-right: 5px;
     font-weight: 900;
+}
+
+.report-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 100;
+    margin-left: 20px;
+    width: fit-content;
+}
+
+.input-textarea {
+    height: 450px;
+    max-width: 600px;
+    min-width: 500px;
+    width: 100%;
+    border: 1px solid #c3c3c3;
+    border-radius: 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    resize: none;
+    font-size: 15px;
+    outline: none;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.report-submit {
+    height: 50px;
+    border-radius: 15px;
+    border: none;
+    font-size: 20px;
+    color: white;
+    background-color: #345fed;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 300ms linear;
+    align-self: center;
+}
+
+.report-submit:hover {
+    background-color: #54cc39;
+    color: black;
+}
+
+.max-width {
+    max-width: 500px;
+    text-align: start;
 }
 </style>

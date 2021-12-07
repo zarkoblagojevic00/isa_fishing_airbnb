@@ -1,5 +1,5 @@
 <template>
-    <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
+    <AdminEntitiesNavbar :baseUrl="baseUrlInstructor" />
     <div class="heading">
         <h1>Requests</h1>
         <router-link to="/admin/new-admin" class="button-new-admin"
@@ -70,13 +70,13 @@
 </template>
 
 <script>
-import Navbar from "@/components/Navbar.vue";
+import AdminEntitiesNavbar from "@/components/AdminEntitiesNavbar.vue";
 import axios from "../api/api.js";
 
 export default {
     name: "AdminRequests",
     components: {
-        Navbar,
+        AdminEntitiesNavbar,
     },
     mounted() {
         this.loadRequests();

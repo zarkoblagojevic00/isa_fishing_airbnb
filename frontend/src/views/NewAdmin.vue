@@ -1,5 +1,5 @@
 <template>
-    <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
+    <AdminEntitiesNavbar :baseUrl="baseUrlInstructor" />
     <div class="heading">
         <h1>Admin profile</h1>
     </div>
@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import Navbar from "@/components/Navbar.vue";
+import AdminEntitiesNavbar from "@/components/AdminEntitiesNavbar.vue";
 import axios from "../api/api.js";
 
 import { useVuelidate } from "@vuelidate/core";
@@ -116,7 +116,7 @@ import { required, email } from "@vuelidate/validators";
 export default {
     name: "NewAdmin",
     components: {
-        Navbar,
+        AdminEntitiesNavbar,
     },
     mounted() {
         this.GetCities();
@@ -167,13 +167,6 @@ export default {
     },
     data() {
         return {
-            navbarItems: [
-                "Requests",
-                "Users",
-                "Entities",
-                "Analytics",
-                "My profile",
-            ],
             baseUrlInstructor: "/admin/",
             userInfo: {
                 name: "",

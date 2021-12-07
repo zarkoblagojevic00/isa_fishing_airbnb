@@ -47,6 +47,39 @@ namespace API.Controllers
             return Ok(dto);
         }
 
+        [HttpGet]
+        public IActionResult GetUsersByRole(UserType userType)
+        {
+
+            var userInfos = UoW.GetRepository<IUserReadRepository>().GetAll()
+                .Where(x => x.UserType == userType);
+
+            List<ExtendedUserInfoDTO> users = new();
+
+            foreach(var user in userInfos)
+            {
+                var city = UoW.GetRepository<ICityReadRepository>().GetById(user.CityId);
+                var country = UoW.GetRepository<ICountryReadRepository>().GetById(city.CountryId);
+                var dto = new ExtendedUserInfoDTO()
+                {
+                    UserId = user.UserId,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    Address = user.Address,
+                    Phone = user.PhoneNumber,
+                    Email = user.Email,
+                    City = city.Name,
+                    Country = country.Name,
+                    IsAccountVerified = user.IsAccountVerified,
+                    IsAccountActive = user.IsAccountActive,
+                    UserType = user.UserType,
+                };
+                users.Add(dto);
+            }
+
+            return Ok(users);
+        }
+
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true })]
         public IActionResult UpdateBasicInfo(UserInfoDTO userInfo)

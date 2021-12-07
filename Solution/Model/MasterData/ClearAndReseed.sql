@@ -1,6 +1,8 @@
 ﻿DELETE AccountDeletionRequests
 DELETE AdditionalBoatServiceInfos
 DELETE AdditionalVillaServiceInfos
+DELETE AdditionalAdventureInfos
+DELETE AdditionalInstructorInfos
 DELETE BoatReservationDetails
 DELETE BoatServiceNavigationTools
 DELETE Cities

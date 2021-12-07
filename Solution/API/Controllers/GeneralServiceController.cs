@@ -253,6 +253,42 @@ namespace API.Controllers
             return Ok(summary);
         }
 
+        [HttpGet]
+        public IActionResult GetServicesByType(ServiceType serviceType)
+        {
+
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
+                .Where(x => x.ServiceType == serviceType);
+
+            List<ServiceInfoDTO> serviceInfos = new();
+
+            foreach (var service in services)
+            {
+                var owner = UoW.GetRepository<IUserReadRepository>().GetAll()
+                    .Where(x => x.UserId == service.OwnerId).FirstOrDefault();
+                var dto = new ServiceInfoDTO()
+                {
+                    ServiceId = service.ServiceId,
+                    Name = service.Name,
+                    OwnerId = service.OwnerId,
+                    OwnerName = owner.Name,
+                    OwnerSurname = owner.Surname,
+                    Address = service.Address,
+                    PromoDescription = service.PromoDescription,
+                    PricePerDay = service.PricePerDay,
+                    Capacity = service.Capacity,
+                    TermsOfUse = service.TermsOfUse,
+                    AdditionalEquipment = service.AdditionalEquipment,
+                    IsPercentageTakenFromCanceledReservations = service.IsPercentageTakenFromCanceledReservations,
+                    PercentageToTake = service.PercentageToTake,
+                    ServiceType = service.ServiceType
+                };
+                serviceInfos.Add(dto);
+            }
+
+            return Ok(serviceInfos);
+        }
+
         private Report CreateNewReport(ReportDTO report)
         {
             return new Report()

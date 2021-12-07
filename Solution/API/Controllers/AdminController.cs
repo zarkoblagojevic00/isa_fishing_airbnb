@@ -204,5 +204,37 @@ namespace API.Controllers
 
             return Ok(systemConfig);
         }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetReservationRevenue()
+        {
+            var reservations = UoW.GetRepository<IReservationReadRepository>().GetAll()
+                .Where(x => !x.IsCanceled);
+                //.Where(x => x.EndDateTime < DateTime.Now);
+
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll();
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+
+            var reservationRevenueInfos = reservations
+                .Join(services, r => r.ServiceId, s => s.ServiceId, (r, s) => new { r, s })
+                .Join(users, rs => rs.r.UserId, u => u.UserId, (rs, u) => new { rs, u })
+                .Select(revenue => new ReservationRevenueDTO
+                {
+                    ServiceId = revenue.rs.s.ServiceId,
+                    Price = revenue.rs.r.Price,
+                    ReservationId = revenue.rs.r.ReservationId,
+                    ServiceName = revenue.rs.s.Name,
+                    ServiceType = revenue.rs.s.ServiceType,
+                    ServiceStart = revenue.rs.r.StartDateTime,
+                    ServiceEnd = revenue.rs.r.EndDateTime,
+                    UserId = revenue.u.UserId,
+                    UserName = revenue.u.Name,
+                    UserSurname = revenue.u.Surname,
+                });
+
+            return Ok(reservationRevenueInfos);
+        }
     }
 }

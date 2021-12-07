@@ -18,11 +18,49 @@
             />
         </div>
     </div>
+
+    <div class="flexbox-container">
+        <table class="reservations-table">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Client</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody v-for="res in reservationRevenues" :key="res.reservationId">
+                <tr>
+                    <td class="left">{{ res.serviceName }}</td>
+                    <td class="left">
+                        {{
+                            res.serviceStart
+                                ? dateFormat(res.serviceStart)
+                                : "/"
+                        }}
+                    </td>
+                    <td class="left">
+                        {{ res.serviceEnd ? dateFormat(res.serviceEnd) : "/" }}
+                    </td>
+                    <td class="left">
+                        {{ res.userName }} {{ res.userSurname }}
+                    </td>
+                    <td class="left">{{ res.price }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="flexbox-revenue">
+        <div>Overall revenue:&emsp;</div>
+        <div>{{ overallRevenue }}</div>
+    </div>
 </template>
 
 <script>
 import AdminEntitiesNavbar from "@/components/AdminEntitiesNavbar.vue";
 import axios from "../api/api.js";
+import moment from "moment";
 
 export default {
     name: "AdminAnalytics",
@@ -31,11 +69,14 @@ export default {
     },
     mounted() {
         this.loadSystemConfig();
+        this.loadReservationRevenues();
     },
     data() {
         return {
             baseUrlInstructor: "/admin/",
             systemConfig: {},
+            reservationRevenues: [],
+            overallRevenue: 0,
         };
     },
     methods: {
@@ -72,6 +113,18 @@ export default {
                     console.log(res.data);
                 });
         },
+        dateFormat(value) {
+            return moment(value).format("YYYY-MM-DD HH:mm");
+        },
+        loadReservationRevenues() {
+            axios.get("/api/Admin/GetReservationRevenue").then((res) => {
+                this.reservationRevenues = res.data;
+                console.log(res.data);
+                this.overallRevenue = this.reservationRevenues
+                    .map((item) => item.price)
+                    .reduce((prev, next) => prev + next);
+            });
+        },
     },
 };
 </script>
@@ -87,6 +140,13 @@ export default {
     padding: 50px;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.flexbox-revenue {
+    padding: 50px;
+    display: flex;
     align-items: flex-start;
     justify-content: flex-start;
 }
@@ -131,5 +191,38 @@ input {
 
 button:hover {
     background-color: #2843d8;
+}
+
+.flexbox-container-reservations {
+    padding: 50px;
+    padding-bottom: 1px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-direction: column;
+}
+.reservations-table {
+    border: solid 1px #ddeeee;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font: normal 13px Arial, sans-serif;
+}
+.reservations-table thead th {
+    background-color: #ddefef;
+    border: solid 1px #ddeeee;
+    color: #336b6b;
+    padding: 10px;
+    text-align: left;
+    text-shadow: 1px 1px 1px #fff;
+}
+.reservations-table tbody td {
+    border: solid 1px #ddeeee;
+    color: #333;
+    padding: 10px;
+    text-shadow: 1px 1px 1px #fff;
+}
+.left {
+    text-align: left;
+    width: 250px;
 }
 </style>

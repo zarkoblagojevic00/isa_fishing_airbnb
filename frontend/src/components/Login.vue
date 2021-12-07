@@ -21,7 +21,7 @@
 
     <div class="login-forgot">
         <a href="#">Forgot password?</a>
-        <button class="login-btn">Login</button>
+        <button class="login-btn" @click="login">Login</button>
     </div>
 
     <hr class="hr" />
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import sessionService from "../services/session-service.js";
 export default {
     name: "Login",
     components: {},
@@ -57,6 +58,20 @@ export default {
             if (this.password.length < 8) return false;
 
             return true;
+        },
+        async login() {
+            try {
+                await sessionService.login(this.email, this.password);
+                alert("Login success!");
+                // TODO: navigate to users home page
+            } catch (e) {
+                alert(e.response.data);
+            }
+        },
+
+        logout() {
+            sessionService.logout();
+            // this.$router.push({ name: "Homepage" }); // ovo vrati na sam homepage bez hedera i futera
         },
     },
 };

@@ -299,7 +299,7 @@ export default {
             try {
                 await registrationService.registerServiceUser(data);
                 alert(
-                    "Your registration has been sub successfully. You should receive the confirmation link in the mailbox!"
+                    "Your registration has been submitted successfully. You should receive the confirmation link in the mailbox!"
                 );
             } catch (e) {
                 alert(e.response.data);

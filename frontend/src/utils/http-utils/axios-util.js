@@ -7,9 +7,10 @@ export default function init(resource) {
     return {
         get: ({
             relPath = "",
+            params = {},
             contentType = "application/json",
             responseType = "json",
-            params = {},
+            responseInfo = [],
         } = {}) =>
             request({
                 url: createEndPoint(relPath),
@@ -17,6 +18,7 @@ export default function init(resource) {
                 params,
                 contentType,
                 responseType,
+                responseInfo,
             }),
 
         post: ({
@@ -24,6 +26,7 @@ export default function init(resource) {
             relPath = "",
             contentType = "application/json",
             responseType = "json",
+            responseInfo = [],
         } = {}) =>
             request({
                 url: createEndPoint(relPath),
@@ -31,6 +34,7 @@ export default function init(resource) {
                 data: data,
                 contentType,
                 responseType,
+                responseInfo,
             }),
 
         put: ({
@@ -38,6 +42,7 @@ export default function init(resource) {
             relPath = "",
             contentType = "application/json",
             responseType = "json",
+            responseInfo = [],
         } = {}) =>
             request({
                 url: createEndPoint(relPath),
@@ -45,18 +50,21 @@ export default function init(resource) {
                 data: data,
                 contentType,
                 responseType,
+                responseInfo,
             }),
 
         delete: ({
             relPath = "",
             contentType = "application/json",
             responseType = "json",
+            responseInfo = [],
         } = {}) =>
             request({
                 url: createEndPoint(relPath),
                 method: "DELETE",
                 contentType,
                 responseType,
+                responseInfo,
             }),
 
         sendFileForm: ({
@@ -64,6 +72,7 @@ export default function init(resource) {
             relPath = "",
             responseType = "json",
             method = "POST",
+            responseInfo = [],
         } = {}) =>
             request({
                 url: createEndPoint(relPath),
@@ -71,6 +80,7 @@ export default function init(resource) {
                 data: createFormData(rawFormData),
                 contentType: "multipart/form-data",
                 responseType,
+                responseInfo,
             }),
     };
 }
@@ -83,21 +93,30 @@ const request = async (config) => {
         params: config.params,
         headers: {
             ...contentTypeHeader(config.contentType),
-            ...setCookieHeader,
         },
         responseType: config.responseType,
+        withCredentials: true,
     });
 
-    // TODO: Change to work with new image format
-    return config.contentType === "blob"
-        ? new Blob([response.data])
-        : response.data;
+    const data =
+        config.contentType === "blob"
+            ? new Blob([response.data])
+            : response.data;
+
+    if (!config.responseInfo.lenght) return data;
+
+    return config.responseInfo.reduce(
+        (responseSubset, responseField) => {
+            responseSubset[responseField] = response[responseField];
+            return responseSubset;
+        },
+        { data } // always return data - other response fields are optional
+    );
 };
 
 const contentTypeHeader = (contentType) => ({
     "Content-Type": `${contentType}`,
 });
-const setCookieHeader = { "Set-Cookie": document.cookie };
 
 const JSONblobify = (obj) =>
     new Blob([JSON.stringify(obj)], { type: "application/json" });

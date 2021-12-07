@@ -34,5 +34,10 @@ namespace Services.Constants
         public static string ReportAlreadySubmitted = "Report already submitted";
 
         public static string AccountDeletionRequestSubmitted = "Account deletion request was already submitted for this user";
+
+        public static string BadCredentials = "User with given email and password doesn't exist";
+
+        public static string UserAccountNotVerified = "Your account is not yet verified. Please verify your account via email.";
+
     }
 }

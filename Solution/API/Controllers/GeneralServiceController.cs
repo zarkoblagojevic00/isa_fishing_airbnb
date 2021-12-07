@@ -65,8 +65,20 @@ namespace API.Controllers
             }
 
             var user = UoW.GetRepository<IUserReadRepository>().GetById(reservation.UserId);
+            var city = UoW.GetRepository<ICityReadRepository>().GetById(user.CityId);
 
-            return Ok(user);
+            var result = new UserInfoDTO()
+            {
+                Address = user.Address,
+                City = city.Name,
+                Country = UoW.GetRepository<ICountryReadRepository>().GetById(city.CountryId).Name,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                Name = user.Name,
+                Surname = user.Surname
+            };
+
+            return Ok(result);
         }
 
         [HttpPost]

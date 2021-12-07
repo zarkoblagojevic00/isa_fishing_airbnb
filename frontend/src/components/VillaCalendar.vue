@@ -31,6 +31,7 @@
                 :current-period-label="useTodayIcons ? 'icons' : ''"
                 :displayWeekNumbers="displayWeekNumbers"
                 :enable-date-selection="false"
+                @click-item="GetUserForReservation"
             >
                 <template #header="{ headerProps }">
                     <calendar-view-header
@@ -39,6 +40,54 @@
                     />
                 </template>
             </calendar-view>
+        </div>
+        <div class="user-info" v-if="displayUserInfo == true">
+            <div class="info-header">
+                User information for selected reservation lasting from
+                <span class="emphasise">
+                    {{
+                        moment(selectedReservation.startDate).format(
+                            "ddd MMM DD, YYYY"
+                        )
+                    }}
+                </span>
+                to
+                <span class="emphasise">
+                    {{
+                        moment(selectedReservation.endDate).format(
+                            "ddd MMM DD, YYYY"
+                        )
+                    }}
+                </span>
+            </div>
+            <div class="info-wrapper">
+                <span>Name: </span>
+                <span class="emphasise">{{ user.name }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>Surname: </span>
+                <span class="emphasise">{{ user.surname }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>Phone: </span>
+                <span class="emphasise">{{ user.phone }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>Email: </span>
+                <span class="emphasise">{{ user.email }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>Address: </span>
+                <span class="emphasise">{{ user.address }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>Country: </span>
+                <span class="emphasise">{{ user.country }}</span>
+            </div>
+            <div class="info-wrapper">
+                <span>City: </span>
+                <span class="emphasise">{{ user.city }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -51,6 +100,7 @@ import {
     CalendarViewHeader,
     CalendarMath,
 } from "vue-simple-calendar";
+import moment from "moment";
 export default {
     name: "VillaCalendar",
     components: {
@@ -78,6 +128,12 @@ export default {
             selectedVilla: "",
             allVillas: [],
             items: [],
+
+            user: {},
+            selectedReservation: {},
+            displayUserInfo: false,
+            receivedHistory: [],
+            moment: moment,
         };
     },
     computed: {
@@ -187,6 +243,7 @@ export default {
                     }
 
                     vue.items = new Array();
+                    vue.receivedHistory = data;
                     for (let i = 0; i < data.length; i++) {
                         let reservation = data[i].reservation;
                         if (!reservation.isCanceled) {
@@ -224,6 +281,38 @@ export default {
                         }
                     }
                 });
+        },
+        async GetUserForReservation(evt) {
+            this.selectedReservation.startDate = evt.startDate;
+            this.selectedReservation.endDate = evt.endDate;
+
+            let vue = this;
+            let response = await fetch(
+                "/api/GeneralService/GetUserInfoFromReservation?reservationId=" +
+                    vue.receivedHistory[evt.id].reservation.reservationId,
+                {
+                    method: "GET",
+                    header: {
+                        "Content-type": "application/json",
+                        "Set-Cookie": document.cookie,
+                    },
+                }
+            );
+            let message = await response.text();
+            let parsed = "";
+            try {
+                parsed = JSON.parse(message);
+            } catch {
+                parsed = message;
+            }
+
+            let strconstructor = "test".constructor;
+            if (strconstructor == parsed.constructor) {
+                alert("Something went wrong!\nError message: " + parsed);
+                return;
+            }
+            this.user = parsed;
+            this.displayUserInfo = true;
         },
     },
     watch: {
@@ -288,5 +377,30 @@ export default {
     margin-left: 10px;
     outline: none;
     border: none;
+}
+
+.user-info {
+    position: relative;
+    width: auto;
+    margin-top: 25px;
+}
+.info-header {
+    width: auto;
+    display: flex;
+    font-size: 18px;
+    font-weight: 100;
+}
+.info-wrapper {
+    width: auto;
+    display: flex;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 100;
+}
+.emphasise {
+    font-style: italic;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-weight: 900;
 }
 </style>

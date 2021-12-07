@@ -1,6 +1,11 @@
 <template>
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
-    <h1>Requests</h1>
+    <div class="heading">
+        <h1>Requests</h1>
+        <router-link to="/admin/new-admin" class="button-new-admin"
+            >New admin</router-link
+        >
+    </div>
     <div class="flexbox-container">
         <table class="reservations-table">
             <thead>
@@ -96,14 +101,6 @@ export default {
                 });
         },
         onDeclineRequest(userId) {
-            // axios
-            //     .put("/api/RegistrationReview/ReviewRequest", {
-            //         userId: userId,
-            //         result: false,
-            //         reason: "Does not meet all conditions.",
-            //     })
-            //     .catch((err) => console.log(err));
-
             this.$swal
                 .fire({
                     title: "Enter reason for declining request.",
@@ -171,9 +168,9 @@ export default {
 </script>
 
 <style scoped>
-h1 {
+.heading {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 50px;
 }
 
@@ -214,6 +211,27 @@ h1 {
 .left {
     text-align: left;
     width: 250px;
+}
+
+.button-new-admin {
+    background-color: #000000;
+    border-radius: 12px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 10px;
+    text-align: center;
+    width: 120px;
+    height: 50px;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    text-decoration: none;
+    align-items: center;
+    font-size: 14px;
 }
 
 .button-accept {

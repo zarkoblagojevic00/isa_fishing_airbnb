@@ -17,6 +17,7 @@ using Services;
 using Services.Constants;
 using Services.Validators;
 using HtmlWriter = Services.HtmlWriter.HtmlWriter;
+using API.Attributes;
 
 namespace API.Controllers
 {
@@ -129,6 +130,48 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult AddNewAdmin(NewAdminDTO newAdminData)
+        {
+            var emailValidationService = new EmailValidationService(UoW);
+            var serviceResponse = emailValidationService.CheckEmailDuplication(newAdminData.Email);
+            if (serviceResponse != Responses.Ok)
+            {
+                return BadRequest(serviceResponse);
+            }
+
+            var writeUserRepo = UoW.GetRepository<IUserWriteRepository>();
+            var writeUserVerificationRepo = UoW.GetRepository<IUserVerificationKeyWriteRepository>();
+
+            UoW.BeginTransaction();
+
+            var newUser = ExtractAdmin(newAdminData);
+            writeUserRepo.Add(newUser);
+
+
+            var userRegistrationKey = new UserVerificationKey()
+            {
+                UserId = newUser.UserId,
+                VerificationKey = Guid.NewGuid(),
+                IsUsed = false
+            };
+
+            writeUserVerificationRepo.Add(userRegistrationKey);
+
+            UoW.Commit();
+
+            var mailService = new MailingService(UoW)
+            {
+                Body = GenerateMailForConfirmation(newUser.UserId, userRegistrationKey.VerificationKey.ToString()),
+                Receiver = newUser.Email,
+                Title = "Account verification"
+            };
+            mailService.Send();
+
+            return Ok(Responses.Ok);
+        }
+
         [HttpGet]
         public IActionResult ConfirmIdentity(int userId, Guid guid)
         {
@@ -173,6 +216,27 @@ namespace API.Controllers
                 CityId = userRegistrationData.CityId,
                 PhoneNumber = userRegistrationData.PhoneNumber,
                 Email = userRegistrationData.Email,
+                IsAccountActive = false,
+                IsAccountVerified = false
+            };
+        }
+
+        private User ExtractAdmin(NewAdminDTO newAdminData)
+        {
+            var city = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .Where(x => x.Name == newAdminData.City)
+                .FirstOrDefault();
+            return new User()
+            {
+                UserType = UserType.Admin,
+                Name = newAdminData.Name,
+                Surname = newAdminData.Surname,
+                Password = Guid.NewGuid().ToString(),
+                Address = newAdminData.Address,
+                CityId = city.CityId,
+                PhoneNumber = newAdminData.Phone,
+                Email = newAdminData.Email,
                 IsAccountActive = false,
                 IsAccountVerified = false
             };

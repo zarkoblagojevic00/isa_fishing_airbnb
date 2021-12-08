@@ -9,6 +9,7 @@ import {
     faTrash,
     faEdit,
     faSearch,
+    faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VCalendar from "v-calendar";
@@ -22,6 +23,7 @@ library.add(faTrash);
 library.add(faEdit);
 library.add(faPlus);
 library.add(faSearch);
+library.add(faInfoCircle);
 
 const $ = jQuery;
 window.$ = $;
@@ -39,7 +41,7 @@ if (process.env.VUE_APP_ENV == "development") {
         document.cookie = "userId=2; domain=localhost";
         document.cookie = "email=testvillaowner@gmail.com; domain=localhost";
     } else if (process.env.VUE_APP_USER == "suki") {
-        document.cookie = "userId=1; domain=localhost";
-        document.cookie = "email=nikolamilosa20@gmail.com; domain=localhost";
+        document.cookie = "userId=4; domain=localhost";
+        document.cookie = "email=stef@gmail.com; domain=localhost";
     }
 }

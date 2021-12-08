@@ -42,6 +42,14 @@ export default {
             successMessage: "",
         };
     },
+    mounted() {
+        axios
+            .get("/api/Instructor/GetAdditionalInstructorInfo")
+            .then(({ data }) => {
+                this.range.start = data.startDateTime;
+                this.range.end = data.endDateTime;
+            });
+    },
     methods: {
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");

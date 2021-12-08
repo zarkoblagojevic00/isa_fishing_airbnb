@@ -23,6 +23,8 @@ import AdminAnalytics from "../views/AdminAnalytics.vue";
 import VillasExpo from "../views/VillasExpo.vue";
 import BoatsExpo from "../views/BoatsExpo.vue";
 import AdventuresExpo from "../views/AdventuresExpo.vue";
+import EditAdventure from "../views/EditAdventure.vue";
+import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
 
 const routes = [
     {
@@ -145,6 +147,16 @@ const routes = [
         path: "/admin/analytics",
         name: "AdminAnalytics",
         component: AdminAnalytics,
+    },
+    {
+        path: "/adventure/:id/edit",
+        name: "EditAdventure",
+        component: EditAdventure,
+    },
+    {
+        path: "/adventure/:id/new-quick-action",
+        name: "AdventureNewQuickAction",
+        component: AdventureNewQuickAction,
     },
 ];
 

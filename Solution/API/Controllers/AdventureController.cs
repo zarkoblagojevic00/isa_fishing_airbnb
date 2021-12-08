@@ -62,6 +62,54 @@ namespace API.Controllers
         }
 
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetAdventureInfoById(int adventureId)
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            if (!CheckOwnerShip(adventureId))
+            {
+                return Unauthorized(Responses.ServiceOwnerNotLinked);
+            }
+
+            var adventure = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == adventureId).FirstOrDefault();
+            var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
+                .GetAll()
+                .Where(x => x.AdventureId == adventureId).FirstOrDefault();
+
+            var images = UoW.GetRepository<IImageReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == adventureId);
+
+            var adventureInfo = new AdventureDTO
+            {
+                Name = adventure.Name,
+                PricePerDay = adventure.PricePerDay,
+                Address = adventure.Address,
+                Longitude = adventure.Longitude,
+                Latitude = adventure.Latitude,
+                AvailableFrom = adventure.AvailableFrom,
+                AvailableTo = adventure.AvailableTo,
+                PromoDescription = adventure.PromoDescription,
+                TermsOfUse = adventure.TermsOfUse,
+                AdditionalEquipment = adventure.AdditionalEquipment,
+                Capacity = adventure.Capacity,
+                IsPercentageTakenFromCanceledReservations = adventure.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = adventure.PercentageToTake,
+                OwnerId = adventure.OwnerId,
+                AdditionalOffers = additionalInformation.AdditionalOffers,
+                AdventureId = adventure.ServiceId,
+                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+            };
+
+            adventureInfo.ImageIds = images.Select(x => x.ImageId);
+
+            return Ok(adventureInfo);
+        }
+
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
@@ -97,7 +145,7 @@ namespace API.Controllers
                 OwnerId = x.OwnerId,
                 AdditionalOffers = y.AdditionalOffers,
                 AdventureId = x.ServiceId,
-                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography
+                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
             });
 
             foreach (AdventureDTO adventure in ownedAdventures)

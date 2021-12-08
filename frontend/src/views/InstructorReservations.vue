@@ -29,6 +29,17 @@
                     </td>
                     <td class="left">
                         {{ res.usersName }} {{ res.usersSurname }}
+                        <font-awesome-icon
+                            icon="info-circle"
+                            style="cursor: pointer"
+                            @click="
+                                showUserInfo({
+                                    usersName: res.usersName,
+                                    usersSurname: res.usersSurname,
+                                    usersPhoneNumber: res.usersPhoneNumber,
+                                })
+                            "
+                        />
                     </td>
                     <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
@@ -72,6 +83,23 @@ export default {
     methods: {
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");
+        },
+        showUserInfo(user) {
+            this.$swal.fire({
+                title:
+                    "<p>" +
+                    user.usersName +
+                    " " +
+                    user.usersSurname +
+                    ", " +
+                    user.usersPhoneNumber +
+                    "</p>",
+                icon: "info",
+
+                focusConfirm: false,
+                confirmButtonText: "Great!",
+                confirmButtonAriaLabel: "Thumbs up, great!",
+            });
         },
     },
 };

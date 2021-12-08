@@ -3,6 +3,9 @@
     <div class="flexbox-container">
         <InstructorInfo />
         <Map />
+        <button @click="$router.push(baseUrlInstructor + 'edit')">
+            Review adventure information
+        </button>
     </div>
 </template>
 
@@ -36,7 +39,29 @@ export default {
 <style scoped>
 .flexbox-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     padding: 50px;
+}
+
+button {
+    background-color: #000;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: center;
+    transition: 200ms;
+    height: 50px;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 7px;
+    float: left;
+    margin-left: 50px;
+    margin-bottom: 50px;
 }
 </style>

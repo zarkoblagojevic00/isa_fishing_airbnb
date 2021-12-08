@@ -133,6 +133,26 @@ namespace API.Controllers
         }
 
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetAdditionalInstructorInfo()
+        {
+            var userId = GetUserIdFromCookie();
+
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
+                .Where(x => x.InstructorId == userId).FirstOrDefault();
+
+
+            AvailabilityPeriodDTO availability = new AvailabilityPeriodDTO
+            {
+                StartDateTime = additionalInstructorInfo.AvailableFrom.Value,
+                EndDateTime = additionalInstructorInfo.AvailableTo.Value
+            };
+
+            return Ok(availability);
+        }
+
+
         private IEnumerable<ReservationUserDTO> MapReservationsAndUsers(IEnumerable<Reservation> reservations)
         {
             List<ReservationUserDTO> userReservations = new List<ReservationUserDTO>();

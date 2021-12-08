@@ -1,7 +1,7 @@
 <template>
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="flexbox-container-space-between">
-        <h1>New adventure</h1>
+        <h1>Edit adventure</h1>
     </div>
     <div class="flexbox-container-space-between">
         <form class="form">
@@ -161,9 +161,18 @@
             <v-date-picker v-model="range" mode="dateTime" is-range />
         </div>
     </div>
-    <button @click="onSubmit" :disabled="v$.newAdventure.$invalid">
-        Create adventure
-    </button>
+    <div class="flexbox">
+        <button
+            class="button-update"
+            @click="onSubmit"
+            :disabled="v$.newAdventure.$invalid"
+        >
+            Update adventure
+        </button>
+        <button class="button-remove" @click="onRemove">
+            Remove adventure
+        </button>
+    </div>
 </template>
 
 <script>
@@ -173,14 +182,16 @@ import { required, minValue, maxValue } from "@vuelidate/validators";
 import axios from "../api/api.js";
 
 export default {
-    name: "New adventure",
+    name: "EditAdventure",
     components: {
         Navbar,
     },
     setup() {
         return { v$: useVuelidate() };
     },
-    mounted() {},
+    mounted() {
+        this.loadAdventure();
+    },
     data() {
         return {
             navbarItems: [
@@ -190,8 +201,9 @@ export default {
                 "Analytics",
                 "My profile",
             ],
-            baseUrlInstructor: "/instructor/",
+            baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             newAdventure: {
+                adventureId: "",
                 name: "",
                 address: "",
                 longitude: "",
@@ -230,8 +242,8 @@ export default {
     },
     methods: {
         noClicked() {
-            this.isPercentageTakenFromCanceledReservations = false;
-            this.percentageToTake = 0;
+            this.newAdventure.isPercentageTakenFromCanceledReservations = false;
+            this.newAdventure.percentageToTake = 0;
         },
         onSubmit() {
             console.log(this.newAdventure);
@@ -241,11 +253,58 @@ export default {
             console.log(adventure);
 
             axios
-                .post("/api/Adventure/AddAdventure", adventure)
-                .then((res) => {
-                    console.log("OK ", res.data);
+                .put("/api/Adventure/UpdateAdventure", adventure)
+                .then(() => {
+                    this.$swal.fire(
+                        "Updated!",
+                        "Your adventure has been updated.",
+                        "success"
+                    );
+                    this.$router.push(this.baseUrlInstructor);
                 })
                 .catch((err) => console.log(err));
+        },
+        loadAdventure() {
+            axios
+                .get(
+                    "/api/Adventure/GetAdventureInfoById?adventureId=" +
+                        this.$route.params.id
+                )
+                .then((res) => {
+                    this.newAdventure = res.data;
+                    console.log(res.data);
+                    this.range.start = res.data.availableFrom;
+                    this.range.end = res.data.availableTo;
+                })
+                .catch((err) => console.log(err));
+        },
+        onRemove() {
+            this.$swal
+                .fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!",
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        axios
+                            .delete(
+                                "/api/Adventure/DeleteAdventure?adventureId=" +
+                                    this.newAdventure.adventureId
+                            )
+                            .then(() => {
+                                this.$swal.fire(
+                                    "Deleted!",
+                                    "Your adventure has been deleted.",
+                                    "success"
+                                );
+                            });
+                    }
+                });
         },
     },
 };
@@ -266,8 +325,36 @@ export default {
     align-items: center;
 }
 
-button {
+.flexbox {
+    display: flex;
+    justify-content: flex-start;
+    padding: 50px;
+}
+
+.button-update {
     background-color: #000;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: center;
+    transition: 200ms;
+    height: 50px;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 7px;
+    float: left;
+    margin-left: 50px;
+    margin-bottom: 50px;
+}
+
+.button-remove {
+    background-color: rgb(255, 0, 0);
     border-radius: 12px;
     color: #fff;
     cursor: pointer;

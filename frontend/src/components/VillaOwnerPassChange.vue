@@ -1,4 +1,10 @@
 <template>
+    <h3>Change password</h3>
+    <hr />
+    <span class="info"
+        >If you want to you can change your password quickly here! Just fill out
+        this quick form!</span
+    >
     <div class="whole-div">
         <div class="wrapper-div">
             <div class="input-wrapper">
@@ -273,5 +279,17 @@ li {
 
 .push-down {
     margin-top: 25px;
+}
+
+h3 {
+    display: flex;
+    padding-left: 25px;
+}
+
+.info {
+    display: flex;
+    text-align: left;
+    margin-bottom: 15px;
+    padding: 0px 15px;
 }
 </style>

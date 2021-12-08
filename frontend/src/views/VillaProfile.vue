@@ -44,12 +44,11 @@
                 >
                     <span class="menu-text"> Profile </span>
                 </div>
-                <div
-                    class="submenu"
-                    id="sub-profile"
-                    @click="ChangeMode('ViewProfile')"
-                >
-                    <div class="submenu-item">
+                <div class="submenu" id="sub-profile">
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('ViewProfile')"
+                    >
                         <span class="menu-text"> View profile </span>
                     </div>
                     <div class="submenu-item" @click="ChangeMode('ChangePass')">
@@ -117,6 +116,7 @@
                 />
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
                 <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
+                <VillaOwnerDeletion v-if="mode == 'RequestDeletion'" />
             </div>
         </div>
     </div>
@@ -130,6 +130,7 @@ import VillaCalendar from "../components/VillaCalendar.vue";
 import AddPromoAction from "../components/AddPromoAction.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
+import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
 
 export default {
     name: "VillaProfile",
@@ -141,10 +142,11 @@ export default {
         AddPromoAction,
         VillaOwnerProfile,
         VillaOwnerPassChange,
+        VillaOwnerDeletion,
     },
     data() {
         return {
-            mode: "ChangePass",
+            mode: "RequestDeletion",
             chosenVilla: 1,
         };
     },

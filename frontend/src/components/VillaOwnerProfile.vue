@@ -1,4 +1,10 @@
 <template>
+    <h3>Profile details:</h3>
+    <hr />
+    <span class="info"
+        >Here you can view your account details and, if you want to, you can
+        change them!</span
+    >
     <div class="wholediv">
         <div class="wrapper-div">
             <div class="input-wrapper">
@@ -339,5 +345,17 @@ li {
 
 .push-down {
     margin-top: 25px;
+}
+
+h3 {
+    display: flex;
+    padding-left: 25px;
+}
+
+.info {
+    display: flex;
+    text-align: left;
+    margin-bottom: 15px;
+    padding: 0px 15px;
 }
 </style>

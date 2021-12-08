@@ -1,4 +1,7 @@
 <template>
+    <h3>{{ mode == "Adding" ? "Add new villa!" : "Edit villa!" }}</h3>
+    <hr />
+    <span class="info"></span>
     <div class="content">
         <div class="content-pane">
             <div class="input-wrapper">
@@ -536,5 +539,17 @@ li {
 
 .error-outline {
     border: 1px solid red !important;
+}
+
+h3 {
+    display: flex;
+    padding-left: 25px;
+}
+
+.info {
+    display: flex;
+    text-align: left;
+    margin-bottom: 15px;
+    padding: 0px 15px;
 }
 </style>

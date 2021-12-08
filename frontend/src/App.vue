@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import sessionService from "@/services/session-service.js";
 import GeneralHeader from "@/components/GeneralHeader.vue";
 import GeneralFooter from "@/components/GeneralFooter.vue";
 export default {
@@ -24,30 +25,40 @@ export default {
                     options: [
                         {
                             text: "villas",
-                            invoke: () => (window.location.href = ""),
+                            invoke: () => (window.location.href = "/villas"),
                         },
                         {
                             text: "boats",
-                            invoke: () => (window.location.href = ""),
+                            invoke: () => (window.location.href = "/boats"),
                         },
                         {
                             text: "adventures",
-                            invoke: () => (window.location.href = ""),
+                            invoke: () =>
+                                (window.location.href = "/adventures"),
                         },
                     ],
                 },
                 {
                     text: "account",
-                    options: [
-                        {
-                            text: "login",
-                            invoke: () => (window.location.href = "/Login"),
-                        },
-                        {
-                            text: "register",
-                            invoke: () => (window.location.href = ""),
-                        },
-                    ],
+                    options: !document.cookie
+                        ? [
+                              {
+                                  text: "login",
+                                  invoke: () =>
+                                      (window.location.href = "/login"),
+                              },
+                              {
+                                  text: "register",
+                                  invoke: () =>
+                                      (window.location.href = "/Login"),
+                              },
+                          ]
+                        : [
+                              {
+                                  text: "log out",
+                                  invoke: this.logout,
+                              },
+                          ],
                 },
             ],
         };
@@ -61,6 +72,11 @@ export default {
                 return false;
             }
             return true;
+        },
+
+        logout() {
+            sessionService.logout();
+            location.href = "/";
         },
     },
 };

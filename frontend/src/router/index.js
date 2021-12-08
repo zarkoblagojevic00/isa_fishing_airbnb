@@ -20,6 +20,9 @@ import AdminProfile from "../views/AdminProfile.vue";
 import NewAdmin from "../views/NewAdmin.vue";
 import AdminEntities from "../views/AdminEntities.vue";
 import AdminAnalytics from "../views/AdminAnalytics.vue";
+import VillasExpo from "../views/VillasExpo.vue";
+import BoatsExpo from "../views/BoatsExpo.vue";
+import AdventuresExpo from "../views/AdventuresExpo.vue";
 
 const routes = [
     {
@@ -28,14 +31,29 @@ const routes = [
         component: Homepage,
     },
     {
-        path: "/adventure/:id/gallery",
-        name: "Gallery",
-        component: Gallery,
+        path: "/boats",
+        name: "BoatsExpo",
+        component: BoatsExpo,
+    },
+    {
+        path: "/villas",
+        name: "VillasExpo",
+        component: VillasExpo,
+    },
+    {
+        path: "/adventures",
+        name: "AdventuresExpo",
+        component: AdventuresExpo,
     },
     {
         path: "/adventure/:id",
         name: "AdventureProfile",
         component: AdventureProfile,
+    },
+    {
+        path: "/adventure/:id/gallery",
+        name: "Gallery",
+        component: Gallery,
     },
     {
         path: "/adventure/:id/rules-of-conduct",
@@ -52,6 +70,7 @@ const routes = [
         name: "AdventureQuickReservation",
         component: AdventureQuickReservation,
     },
+
     {
         path: "/instructor",
         name: "InstructorHomePage",

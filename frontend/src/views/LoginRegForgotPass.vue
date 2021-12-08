@@ -24,7 +24,7 @@ export default {
     },
     data() {
         return {
-            mode: "login",
+            mode: location.pathname === "/login" ? "login" : "register",
         };
     },
     methods: {

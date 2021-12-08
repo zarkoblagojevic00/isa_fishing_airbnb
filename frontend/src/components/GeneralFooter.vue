@@ -75,8 +75,10 @@ export default {
     padding: 10px;
     font-size: 13px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    color: white;
+    color: #aaa;
+    font-weight: 550;
     padding-left: 40px;
 }
 

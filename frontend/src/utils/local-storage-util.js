@@ -19,6 +19,7 @@ export const saveClaimsToLocalStorage = (payload) => {
             },
         })
     );
+    return { userType: getRole(), userId: payload.userId, name: payload.name };
 };
 
 const mapRole = (roleAsNum) => {

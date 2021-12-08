@@ -13,14 +13,15 @@ const sessionService = {
             data: { email, password },
         });
         const { email: mail, ...claims } = responseSubset;
-        saveClaimsToLocalStorage(claims);
+        const realClaims = saveClaimsToLocalStorage(claims);
         document.cookie = `userId=${claims.userId}; domain=localhost`;
         document.cookie = `email=${mail}; domain=localhost`;
+        return realClaims;
     },
     logout: () => {
         clearStorage();
-        document.cookie = `userId=; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
-        document.cookie = `email=; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
+        document.cookie = "userId=; expires = Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = "email=; expires = Thu, 01 Jan 1970 00:00:00 GMT";
     },
 };
 

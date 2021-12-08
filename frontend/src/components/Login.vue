@@ -61,17 +61,18 @@ export default {
         },
         async login() {
             try {
-                await sessionService.login(this.email, this.password);
-                alert("Login success!");
-                // TODO: navigate to users home page
+                const claims = await sessionService.login(
+                    this.email,
+                    this.password
+                );
+                this.navigate(claims);
             } catch (e) {
                 alert(e.response.data);
             }
         },
-
-        logout() {
-            sessionService.logout();
-            // this.$router.push({ name: "Homepage" }); // ovo vrati na sam homepage bez hedera i futera
+        navigate({ userType }) {
+            if (userType === "VillaOwner") location.href = "/villaprofile";
+            if (userType === "Instructor") location.href = "/instructor";
         },
     },
 };

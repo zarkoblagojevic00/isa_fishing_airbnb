@@ -86,16 +86,9 @@ namespace API.Controllers
         {
             var userId = GetUserIdFromCookie();
 
-            var country = UoW.GetRepository<ICountryReadRepository>().GetAll()
-                .FirstOrDefault(x => x.Name == userInfo.Country);
-
-            if (country == null)
-            {
-                return BadRequest(Responses.NotFound);
-            }
 
             var city = UoW.GetRepository<ICityReadRepository>().GetAll()
-                .FirstOrDefault(x => x.Name == userInfo.City && x.CountryId == country.CountryId);
+                .FirstOrDefault(x => x.Name == userInfo.City);
 
             if (city == null)
             {

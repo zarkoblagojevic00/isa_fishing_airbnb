@@ -115,6 +115,7 @@
                     v-if="mode == 'AddPromoAction' || mode == 'ReserveForUser'"
                     :currentMode="mode"
                 />
+                <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
             </div>
         </div>
     </div>
@@ -126,6 +127,7 @@ import ViewVillas from "../components/ViewVillas.vue";
 import VillaImages from "../components/VillaImages.vue";
 import VillaCalendar from "../components/VillaCalendar.vue";
 import AddPromoAction from "../components/AddPromoAction.vue";
+import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 
 export default {
     name: "VillaProfile",
@@ -135,10 +137,11 @@ export default {
         VillaImages,
         VillaCalendar,
         AddPromoAction,
+        VillaOwnerProfile,
     },
     data() {
         return {
-            mode: "ReserveForUser",
+            mode: "ViewProfile",
             chosenVilla: 1,
         };
     },

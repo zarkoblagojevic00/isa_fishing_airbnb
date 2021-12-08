@@ -16,7 +16,7 @@ namespace API.DTOs
         public string Address { get; set; }
         [Required(ErrorMessage = "City is required!")]
         public string City { get; set; }
-        [Required(ErrorMessage = "Country is required!")]
+
         public string Country { get; set; }
         [Required(ErrorMessage = "Phone number is required!")]
         [Phone(ErrorMessage = "Phone is not in the correct format!")]

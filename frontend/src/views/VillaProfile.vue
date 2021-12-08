@@ -116,6 +116,7 @@
                     :currentMode="mode"
                 />
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
+                <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
             </div>
         </div>
     </div>
@@ -128,6 +129,7 @@ import VillaImages from "../components/VillaImages.vue";
 import VillaCalendar from "../components/VillaCalendar.vue";
 import AddPromoAction from "../components/AddPromoAction.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
+import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 
 export default {
     name: "VillaProfile",
@@ -138,10 +140,11 @@ export default {
         VillaCalendar,
         AddPromoAction,
         VillaOwnerProfile,
+        VillaOwnerPassChange,
     },
     data() {
         return {
-            mode: "ViewProfile",
+            mode: "ChangePass",
             chosenVilla: 1,
         };
     },

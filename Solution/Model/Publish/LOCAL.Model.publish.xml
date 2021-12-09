@@ -9,9 +9,4 @@
     <BlockOnPossibleDataLoss>False</BlockOnPossibleDataLoss>
     <VerifyDeployment>False</VerifyDeployment>
   </PropertyGroup>
-  <ItemGroup>
-    <SqlCmdVariable Include="Environment">
-      <Value>LOCAL</Value>
-    </SqlCmdVariable>
-  </ItemGroup>
 </Project>

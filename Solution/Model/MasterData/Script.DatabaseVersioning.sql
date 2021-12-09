@@ -4,7 +4,7 @@ DECLARE @deploymentProfile NVARCHAR(50)
 
 SET @deploymentDate = GETDATE()
 SET @deploymentUser = suser_name()
-SET @deploymentProfile = '$(Environment)'
+SET @deploymentProfile = @Environment
 
 INSERT [dbo].[DatabaseVersion] ([DeploymentDate], [DeploymentUser], [DeploymentProfile]) 
 	VALUES (@deploymentDate, @deploymentUser, @deploymentProfile)

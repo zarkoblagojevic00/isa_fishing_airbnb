@@ -2,6 +2,9 @@
 Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje podataka
 */
 
+DECLARE @Environment varchar(100)
+SET @Environment = 'LOCAL'
+
 -- Clear and reseed Database
 :r .\ClearAndReseed.sql
 
@@ -17,7 +20,7 @@ Skripta koja na osnovu publish profila radi verzioniranje baze i seedovanje poda
 :r .\Cities.Table.sql
 :r .\Users.Table.sql
 
-IF '$(Environment)' = 'LOCAL'
+IF @Environment = 'LOCAL'
 	BEGIN
 		-- Scripts run for local configurations 
 		:r .\LOCAL\SystemConfiguration.Table.sql

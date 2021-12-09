@@ -1,0 +1,21 @@
+﻿<Project Sdk="MSBuild.Sdk.SqlProj/1.17.2">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Model\Tables\*.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PostDeploy Include="..\Model\MasterData\Script.PostDeployment.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="150.5282.3" />
+  </ItemGroup>
+
+
+</Project>

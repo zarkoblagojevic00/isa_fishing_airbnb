@@ -21,8 +21,17 @@ using Autofac.Extensions.DependencyInjection;
 using Domain.Entities;
 using Domain.Mappings;
 using Domain.UnitOfWork;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
 using Infrastructure;
+using NHibernate.Cfg;
+using NHibernate.Connection;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Tool.hbm2ddl;
 using VueCliMiddleware;
+using Environment = System.Environment;
 
 namespace API
 {
@@ -40,6 +49,11 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            if (!CurrentEnvironment.IsDevelopment())
+            {
+                ExecutePublishOfDb();
+            }
+
             services.AddControllers();
             services.AddCors(c =>
             {
@@ -152,6 +166,29 @@ namespace API
                     }
                 });
             });
+        }
+
+        //Database init on startup
+        //Add dotnet tool install --global Dacpac.Tool in prod
+        public void ExecutePublishOfDb()
+        {
+            var executingDir = Environment.CurrentDirectory;
+            var process = new Process();
+            var startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = $"/C dotnet dacpac publish --dacpath={executingDir}/../Model.Build/bin/Debug/net5.0/ --server=localhost --databasenames=ISA";
+            }
+            else
+            {
+                startInfo.FileName = "/bin/bash";
+                startInfo.Arguments = $"-c \"dotnet dacpac publish --dacpath={executingDir}/../Model.Build/bin/Debug/net5.0/ --server=localhost --databasenames=ISA\" ";
+
+            }
+            process.StartInfo = startInfo;
+            process.Start();
         }
     }
 }

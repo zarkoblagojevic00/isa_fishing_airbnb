@@ -1,6 +1,6 @@
 ﻿INSERT INTO Services VALUES (2, 0, 'Test villa', 19.50, 'Test address 123', 20, 20, 'Awesome description for the villa', 'no terms', null, null, null, 10, 0, null)
  INSERT INTO AdditionalVillaServiceInfos VALUES (1, 10, 2)
-INSERT INTO Services VALUES (4, 2, 'Test adventure', 19.50, 'Test address 123', 20, 20, 'Awesome description for the adventure', 'no terms', null, null, null, 10, 0, null)
- INSERT INTO AdditionalAdventureInfos VALUES (2, 'You can use our speakers for music')
+INSERT INTO Services VALUES (4, 2, 'Sunset champagne cornflower experience', 19.50, 'Bulevar despota Stefana 7', -20, -20, 'Unforgettable sunset fishing among the Serbian fields, where the grass is always green and the people are always chill.', 'Absolutely everithing is allowed, except drugs. Do not bring drugs.', 'We offer you our boat, fishing sticks, fishing baits, chairs, life west and anything you wish, seriously.', null, null, 10, 0, null)
+ INSERT INTO AdditionalAdventureInfos VALUES (2, 'You can use our speakers for music, drink our beer, eat our food. Also, your wish is our command. Seriously, anything you need we will supply. There is a local market nearby, our guests usually love it! Just stop by, and you will become our regular customer. Cheers!')
  INSERT INTO Services VALUES (6, 1, 'Test boat', 19.50, 'Test address 888', 20, 20, 'Awesome description for the boat', 'no terms', null, null, null, 10, 0, null)
  INSERT INTO AdditionalBoatServiceInfos VALUES (3, 20, null, 5, 80, 95)

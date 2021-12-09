@@ -5,12 +5,16 @@
     </div>
     <div class="flexbox-container-space-between">
         <form class="form">
-            <input
-                type="text"
-                class="field"
-                placeholder="Adventure name"
-                v-model="v$.newAdventure.name.$model"
-            />
+            <div class="flexbox-row">
+                <label> Name </label>
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Adventure name"
+                    v-model="v$.newAdventure.name.$model"
+                />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.name.$errors"
@@ -18,12 +22,17 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="text"
-                class="field"
-                placeholder="Address"
-                v-model="v$.newAdventure.address.$model"
-            />
+
+            <div class="flexbox-row">
+                <label> Address </label>
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Address"
+                    v-model="v$.newAdventure.address.$model"
+                />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.address.$errors"
@@ -31,12 +40,17 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="number"
-                class="field"
-                placeholder="Longitude"
-                v-model="v$.newAdventure.longitude.$model"
-            />
+
+            <div class="flexbox-row">
+                <label> Longitude </label>
+                <input
+                    type="number"
+                    class="field"
+                    placeholder="Longitude"
+                    v-model="v$.newAdventure.longitude.$model"
+                />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.longitude.$errors"
@@ -44,12 +58,16 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="number"
-                class="field"
-                placeholder="Latitude"
-                v-model="v$.newAdventure.latitude.$model"
-            />
+            <div class="flexbox-row">
+                <label> Latitude </label>
+                <input
+                    type="number"
+                    class="field"
+                    placeholder="Latitude"
+                    v-model="v$.newAdventure.latitude.$model"
+                />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.latitude.$errors"
@@ -57,12 +75,16 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="text"
-                class="field"
-                placeholder="Promo description"
-                v-model="v$.newAdventure.promoDescription.$model"
-            />
+
+            <div class="flexbox-row">
+                <label> Promo description </label>
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Promo description"
+                    v-model="v$.newAdventure.promoDescription.$model"
+                />
+            </div>
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.promoDescription
@@ -71,12 +93,16 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="number"
-                class="field"
-                placeholder="Price per day"
-                v-model="v$.newAdventure.pricePerDay.$model"
-            />
+            <div class="flexbox-row">
+                <label> Price per day </label>
+
+                <input
+                    type="number"
+                    class="field"
+                    placeholder="Price per day"
+                    v-model="v$.newAdventure.pricePerDay.$model"
+                />
+            </div>
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.pricePerDay.$errors"
@@ -84,12 +110,18 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="number"
-                class="field"
-                placeholder="Maximum number of people"
-                v-model="v$.newAdventure.capacity.$model"
-            />
+
+            <div class="flexbox-row">
+                <label> Max people </label>
+
+                <input
+                    type="number"
+                    class="field"
+                    placeholder="Maximum number of people"
+                    v-model="v$.newAdventure.capacity.$model"
+                />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.capacity.$errors"
@@ -97,56 +129,79 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-            <input
-                type="text"
-                class="field"
-                placeholder="Terms of use"
-                v-model="newAdventure.termsOfUse"
-            />
-            <input
-                type="text"
-                class="field"
-                placeholder="Additional equipment"
-                v-model="newAdventure.additionalEquipment"
-            />
-            <input
-                type="text"
-                class="field"
-                placeholder="Additional offers"
-                v-model="newAdventure.additionalOffers"
-            />
+            <div class="flexbox-row">
+                <label> Terms of use </label>
+
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Terms of use"
+                    v-model="newAdventure.termsOfUse"
+                />
+            </div>
+            <div class="flexbox-row">
+                <label> Additional equipment </label>
+
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Additional equipment"
+                    v-model="newAdventure.additionalEquipment"
+                />
+            </div>
+
+            <div class="flexbox-row">
+                <label> Additional offers </label>
+
+                <input
+                    type="text"
+                    class="field"
+                    placeholder="Additional offers"
+                    v-model="newAdventure.additionalOffers"
+                />
+            </div>
+
             <fieldset
                 id="group1"
                 style="margin-top: 10px; font-size: 14px; width: 20rem"
             >
-                <div>Is percentage taken upon cancellation</div>
-                <label for="group1"> Yes </label>
+                <div class="flexbox-row">
+                    <label>Is percentage taken upon cancellation</label>
+                    <span> Yes </span>
+                    <input
+                        type="radio"
+                        value="value1"
+                        name="group1"
+                        class="radio"
+                        @click="
+                            newAdventure.isPercentageTakenFromCanceledReservations = true
+                        "
+                    />
+                    <span> No </span>
+                    <input
+                        type="radio"
+                        value="value2"
+                        name="group1"
+                        class="radio"
+                        @click="noClicked"
+                    />
+                </div>
+            </fieldset>
+            <div class="flexbox-row">
+                <label> If yes, how much? </label>
+
                 <input
-                    type="radio"
-                    value="value1"
-                    name="group1"
-                    @click="
-                        newAdventure.isPercentageTakenFromCanceledReservations = true
+                    type="number"
+                    class="field"
+                    placeholder="If yes, how much?"
+                    v-model="v$.newAdventure.percentageToTake.$model"
+                    :disabled="
+                        newAdventure.isPercentageTakenFromCanceledReservations ==
+                        false
                     "
                 />
-                <label for="group2"> No </label>
-                <input
-                    type="radio"
-                    value="value2"
-                    name="group1"
-                    @click="noClicked"
-                />
-            </fieldset>
-            <input
-                type="number"
-                class="field"
-                placeholder="If yes, how much?"
-                v-model="v$.newAdventure.percentageToTake.$model"
-                :disabled="
-                    newAdventure.isPercentageTakenFromCanceledReservations ==
-                    false
-                "
-            />
+            </div>
+
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.newAdventure.percentageToTake
@@ -195,11 +250,10 @@ export default {
     data() {
         return {
             navbarItems: [
-                "Services",
-                "Reservations",
-                "Availability",
-                "Analytics",
-                "My profile",
+                "Quick reservation",
+                "Gallery",
+                "Price list",
+                "Rules of conduct",
             ],
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             newAdventure: {
@@ -331,6 +385,19 @@ export default {
     padding: 50px;
 }
 
+.flexbox-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+label {
+    width: 220px;
+    font-weight: bolder;
+    display: flex;
+    justify-content: flex-start;
+}
+
 .button-update {
     background-color: #000;
     border-radius: 12px;
@@ -384,10 +451,19 @@ export default {
 .input-errors {
     color: red;
     font-size: 10px;
+    margin-left: 220px;
 }
 
 button[disabled="disabled"],
 button:disabled {
     background-color: rgb(74, 75, 77);
+}
+
+.radio {
+    margin-right: 50px;
+}
+
+span {
+    margin-left: 100px;
 }
 </style>

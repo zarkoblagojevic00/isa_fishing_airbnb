@@ -27,4 +27,5 @@ IF @Environment = 'LOCAL'
 		:r .\LOCAL\Services.Table.sql
 		:r .\LOCAL\Reservations.Table.sql
 		:r .\LOCAL\PromoActions.Table.sql
+		:r .\LOCAL\AdditionalInstructorInfos.Table.sql
 	END

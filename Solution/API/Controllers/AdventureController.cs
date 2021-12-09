@@ -84,6 +84,8 @@ namespace API.Controllers
                 .GetAll()
                 .Where(x => x.ServiceId == adventureId);
 
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(ownerId);
+
             var adventureInfo = new AdventureDTO
             {
                 Name = adventure.Name,
@@ -102,7 +104,7 @@ namespace API.Controllers
                 OwnerId = adventure.OwnerId,
                 AdditionalOffers = additionalInformation.AdditionalOffers,
                 AdventureId = adventure.ServiceId,
-                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+                ShortInstructorBiography = additionalInstructorInfo.ShortBiography,
             };
 
             adventureInfo.ImageIds = images.Select(x => x.ImageId);

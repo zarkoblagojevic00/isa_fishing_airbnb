@@ -16,7 +16,7 @@
             v-for="service in services"
             :key="service.adventureId"
             :service="service"
-            @click="$router.push('/adventure/' + service.adventureId)"
+            @click="onAdventureClick(service)"
         />
     </div>
 </template>
@@ -56,6 +56,14 @@ export default {
     methods: {
         onFiltered(value) {
             this.services = value;
+        },
+        onAdventureClick(service) {
+            this.$router.push({
+                path: "/adventure/" + service.adventureId,
+                params: {
+                    serviceName: service.name,
+                },
+            });
         },
     },
 };

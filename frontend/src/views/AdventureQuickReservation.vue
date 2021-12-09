@@ -4,6 +4,7 @@
         <h1>Quick reservation</h1>
         <button
             @click="$router.push(this.baseUrlInstructor + 'new-quick-action')"
+            v-if="currentRole == 'Instructor'"
         >
             New quick action
         </button>
@@ -23,6 +24,9 @@ export default {
         Navbar,
         QuickReservation,
     },
+    mounted() {
+        this.currentRole = localStorage.getItem("role");
+    },
     data() {
         return {
             navbarItems: [
@@ -32,6 +36,7 @@ export default {
                 "Rules of conduct",
             ],
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
+            currentRole: "",
         };
     },
     computed: {},

@@ -47,16 +47,16 @@
                 <span class="emphasise">
                     {{
                         moment(
-                            selectedReservation.reservation.startDate
+                            selectedReservation.reservation.startDateTime
                         ).format("ddd MMM DD, YYYY")
                     }}
                 </span>
                 to
                 <span class="emphasise">
                     {{
-                        moment(selectedReservation.reservation.endDate).format(
-                            "ddd MMM DD, YYYY"
-                        )
+                        moment(
+                            selectedReservation.reservation.endDateTime
+                        ).format("ddd MMM DD, YYYY")
                     }}
                 </span>
             </div>
@@ -88,13 +88,7 @@
                 <span>City: </span>
                 <span class="emphasise">{{ user.city }}</span>
             </div>
-            <div
-                class="info-wrapper"
-                v-if="
-                    selectedReservation.report != undefined &&
-                    selectedReservation.report.reportText.length != 0
-                "
-            >
+            <div class="info-wrapper" v-if="selectedReservation.report != null">
                 <span>Report: </span>
                 <span class="emphasise max-width">{{
                     selectedReservation.report.reportText
@@ -103,9 +97,9 @@
             <div
                 class="report-wrapper"
                 v-if="
-                    (selectedReservation.report == undefined ||
-                        selectedReservation.report.reportText.length == 0) &&
-                    selectedReservation.reservation.endDate < new Date()
+                    selectedReservation.report == null &&
+                    Date.parse(selectedReservation.reservation.endDateTime) <
+                        Date.parse(new Date().toISOString())
                 "
             >
                 <div>Write a report!</div>
@@ -159,12 +153,7 @@ export default {
             items: [],
 
             user: {},
-            selectedReservation: {
-                reservation: {},
-                report: {
-                    text: "",
-                },
-            },
+            selectedReservation: {},
             displayUserInfo: false,
             receivedHistory: [],
             moment: moment,
@@ -325,7 +314,7 @@ export default {
             this.selectedReservation = this.receivedHistory[evt.id];
 
             let vue = this;
-            let response = await fetch(
+            fetch(
                 "/api/GeneralService/GetUserInfoFromReservation?reservationId=" +
                     vue.receivedHistory[evt.id].reservation.reservationId,
                 {
@@ -335,22 +324,28 @@ export default {
                         "Set-Cookie": document.cookie,
                     },
                 }
-            );
-            let message = await response.text();
-            let parsed = "";
-            try {
-                parsed = JSON.parse(message);
-            } catch {
-                parsed = message;
-            }
+            )
+                .then((response) => {
+                    return response.text();
+                })
+                .then((data) => {
+                    let parsed = "";
+                    try {
+                        parsed = JSON.parse(data);
+                    } catch {
+                        parsed = data;
+                    }
 
-            let strconstructor = "test".constructor;
-            if (strconstructor == parsed.constructor) {
-                alert("Something went wrong!\nError message: " + parsed);
-                return;
-            }
-            this.user = parsed;
-            this.displayUserInfo = true;
+                    let strconstructor = "test".constructor;
+                    if (strconstructor == parsed.constructor) {
+                        alert(
+                            "Something went wrong!\nError message: " + parsed
+                        );
+                        return;
+                    }
+                    vue.user = parsed;
+                    vue.displayUserInfo = true;
+                });
         },
         async Submit() {
             let dto = {

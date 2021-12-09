@@ -31,6 +31,7 @@ namespace API.DTOs
         [Required(ErrorMessage = "Capacity needs to be specified")]
         [Range(1, int.MaxValue, ErrorMessage = "Capacity needs to be greater than 1!")]
         public int Capacity { get; set; }
+        public string Place { get; set; }
 
     }
 }

@@ -7,5 +7,6 @@
     [PricePerDay] DECIMAL(2, 0) NULL, 
     [IsTaken] BIT NULL, 
     [Capacity] INT NULL, 
-    [AddedBenefits] NVARCHAR(MAX) NULL
+    [AddedBenefits] NVARCHAR(MAX) NULL, 
+    [Place] NVARCHAR(MAX) NULL
 )

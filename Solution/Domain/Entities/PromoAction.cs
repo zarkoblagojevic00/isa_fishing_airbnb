@@ -16,5 +16,6 @@ namespace Domain.Entities
         public virtual int Capacity { get; set; }
         //Just for serialization, we will have intern POCO 
         public virtual string AddedBenefits { get; set; }
+        public virtual string Place { get; set; }
     }
 }

@@ -10,6 +10,7 @@ import {
     faEdit,
     faSearch,
     faInfoCircle,
+    faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VCalendar from "v-calendar";
@@ -24,6 +25,7 @@ library.add(faEdit);
 library.add(faPlus);
 library.add(faSearch);
 library.add(faInfoCircle);
+library.add(faPlusCircle);
 
 const $ = jQuery;
 window.$ = $;

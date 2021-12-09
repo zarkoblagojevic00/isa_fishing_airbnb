@@ -2,43 +2,37 @@
     <div class="card">
         <div class="container">
             <table>
-                <tbody v-for="offer in reservationOffers" :key="offer.id">
+                <tbody
+                    v-for="action in promoActions"
+                    :key="action.promoActionId"
+                >
                     <tr>
-                        <td class="left">start time:</td>
-                        <td class="right">{{ dateFormat(offer.date) }}</td>
-                    </tr>
-                    <tr>
-                        <td class="left">duration:</td>
-                        <td class="right">{{ offer.duration }}</td>
-                    </tr>
-                    <tr>
-                        <td class="left">place:</td>
-                        <td class="right">{{ offer.place }}</td>
-                    </tr>
-                    <tr>
-                        <td class="left">max people:</td>
-                        <td class="right">{{ offer.maxNumberOfPeople }}</td>
-                    </tr>
-                    <tr>
-                        <td class="left">price:</td>
-                        <td class="right">{{ offer.price }}</td>
-                    </tr>
-                    <tr class="additional">
-                        <td class="left">additional services:</td>
+                        <td class="left">Start time:</td>
                         <td class="right">
-                            <div
-                                v-for="service in offer.additionalServices"
-                                :key="service"
-                            >
-                                {{ service }}
-                            </div>
+                            {{ dateFormat(action.startDateTime) }}
                         </td>
                     </tr>
                     <tr>
-                        <td class="left"></td>
-                        <td class="right button-book">
-                            <button>Book</button>
+                        <td class="left">End time:</td>
+                        <td class="right">
+                            {{ dateFormat(action.endDateTime) }}
                         </td>
+                    </tr>
+                    <tr>
+                        <td class="left">Price per day:</td>
+                        <td class="right">{{ action.pricePerDay }}</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Max people:</td>
+                        <td class="right">{{ action.capacity }}</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Added benefits:</td>
+                        <td class="right">{{ action.addedBenefits }}</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Place:</td>
+                        <td class="right">{{ action.place }}</td>
                     </tr>
                     <hr />
                 </tbody>
@@ -49,42 +43,41 @@
 
 <script>
 import moment from "moment";
+import axios from "../api/api.js";
 
 export default {
+    mounted() {
+        this.loadPromoActions();
+    },
     data() {
         return {
-            reservationOffers: [
-                {
-                    id: 1,
-                    date: new Date(),
-                    place: "New York",
-                    duration: "1h",
-                    maxNumberOfPeople: 5,
-                    additionalServices: [
-                        "instructor has a boat",
-                        "instructor is funny",
-                        "instructor is smart",
-                    ],
-                    price: 300,
-                },
-                {
-                    id: 2,
-                    date: new Date(),
-                    place: "London",
-                    duration: "2h",
-                    maxNumberOfPeople: 3,
-                    additionalServices: [
-                        "instructor has a boat",
-                        "instructor is funny",
-                    ],
-                    price: 500,
-                },
-            ],
+            promoAction: {
+                startDateTime: "",
+                endDateTime: "",
+                promoactionId: "",
+                serviceId: "",
+                pricePerDay: "",
+                isTaken: "",
+                capacity: "",
+                addedBenefits: "",
+            },
+            promoActions: [],
         };
     },
     methods: {
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");
+        },
+        loadPromoActions() {
+            axios
+                .get(
+                    "/api/QuickAction/GetQuickActions?serviceId=" +
+                        this.$route.params.id
+                )
+                .then(({ data }) => {
+                    console.log(data);
+                    this.promoActions = data;
+                });
         },
     },
 };
@@ -153,5 +146,9 @@ button:hover {
 
 p {
     font-size: 26px;
+}
+
+tbody {
+    background-color: rgb(239, 248, 248);
 }
 </style>

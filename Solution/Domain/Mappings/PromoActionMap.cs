@@ -38,6 +38,7 @@ namespace Domain.Mappings
             Property(x => x.IsTaken, map => map.Column("IsTaken"));
             Property(x => x.Capacity, map => map.Column("Capacity"));
             Property(x => x.AddedBenefits, map => map.Column("AddedBenefits"));
+            Property(x => x.Place, map => map.Column("Place"));
         }
     }
 }

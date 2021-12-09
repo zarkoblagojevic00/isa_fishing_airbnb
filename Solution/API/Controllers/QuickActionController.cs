@@ -154,7 +154,8 @@ namespace API.Controllers
                 Capacity = action.Capacity,
                 AddedBenefits = action.AddedBenefits,
                 StartDateTime = action.StartDateTime,
-                EndDateTime = action.EndDateTime
+                EndDateTime = action.EndDateTime,
+                Place = action.Place
             };
         }
 

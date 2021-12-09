@@ -101,6 +101,21 @@
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
         </div>
+        <div class="flexbox-row">
+            <div class="item bold">Place:</div>
+            <input
+                type="text"
+                class="item"
+                v-model="v$.quickAction.place.$model"
+            />
+            <div
+                class="input-errors"
+                v-for="(error, index) of v$.quickAction.place.$errors"
+                :key="index"
+            >
+                <div class="error-msg">{{ error.$message }}</div>
+            </div>
+        </div>
     </div>
     <div class="button-row">
         <button class="button-decline" @click="onCancelEdit">Cancel</button>
@@ -139,6 +154,27 @@ export default {
                 .post("/api/QuickAction/CreateNewQuickAction", quickAction_obj)
                 .then(({ data }) => {
                     console.log(data);
+                    this.$swal.fire("Quick action created");
+                    this.$router.push(
+                        "/adventure/" +
+                            this.$route.params.id +
+                            "/" +
+                            "quick-reservation"
+                    );
+                })
+                .catch(function (error) {
+                    if (error.response) {
+                        // Request made and server responded
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log("Error", error.message);
+                    }
                 });
         },
     },
@@ -147,7 +183,7 @@ export default {
     },
     data() {
         return {
-            baseUrlInstructor: "/admin/",
+            baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             quickAction: {
                 serviceId: "",
                 startDateTime: "",
@@ -155,6 +191,7 @@ export default {
                 pricePerDay: "",
                 addedBenefits: "",
                 capacity: "",
+                place: "",
             },
             navbarItems: [
                 "Quick reservation",
@@ -171,6 +208,7 @@ export default {
                 endDateTime: { required },
                 pricePerDay: { required },
                 capacity: { required },
+                place: { required },
             },
         };
     },

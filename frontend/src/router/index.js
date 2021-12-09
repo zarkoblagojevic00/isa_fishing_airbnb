@@ -25,6 +25,7 @@ import BoatsExpo from "../views/BoatsExpo.vue";
 import AdventuresExpo from "../views/AdventuresExpo.vue";
 import EditAdventure from "../views/EditAdventure.vue";
 import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
+import InstructorProfile from "../views/InstructorProfile.vue";
 
 const routes = [
     {
@@ -157,6 +158,11 @@ const routes = [
         path: "/adventure/:id/new-quick-action",
         name: "AdventureNewQuickAction",
         component: AdventureNewQuickAction,
+    },
+    {
+        path: "/instructor/my-profile",
+        name: "InstructorProfile",
+        component: InstructorProfile,
     },
 ];
 

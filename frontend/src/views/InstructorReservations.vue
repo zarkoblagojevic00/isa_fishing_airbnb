@@ -14,6 +14,7 @@
                     <th>Client</th>
                     <th>Number of guests</th>
                     <th>Price</th>
+                    <th>Report</th>
                 </tr>
             </thead>
             <tbody v-for="res in reservations" :key="res.serviceId">
@@ -43,6 +44,13 @@
                     </td>
                     <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
+                    <td class="left">
+                        <font-awesome-icon
+                            icon="plus-circle"
+                            style="cursor: pointer"
+                            @click="addReport(res.reservationId)"
+                        />
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -100,6 +108,43 @@ export default {
                 confirmButtonText: "Great!",
                 confirmButtonAriaLabel: "Thumbs up, great!",
             });
+        },
+        async addReport(reservationId) {
+            const { value: text } = await this.$swal.fire({
+                input: "textarea",
+                inputLabel: "Add report",
+                inputPlaceholder: "Type your report here...",
+                inputAttributes: {
+                    "aria-label": "Type your report here",
+                },
+                showCancelButton: true,
+            });
+
+            if (text) {
+                console.log(reservationId, text);
+                axios
+                    .post("/api/Instructor/SubmitReport", {
+                        reservationId: reservationId,
+                        reportText: text,
+                    })
+                    .then(() => {
+                        this.$swal.fire("Report added successfully!");
+                    })
+                    .catch(function (error) {
+                        if (error.response) {
+                            // Request made and server responded
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            console.log(error.request);
+                        } else {
+                            // Something happened in setting up the request that triggered an Error
+                            console.log("Error", error.message);
+                        }
+                    });
+            }
         },
     },
 };

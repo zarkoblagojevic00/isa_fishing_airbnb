@@ -91,8 +91,6 @@ namespace API.Controllers
             {
                 var adventure = UoW.GetRepository<IServiceReadRepository>().GetById(reservation.ServiceId);
                 reservation.ServiceName = adventure.Name;
-                reservation.ServiceFrom = adventure.AvailableFrom;
-                reservation.ServiceTo = adventure.AvailableTo;
                 reservation.Capacity = adventure.Capacity;
             }
 
@@ -145,13 +143,71 @@ namespace API.Controllers
 
             AvailabilityPeriodDTO availability = new AvailabilityPeriodDTO
             {
-                StartDateTime = additionalInstructorInfo.AvailableFrom.Value,
-                EndDateTime = additionalInstructorInfo.AvailableTo.Value
+                StartDateTime = additionalInstructorInfo.AvailableFrom == null ? DateTime.Now.AddDays(1) : additionalInstructorInfo.AvailableFrom.Value,
+                EndDateTime = additionalInstructorInfo.AvailableTo == null ? DateTime.Now.AddDays(2) : additionalInstructorInfo.AvailableTo.Value,
             };
 
             return Ok(availability);
         }
 
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult SubmitReport(ReportDTO newReport)
+        {
+            var reservation = UoW.GetRepository<IReservationReadRepository>().GetById(newReport.ReservationId);
+
+            if (reservation == null)
+            {
+                return BadRequest(Responses.NotFound);
+            }
+
+            if (!CheckOwnerShip(reservation.ServiceId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            if (reservation.EndDateTime > DateTime.Now && !reservation.IsCanceled)
+            {
+                return BadRequest(Responses.OngoingReservation);
+            }
+
+            if (reservation.ReportId != null)
+            {
+                return BadRequest(Responses.ReportAlreadySubmitted);
+            }
+
+            var report = CreateNewReport(newReport);
+
+            try
+            {
+                UoW.BeginTransaction();
+
+                UoW.GetRepository<IReportWriteRepository>().Add(report);
+                reservation.ReportId = report.ReportId;
+
+                UoW.GetRepository<IReservationWriteRepository>().Update(reservation);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+
+            return Ok(Responses.Ok);
+        }
+
+
+        private Report CreateNewReport(ReportDTO report)
+        {
+            return new Report()
+            {
+                CreatedDateTime = DateTime.Now,
+                ReportText = report.ReportText
+            };
+        }
 
         private IEnumerable<ReservationUserDTO> MapReservationsAndUsers(IEnumerable<Reservation> reservations)
         {
@@ -176,7 +232,10 @@ namespace API.Controllers
                     UserId = reservation.UserId,
                     UsersName = user.Name,
                     UsersSurname = user.Surname,
-                    UsersPhoneNumber = user.PhoneNumber
+                    UsersPhoneNumber = user.PhoneNumber,
+                    ServiceFrom = reservation.StartDateTime,
+                    ServiceTo = reservation.EndDateTime,
+                    
                 };
                 userReservations.Add(dto);
             }

@@ -68,12 +68,7 @@ export default {
     },
     data() {
         return {
-            navbarItems: [
-                "Quick reservation",
-                "Gallery",
-                "Price list",
-                "Rules of conduct",
-            ],
+            navbarItems: ["Home", "Quick reservation", "Gallery"],
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             adventure: {},
             currentRole: "",

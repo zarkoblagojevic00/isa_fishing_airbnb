@@ -193,12 +193,7 @@ export default {
                 capacity: "",
                 place: "",
             },
-            navbarItems: [
-                "Quick reservation",
-                "Gallery",
-                "Price list",
-                "Rules of conduct",
-            ],
+            navbarItems: ["Home", "Quick reservation", "Gallery"],
         };
     },
     validations() {

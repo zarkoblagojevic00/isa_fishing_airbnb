@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import Gallery from "../views/Gallery.vue";
 import AdventureProfile from "../views/AdventureProfile.vue";
 import AdventureQuickReservation from "../views/AdventureQuickReservation.vue";
-import AdventureRulesOfConduct from "../views/AdventureRulesOfConduct.vue";
-import PriceList from "../views/PriceList.vue";
 import InstructorHomePage from "../views/InstructorHomePage.vue";
 import Homepage from "../views/Homepage.vue";
 import InstructorServices from "../views/InstructorServices.vue";
@@ -49,7 +47,7 @@ const routes = [
         component: AdventuresExpo,
     },
     {
-        path: "/adventure/:id",
+        path: "/adventure/:id/home",
         name: "AdventureProfile",
         component: AdventureProfile,
     },
@@ -57,16 +55,6 @@ const routes = [
         path: "/adventure/:id/gallery",
         name: "Gallery",
         component: Gallery,
-    },
-    {
-        path: "/adventure/:id/rules-of-conduct",
-        name: "AdventureRulesOfConduct",
-        component: AdventureRulesOfConduct,
-    },
-    {
-        path: "/adventure/:id/price-list",
-        name: "PriceList",
-        component: PriceList,
     },
     {
         path: "/adventure/:id/quick-reservation",

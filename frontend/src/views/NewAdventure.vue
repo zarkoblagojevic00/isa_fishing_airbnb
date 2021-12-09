@@ -183,13 +183,7 @@ export default {
     mounted() {},
     data() {
         return {
-            navbarItems: [
-                "Services",
-                "Reservations",
-                "Availability",
-                "Analytics",
-                "My profile",
-            ],
+            navbarItems: ["Home", "Quick reservation", "Gallery"],
             baseUrlInstructor: "/instructor/",
             newAdventure: {
                 name: "",

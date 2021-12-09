@@ -202,7 +202,7 @@ export default {
         },
         //City getter
         GetCities() {
-            fetch(process.env.VUE_APP_BASE_API_URL + "api/City/GetCities")
+            fetch("/api/City/GetCities")
                 .then((response) => response.json())
                 .then((data) => (this.cities = data));
         },
@@ -240,18 +240,14 @@ export default {
 
                 console.log(dto);
 
-                fetch(
-                    process.env.VUE_APP_BASE_API_URL +
-                        "api/Registration/RegisterServiceOwner",
-                    {
-                        method: "POST",
-                        redirect: "follow",
-                        body: JSON.stringify(dto),
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                )
+                fetch("api/Registration/RegisterServiceOwner", {
+                    method: "POST",
+                    redirect: "follow",
+                    body: JSON.stringify(dto),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
                     .then((response) => {
                         alert(
                             "Success! You should receive the confirmation link in the mailbox!"

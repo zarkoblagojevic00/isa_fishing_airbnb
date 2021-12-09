@@ -146,7 +146,7 @@ export default {
     },
     data() {
         return {
-            mode: "RequestDeletion",
+            mode: "ViewVillas",
             chosenVilla: 1,
         };
     },

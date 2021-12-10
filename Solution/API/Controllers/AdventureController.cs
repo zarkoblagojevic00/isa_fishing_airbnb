@@ -63,15 +63,15 @@ namespace API.Controllers
 
 
         [HttpGet]
-        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        //[TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor, UserType.Registered })]
         public IActionResult GetAdventureInfoById(int adventureId)
         {
-            int ownerId = GetUserIdFromCookie();
+            //int ownerId = GetUserIdFromCookie();
 
-            if (!CheckOwnerShip(adventureId))
-            {
-                return Unauthorized(Responses.ServiceOwnerNotLinked);
-            }
+            //if (!CheckOwnerShip(adventureId))
+            //{
+            //    return Unauthorized(Responses.ServiceOwnerNotLinked);
+            //}
 
             var adventure = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
@@ -84,7 +84,7 @@ namespace API.Controllers
                 .GetAll()
                 .Where(x => x.ServiceId == adventureId);
 
-            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(ownerId);
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(adventure.OwnerId);
 
             var adventureInfo = new AdventureDTO
             {
@@ -143,14 +143,9 @@ namespace API.Controllers
                 OwnerId = x.OwnerId,
                 AdditionalOffers = y.AdditionalOffers,
                 AdventureId = x.ServiceId,
-                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
-            });
-
-            foreach (AdventureDTO adventure in allAdventures)
-            {
-                adventure.ImageIds = images.Where(x => x.ServiceId == adventure.AdventureId.Value)
-                    .Select(x => x.ImageId);
-            }
+                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+                ImageIds = images.Where(x => x.ServiceId == y.AdventureId).Select(img => img.ImageId),
+        });
 
             return allAdventures;
         }

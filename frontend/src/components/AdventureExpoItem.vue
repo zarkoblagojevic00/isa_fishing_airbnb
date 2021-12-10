@@ -54,7 +54,8 @@ export default {
         showDetails() {
             // localStorage.setItem("adventure", JSON.stringify(this.adventure));
             // this.$router.push({ name: "AdventureExpoDetails" });
-            throw new Error("Implementiraj show details avanture");
+            const id = this.adventure.adventureId;
+            this.$router.push(`/adventure/${id}`);
         },
     },
 };
@@ -114,12 +115,12 @@ export default {
 }
 
 .title-mark-price {
-    width: 82%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-self: flex-start;
     min-height: 20%;
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 .avgmark {

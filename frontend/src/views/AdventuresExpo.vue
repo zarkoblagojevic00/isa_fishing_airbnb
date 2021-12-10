@@ -2,9 +2,9 @@
     <div class="container">
         <h1>Adventures</h1>
         <AdventureExpoItem
-            v-for="adventure in adventures"
-            :key="adventure.adventureId"
-            :adventure="adventure"
+            v-for="idx in 5"
+            :key="idx"
+            :adventure="adventures[0]"
         ></AdventureExpoItem>
     </div>
 </template>

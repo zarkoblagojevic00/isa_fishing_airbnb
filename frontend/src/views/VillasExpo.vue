@@ -2,9 +2,9 @@
     <div class="container">
         <h1>Villas</h1>
         <VillaExpoItem
-            v-for="villa in villas"
-            :key="villa.villaId"
-            :villa="villa"
+            v-for="idx in 5"
+            :key="idx"
+            :villa="villas[0]"
         ></VillaExpoItem>
     </div>
 </template>

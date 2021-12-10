@@ -309,7 +309,7 @@ export default {
                         "Your adventure has been updated.",
                         "success"
                     );
-                    this.$router.push(this.baseUrlInstructor);
+                    this.$router.push(this.baseUrlInstructor + "home");
                 })
                 .catch((err) => console.log(err));
         },

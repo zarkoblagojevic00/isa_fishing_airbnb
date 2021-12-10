@@ -183,9 +183,13 @@ export default {
             return true;
         },
         ValidateCity() {
-            for (const c of this.cities)
-                if (c.name.toLowerCase() == this.city.toLowerCase())
-                    return true;
+            // for (const c of this.cities)
+            //     if (c.name.toLowerCase() == this.city.toLowerCase())
+            //         return true;
+            // return false;
+            if (this.city) {
+                return true;
+            }
             return false;
         },
         ValidatePhone() {
@@ -240,7 +244,7 @@ export default {
 
                 console.log(dto);
 
-                fetch("api/Registration/RegisterServiceOwner", {
+                fetch("/api/Registration/RegisterServiceOwner", {
                     method: "POST",
                     redirect: "follow",
                     body: JSON.stringify(dto),
@@ -281,7 +285,10 @@ export default {
         },
 
         async RegisterServiceUser() {
-            const cityId = this.GetCityId();
+            let cityId = this.GetCityId();
+            if (cityId == 0) {
+                cityId = 38;
+            }
             let data = {
                 Name: this.firstname,
                 Surname: this.lastname,

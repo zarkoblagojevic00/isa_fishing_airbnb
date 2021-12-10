@@ -37,10 +37,16 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
+import axios from "../api/api.js";
+import moment from "moment";
+
 export default {
     name: "InstructorServices",
     components: {
         Navbar,
+    },
+    mounted() {
+        this.loadAvailabilityPeriod();
     },
     data() {
         const month = new Date().getMonth();
@@ -96,26 +102,6 @@ export default {
                     dates: new Date(year, month, 11),
                 },
             ],
-            services: [
-                {
-                    id: 1,
-                    name: "Sunrise adventure",
-                    description: "Promo description",
-                    address: "Bulevard of broken dreams 0",
-                },
-                {
-                    id: 2,
-                    name: "Sunset adventure",
-                    description: "Promo description",
-                    address: "Bulevard of broken dreams 1",
-                },
-                {
-                    id: 3,
-                    name: "Sunset adventure",
-                    description: "Promo description",
-                    address: "Bulevard of broken dreams 2",
-                },
-            ],
             navbarItems: [
                 "Services",
                 "Reservations",
@@ -124,7 +110,66 @@ export default {
                 "My profile",
             ],
             baseUrlInstructor: "/instructor/",
+            range: {},
         };
+    },
+    methods: {
+        loadAvailabilityPeriod() {
+            axios
+                .get("/api/Instructor/GetAdditionalInstructorInfo")
+                .then(({ data }) => {
+                    this.range = data;
+                    const datesWithinRange = this.getDatesWithinRange(
+                        data.startDateTime,
+                        data.endDateTime
+                    );
+
+                    this.attributes = datesWithinRange.map((date) => {
+                        let idx = datesWithinRange.indexOf(date);
+                        if (idx == 0 || idx == datesWithinRange.length - 1) {
+                            return {
+                                key: idx,
+                                customData: {
+                                    class: "free-slot",
+                                    title: moment(date).format("hh:mm"),
+                                },
+                                dates: date,
+                            };
+                        } else {
+                            return {
+                                key: idx,
+                                customData: {
+                                    class: "free-slot",
+                                    title: "FREE",
+                                },
+                                dates: date,
+                            };
+                        }
+                    });
+                });
+        },
+        getDatesWithinRange(start, end) {
+            //let startDay = new Date(moment(new Date(start)).startOf("day"));
+            let startDay = new Date(start);
+            let endDay = new Date(end);
+            var datesWithinRange = [];
+            for (var d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
+                datesWithinRange.push(new Date(d));
+            }
+
+            let validationDates = datesWithinRange.map((date) => {
+                return moment(new Date(date)).startOf("day").format();
+            });
+
+            if (
+                validationDates.indexOf(
+                    moment(new Date(end)).startOf("day").format()
+                ) == -1
+            ) {
+                datesWithinRange.push(endDay);
+            }
+            return datesWithinRange;
+        },
     },
 };
 </script>

@@ -11,6 +11,7 @@
 import sessionService from "@/services/session-service.js";
 import GeneralHeader from "@/components/GeneralHeader.vue";
 import GeneralFooter from "@/components/GeneralFooter.vue";
+
 export default {
     name: "App",
     components: {
@@ -93,5 +94,6 @@ export default {
 
 body {
     margin: 0px;
+    max-width: 100vw;
 }
 </style>

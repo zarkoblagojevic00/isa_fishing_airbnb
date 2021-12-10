@@ -75,6 +75,8 @@ export default {
             if (userType === "Instructor")
                 location.href = "/instructor/services";
             if (userType === "Admin") location.href = "/admin";
+            if (userType === "Instructor") location.href = "/instructor";
+            if (userType === "Registered") location.href = "/client";
         },
     },
 };

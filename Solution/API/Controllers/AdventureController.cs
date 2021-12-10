@@ -112,6 +112,49 @@ namespace API.Controllers
             return Ok(adventureInfo);
         }
 
+        [HttpGet]
+        public IEnumerable<AdventureDTO> GetAllAdventures()
+        {
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll();
+            var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
+                .GetAll()
+                .Where(x => x.AdventureId.In(adventures.Select(y => y.ServiceId).ToArray()));
+
+            var images = UoW.GetRepository<IImageReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId.In(adventures.Select(y => y.ServiceId).ToArray()));
+
+            var allAdventures = adventures.Join(additionalInformation, x => x.ServiceId, y => y.AdventureId, (x, y) => new AdventureDTO()
+            {
+                Name = x.Name,
+                PricePerDay = x.PricePerDay,
+                Address = x.Address,
+                Longitude = x.Longitude,
+                Latitude = x.Latitude,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.TermsOfUse,
+                AdditionalEquipment = x.AdditionalEquipment,
+                Capacity = x.Capacity,
+                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = x.PercentageToTake,
+                OwnerId = x.OwnerId,
+                AdditionalOffers = y.AdditionalOffers,
+                AdventureId = x.ServiceId,
+                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+            });
+
+            foreach (AdventureDTO adventure in allAdventures)
+            {
+                adventure.ImageIds = images.Where(x => x.ServiceId == adventure.AdventureId.Value)
+                    .Select(x => x.ImageId);
+            }
+
+            return allAdventures;
+        }
+
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]

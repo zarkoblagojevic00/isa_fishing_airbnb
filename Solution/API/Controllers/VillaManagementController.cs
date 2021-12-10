@@ -25,6 +25,34 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetAllVillas()
+        {
+            var villas = UoW.GetRepository<IServiceReadRepository>().GetAll();
+            var additionalInformation = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll();
+            var result = villas.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()
+            {
+                AdditionalEquipment = x.AdditionalEquipment,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Name = x.Name,
+                NumberOfBeds = y.NumberOfBeds,
+                NumberOfRooms = y.NumberOfRooms,
+                PercentageToTake = x.PercentageToTake,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                VillaId = x.ServiceId,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId)
+            });
+            return Ok(result);
+        }
+
+        [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] {false, UserType.VillaOwner})]
         public IActionResult GetVillaInfo(int villaId)
         {

@@ -11,6 +11,7 @@ import {
     faSearch,
     faInfoCircle,
     faPlusCircle,
+    faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VCalendar from "v-calendar";
@@ -26,6 +27,7 @@ library.add(faPlus);
 library.add(faSearch);
 library.add(faInfoCircle);
 library.add(faPlusCircle);
+library.add(faMapMarkerAlt);
 
 const $ = jQuery;
 window.$ = $;

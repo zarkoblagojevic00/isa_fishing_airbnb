@@ -100,10 +100,16 @@
 <script>
 export default {
     name: "Homepage",
+
     methods: {
         navigate(route) {
             this.$router.push(route);
         },
+    },
+    data() {
+        return {
+            ids: [0, 1],
+        };
     },
 };
 </script>

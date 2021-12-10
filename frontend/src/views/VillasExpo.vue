@@ -1,11 +1,37 @@
-<template>
-    <h1>Villas</h1>
+<template v-if="villas.length">
+    <div class="container">
+        <h1>Villas</h1>
+        <VillaExpoItem
+            v-for="villa in villas"
+            :key="villa.villaId"
+            :villa="villa"
+        ></VillaExpoItem>
+    </div>
 </template>
 
 <script>
+import villaService from "../services/villa-service.js";
+import VillaExpoItem from "../components/VillaExpoItem.vue";
 export default {
     name: "VillasExpo",
+    components: {
+        VillaExpoItem,
+    },
+    data() {
+        return {
+            villas: [],
+        };
+    },
+    async created() {
+        this.villas = await villaService.getAllVillas();
+        this.villas.forEach((v) => console.log(v.capacity));
+    },
 };
 </script>
 
-<style></style>
+<style scoped>
+.container {
+    max-width: 80%;
+    margin: 30px auto;
+}
+</style>

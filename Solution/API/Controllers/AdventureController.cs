@@ -147,7 +147,7 @@ namespace API.Controllers
                 OwnerId = x.OwnerId,
                 AdditionalOffers = y.AdditionalOffers,
                 AdventureId = x.ServiceId,
-                //ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
             });
 
             foreach (AdventureDTO adventure in ownedAdventures)
@@ -354,7 +354,7 @@ namespace API.Controllers
                 Phone = userInfo.PhoneNumber,
                 Email = userInfo.Email,
                 City = city.Name,
-                Country = country.Name
+                //Country = country.Name
             };
 
             return Ok(dto);

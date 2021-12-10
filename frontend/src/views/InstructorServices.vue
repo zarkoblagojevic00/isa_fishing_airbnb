@@ -59,7 +59,7 @@ export default {
         },
         onAdventureClick(service) {
             this.$router.push({
-                path: "/adventure/" + service.adventureId,
+                path: "/adventure/" + service.adventureId + "/home",
                 params: {
                     serviceName: service.name,
                 },

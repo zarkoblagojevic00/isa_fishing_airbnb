@@ -37,7 +37,7 @@
                     <td class="left">{{ req.reason }}</td>
                     <td
                         class="left"
-                        v-if="!req.isAccountVerified && !req.denialReason"
+                        v-if="!req.isAccountActive && !req.denialReason"
                     >
                         <button
                             class="button-accept"
@@ -48,7 +48,7 @@
                     </td>
                     <td
                         class="left"
-                        v-if="!req.isAccountVerified && !req.denialReason"
+                        v-if="!req.isAccountActive && !req.denialReason"
                     >
                         <button
                             class="button-decline"
@@ -57,8 +57,8 @@
                             Decline
                         </button>
                     </td>
-                    <td class="left" v-if="req.isAccountVerified">
-                        Account is verified.
+                    <td class="left" v-if="req.isAccountActive">
+                        Account is active.
                     </td>
                     <td class="left" v-if="req.denialReason">
                         Request denied.

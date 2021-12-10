@@ -44,6 +44,10 @@ namespace API.Controllers
 
         private static bool IsAccountValid(User userLoggingIn)
         {
+            if(userLoggingIn.UserType == UserType.Admin)
+            {
+                return userLoggingIn.IsAccountVerified;
+            }
             return userLoggingIn.IsAccountActive && userLoggingIn.IsAccountVerified;
         }
     }

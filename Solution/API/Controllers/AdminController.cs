@@ -236,5 +236,80 @@ namespace API.Controllers
 
             return Ok(reservationRevenueInfos);
         }
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult ChangePassword(PasswordChangeDTO passwordChangeDto)
+        {
+            var userId = GetUserIdFromCookie();
+            var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
+
+            if (user.Password != passwordChangeDto.OldPassword)
+            {
+                ModelState.AddModelError("OldPassword", "The password doesn't match your actual password!");
+                return BadRequest(ModelState);
+            }
+
+            user.Password = passwordChangeDto.NewPassword;
+
+            try
+            {
+                UoW.BeginTransaction();
+
+                UoW.GetRepository<IUserWriteRepository>().Update(user);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+
+            return Ok(Responses.Ok);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetUserInfo()
+        {
+            var userId = GetUserIdFromCookie();
+
+            var userInfo = UoW.GetRepository<IUserReadRepository>().GetById(userId);
+
+            return Ok(userInfo);
+        }
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult ActivateAdmin(User admin)
+        {
+            var userId = GetUserIdFromCookie();
+            var oldAdmin = UoW.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .Where(x => x.UserId == userId)
+                .FirstOrDefault();
+
+
+            if (admin.UserId != userId || oldAdmin == null)
+            {
+                return BadRequest("Cannot activate.");
+            }
+
+            oldAdmin.IsAccountActive = true;
+            try
+            {
+                UoW.BeginTransaction();
+                UoW.GetRepository<IUserWriteRepository>().Update(oldAdmin);
+                UoW.Commit();
+            }
+            catch(Exception e)
+            {
+                UoW.Rollback();
+                return BadRequest("Activation failed.");
+            }
+            
+            return Ok();
+        }
     }
 }

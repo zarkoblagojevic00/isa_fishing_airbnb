@@ -163,7 +163,7 @@ namespace API.Controllers
 
             var mailService = new MailingService(UoW)
             {
-                Body = GenerateMailForConfirmation(newUser.UserId, userRegistrationKey.VerificationKey.ToString()),
+                Body = GenerateMailForConfirmationAdmin(newUser.UserId, userRegistrationKey.VerificationKey.ToString()),
                 Receiver = newUser.Email,
                 Title = "Account verification"
             };
@@ -232,7 +232,7 @@ namespace API.Controllers
                 UserType = UserType.Admin,
                 Name = newAdminData.Name,
                 Surname = newAdminData.Surname,
-                Password = Guid.NewGuid().ToString(),
+                Password = "admin",
                 Address = newAdminData.Address,
                 CityId = city.CityId,
                 PhoneNumber = newAdminData.Phone,
@@ -258,6 +258,17 @@ namespace API.Controllers
             stringBuilder.Append("In order to confirm your identity you need to click on the link below").Append(HtmlWriter.Br());
             stringBuilder.Append(HtmlWriter.Br());
             stringBuilder.Append(HtmlWriter.A(Url.Action("ConfirmIdentity", "Registration",new {userId = id, guid}, Request.Scheme),"link"));
+
+            return stringBuilder.ToString();
+        }
+
+        private string GenerateMailForConfirmationAdmin(int id, string guid)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("In order to confirm your identity you need to click on the link below. Your password is \"admin\", please change it first time you log in.").Append(HtmlWriter.Br());
+            stringBuilder.Append(HtmlWriter.Br());
+            stringBuilder.Append(HtmlWriter.A(Url.Action("ConfirmIdentity", "Registration", new { userId = id, guid }, Request.Scheme), "link"));
 
             return stringBuilder.ToString();
         }

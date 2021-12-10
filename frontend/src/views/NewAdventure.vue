@@ -183,7 +183,13 @@ export default {
     mounted() {},
     data() {
         return {
-            navbarItems: ["Home", "Quick reservation", "Gallery"],
+            navbarItems: [
+                "Services",
+                "Reservations",
+                "Availability",
+                "Analytics",
+                "My profile",
+            ],
             baseUrlInstructor: "/instructor/",
             newAdventure: {
                 name: "",
@@ -236,10 +242,21 @@ export default {
 
             axios
                 .post("/api/Adventure/AddAdventure", adventure)
-                .then((res) => {
-                    console.log("OK ", res.data);
+                .then(() => {
+                    this.$router.push(this.baseUrlInstructor + "services");
                 })
-                .catch((err) => console.log(err));
+                .catch((error) => {
+                    if (error.response) {
+                        if (
+                            error.response.data.Name[0] ==
+                            "The service with that name for this user already exists!"
+                        ) {
+                            this.$swal.fire(
+                                "You already have service with this name!"
+                            );
+                        }
+                    }
+                });
         },
     },
 };

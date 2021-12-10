@@ -43,7 +43,7 @@ if (process.env.VUE_APP_ENV == "development") {
         document.cookie = "userId=2; domain=localhost";
         document.cookie = "email=testvillaowner@gmail.com; domain=localhost";
     } else if (process.env.VUE_APP_USER == "suki") {
-        document.cookie = "userId=4; domain=localhost";
-        document.cookie = "email=stef@gmail.com; domain=localhost";
+        //document.cookie = "userId=4; domain=localhost";
+        //document.cookie = "email=stef@gmail.com; domain=localhost";
     }
 }

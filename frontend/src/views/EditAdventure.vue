@@ -249,12 +249,7 @@ export default {
     },
     data() {
         return {
-            navbarItems: [
-                "Quick reservation",
-                "Gallery",
-                "Price list",
-                "Rules of conduct",
-            ],
+            navbarItems: ["Home", "Quick reservation", "Gallery"],
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             newAdventure: {
                 adventureId: "",
@@ -356,6 +351,7 @@ export default {
                                     "Your adventure has been deleted.",
                                     "success"
                                 );
+                                this.$router.push("/instructor/services");
                             });
                     }
                 });

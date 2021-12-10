@@ -101,6 +101,7 @@ namespace API.Controllers
 
                 var user = userReadRepo.GetById(regReason.UserId);
                 user.IsAccountVerified = reviewDto.Result;
+                user.IsAccountActive = reviewDto.Result;
                 userWriteRepo.Update(user);
 
                 UoW.Commit();

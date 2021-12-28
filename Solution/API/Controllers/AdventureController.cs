@@ -63,16 +63,8 @@ namespace API.Controllers
 
 
         [HttpGet]
-        //[TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor, UserType.Registered })]
         public IActionResult GetAdventureInfoById(int adventureId)
         {
-            //int ownerId = GetUserIdFromCookie();
-
-            //if (!CheckOwnerShip(adventureId))
-            //{
-            //    return Unauthorized(Responses.ServiceOwnerNotLinked);
-            //}
-
             var adventure = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId == adventureId).FirstOrDefault();

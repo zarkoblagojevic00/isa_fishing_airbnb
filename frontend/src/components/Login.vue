@@ -59,8 +59,18 @@ export default {
 
             return true;
         },
+        isValidInput() {
+            return this.ValidateUser() && this.ValidatePassword();
+        },
+
         async login() {
             try {
+                if (!this.isValidInput()) {
+                    alert(
+                        "Please insert all the required data in valid format!"
+                    );
+                    return false;
+                }
                 const claims = await sessionService.login(
                     this.email,
                     this.password

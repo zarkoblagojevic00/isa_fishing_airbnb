@@ -1,6 +1,7 @@
 ﻿using API.Attributes;
 using API.Controllers.Base;
 using API.DTOs;
+using API.Mappers;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
@@ -197,6 +198,45 @@ namespace API.Controllers
             }
 
             return Ok(Responses.Ok);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetAvailabilityPeriods()
+        {
+            var userId = GetUserIdFromCookie();
+
+            var instructorAvailabilityPeriods = UoW.GetRepository<IUserAvailabilityReadRepository>().GetAll()
+                .Where(x => x.UserId == userId)
+                .Where(x => x.PeriodEnd > DateTime.Now);
+
+            return Ok(instructorAvailabilityPeriods);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult AddInstructorAvailabilityPeriod(UserAvailabilityPeriodDTO availabilityPeriod)
+        {
+            var userId = GetUserIdFromCookie();
+            availabilityPeriod.UserId = userId;
+
+            UserAvailability availability = availabilityPeriod.ToModel();
+
+            try
+            {
+                UoW.BeginTransaction();
+
+                UoW.GetRepository<IUserAvailabilityWriteRepository>().Add(availability);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+
+            return Ok("Added availability");
         }
 
 

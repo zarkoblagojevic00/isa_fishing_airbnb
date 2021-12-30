@@ -8,100 +8,24 @@
     </div>
     <!-- use custom calendar with template  -->
     <div class="flexbox-container">
-        <v-calendar
-            class="custom-calendar max-w-full"
-            :masks="masks"
-            :attributes="attributes"
-            disable-page-swipe
-            is-expanded
-        >
-            <template v-slot:day-content="{ day, attributes }">
-                <div class="slot">
-                    <span>
-                        <b>{{ day.day }}</b>
-                    </span>
-                    <div>
-                        <div
-                            v-for="attr in attributes"
-                            :key="attr.key"
-                            :class="attr.customData.class"
-                        >
-                            {{ attr.customData.title }}
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </v-calendar>
+        <InstructorScheduler />
     </div>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar.vue";
-import axios from "../api/api.js";
+import InstructorScheduler from "@/components/InstructorScheduler.vue";
 import moment from "moment";
 
 export default {
     name: "InstructorServices",
     components: {
         Navbar,
+        InstructorScheduler,
     },
-    mounted() {
-        this.loadAvailabilityPeriod();
-    },
+    mounted() {},
     data() {
-        const month = new Date().getMonth();
-        const year = new Date().getFullYear();
         return {
-            masks: {
-                weekdays: "WWW",
-            },
-            attributes: [
-                {
-                    key: 1,
-                    customData: {
-                        title: "12:00 - 17:45",
-                        status: "booked",
-                        class: "booked-slot",
-                    },
-                    dates: new Date(year, month, 1),
-                },
-                {
-                    key: 2,
-                    customData: {
-                        title: "11:00 - 19:00",
-                        status: "booked",
-                        class: "booked-slot",
-                    },
-                    dates: new Date(year, month, 2),
-                },
-                {
-                    key: 3,
-                    customData: {
-                        title: "14:00 - 17:45",
-                        status: "free",
-                        class: "free-slot",
-                    },
-                    dates: new Date(year, month, 5),
-                },
-                {
-                    key: 4,
-                    customData: {
-                        title: "15:00 - 22:30",
-                        status: "free",
-                        class: "free-slot",
-                    },
-                    dates: new Date(year, month, 9),
-                },
-                {
-                    key: 5,
-                    customData: {
-                        title: "08:00 - 14:30",
-                        status: "free",
-                        class: "free-slot",
-                    },
-                    dates: new Date(year, month, 11),
-                },
-            ],
             navbarItems: [
                 "Services",
                 "Reservations",
@@ -114,40 +38,6 @@ export default {
         };
     },
     methods: {
-        loadAvailabilityPeriod() {
-            axios
-                .get("/api/Instructor/GetAdditionalInstructorInfo")
-                .then(({ data }) => {
-                    this.range = data;
-                    const datesWithinRange = this.getDatesWithinRange(
-                        data.startDateTime,
-                        data.endDateTime
-                    );
-
-                    this.attributes = datesWithinRange.map((date) => {
-                        let idx = datesWithinRange.indexOf(date);
-                        if (idx == 0 || idx == datesWithinRange.length - 1) {
-                            return {
-                                key: idx,
-                                customData: {
-                                    class: "free-slot",
-                                    title: moment(date).format("hh:mm"),
-                                },
-                                dates: date,
-                            };
-                        } else {
-                            return {
-                                key: idx,
-                                customData: {
-                                    class: "free-slot",
-                                    title: "FREE",
-                                },
-                                dates: date,
-                            };
-                        }
-                    });
-                });
-        },
         getDatesWithinRange(start, end) {
             //let startDay = new Date(moment(new Date(start)).startOf("day"));
             let startDay = new Date(start);

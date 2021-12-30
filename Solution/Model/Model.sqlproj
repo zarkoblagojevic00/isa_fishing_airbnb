@@ -124,5 +124,6 @@
     <Build Include="Tables\PricelistItems.sql" />
     <Build Include="Tables\AdditionalAdventureInfos.sql" />
     <None Include="MasterData\LOCAL\Services.Table.sql" />
+    <Build Include="Tables\UserAvailabilities.sql" />
   </ItemGroup>
 </Project>

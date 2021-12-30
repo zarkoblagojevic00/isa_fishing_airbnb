@@ -41,5 +41,18 @@ namespace API.Mappers
                 AdventureId = adventureId
             };
         }
+
+        public static UserAvailability ToModel(this UserAvailabilityPeriodDTO dto)
+        {
+            if (dto == null) return null;
+
+            return new UserAvailability
+            {
+                UserId = dto.UserId,
+                PeriodStart = dto.PeriodStart,
+                PeriodEnd = dto.PeriodEnd,
+                Status = dto.Status
+            };
+        }
     }
 }

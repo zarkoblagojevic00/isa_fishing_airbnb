@@ -35,6 +35,19 @@ namespace API.Controllers
                 .Where(x => x.ServiceId == serviceId);
         }
 
+        [HttpGet]
+        public IEnumerable<PromoAction> GetUsersQuickActions()
+        {
+            var userId = GetUserIdFromCookie();
+            var promoActionReadRepository = UoW.GetRepository<IPromoActionReadRepository>();
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
+                .Where(service => service.OwnerId == userId);
+                //.Select(service => new { service.ServiceId });
+
+            return promoActionReadRepository.GetAll()
+                .Where(action => services.Any(service => service.ServiceId == action.ServiceId));
+        }
+
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult CreateNewQuickAction(QuickActionDTO newAction)

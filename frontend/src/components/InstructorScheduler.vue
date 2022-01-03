@@ -15,7 +15,7 @@
         :timeStep="30"
         :timeCellHeight="80"
         :events="events"
-        v-model:events="periods"
+        events-on-month-view="short"
         today-button
         @event-drag-create="onEventDragCreated"
         @event-delete="onEventDeleted"
@@ -30,18 +30,33 @@ export default {
     components: {
         VueCal,
     },
-    mounted() {
+    async mounted() {
+        await this.loadQuickActions();
         this.loadAvailabilityPeriods();
     },
     methods: {
-        onEventDragCreated(event) {
+        async onEventDragCreated(event) {
             if (this.isEventOverlappingWithAny(event)) {
                 this.loadAvailabilityPeriods();
                 //alert overlapping period
             } else {
-                this.addAvailabilityPeriod(event);
-                this.loadAvailabilityPeriods();
+                const eventType = await this.chooseEventType();
+                console.log(eventType);
+                this.addAvailabilityPeriod(event, eventType);
             }
+        },
+        async chooseEventType() {
+            const { value: eventType } = await this.$swal.fire({
+                title: "Select event type",
+                input: "select",
+                inputOptions: {
+                    available: "Available",
+                    unavailable: "Unavailable",
+                },
+                inputPlaceholder: "Select type",
+                showCancelButton: true,
+            });
+            return eventType;
         },
         onEventDeleted(event) {
             this.deleteAvailabilityPeriod(event);
@@ -71,16 +86,24 @@ export default {
                     this.mapPeriodsToEvents();
                 });
         },
-        addAvailabilityPeriod(event) {
+        async loadQuickActions() {
+            await axios
+                .get("/api/QuickAction/GetUsersQuickActions")
+                .then(({ data }) => {
+                    this.quickActions = data;
+                    this.mapQuickActionsToEvents();
+                });
+        },
+        addAvailabilityPeriod(event, eventType) {
             const period = {
                 periodStart: new Date(event.start).toISOString(),
                 periodEnd: new Date(event.end).toISOString(),
-                status: true,
+                status: eventType == "available" ? true : false,
             };
             axios
                 .post("/api/Instructor/AddInstructorAvailabilityPeriod", period)
                 .then(() => {
-                    console.log(period);
+                    this.loadAvailabilityPeriods();
                 });
         },
         deleteAvailabilityPeriod(event) {
@@ -103,8 +126,20 @@ export default {
                 return {
                     start: new Date(period.periodStart),
                     end: new Date(period.periodEnd),
-                    title: "Available",
-                    class: "free-slot",
+                    title: period.status ? "Available" : "Unavailable",
+                    class: period.status ? "free-slot" : "unavailable-slot",
+                };
+            });
+            this.events = this.events.concat(this.quickActions);
+            console.log(this.quickActions);
+        },
+        mapQuickActionsToEvents() {
+            this.quickActions = this.quickActions.map(function (action) {
+                return {
+                    start: new Date(action.startDateTime),
+                    end: new Date(action.endDateTime),
+                    title: "Quick action",
+                    class: "quick-action",
                 };
             });
         },
@@ -113,6 +148,7 @@ export default {
         return {
             periods: [],
             events: [],
+            quickActions: [],
         };
     },
 };
@@ -124,5 +160,13 @@ export default {
 
 .free-slot {
     background-color: rgba(58, 207, 78, 0.35);
+}
+
+.unavailable-slot {
+    background-color: rgba(207, 58, 58, 0.35);
+}
+
+.quick-action {
+    background-color: rgba(68, 58, 207, 0.35);
 }
 </style>

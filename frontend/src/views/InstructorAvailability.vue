@@ -8,7 +8,7 @@
     </div>
     <!-- use custom calendar with template  -->
     <div class="flexbox-container">
-        <InstructorScheduler />
+        <InstructorScheduler class="calendar" />
     </div>
 </template>
 
@@ -102,5 +102,9 @@ button {
 }
 button:hover {
     background-color: #ccbf05;
+}
+
+.calendar {
+    height: 120vh;
 }
 </style>

@@ -6,6 +6,7 @@
             >New admin</router-link
         >
     </div>
+    <div class="flexbox-container-column"><b>Registration requests</b></div>
     <div class="flexbox-container">
         <table class="reservations-table">
             <thead>
@@ -67,6 +68,54 @@
             </tbody>
         </table>
     </div>
+
+    <div class="flexbox-container-column"><b>Mark requests</b></div>
+    <div class="flexbox-container">
+        <table class="reservations-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Email</th>
+                    <th>Service name</th>
+                    <th>Given mark</th>
+                    <th>Mark description</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody v-for="req in markRequests" :key="req.email">
+                <tr>
+                    <td class="left">{{ req.userName }}</td>
+                    <td class="left">{{ req.userSurname }}</td>
+                    <td class="left">{{ req.email }}</td>
+                    <td class="left">{{ req.serviceName }}</td>
+                    <td class="left">{{ req.mark }}</td>
+                    <td class="left">{{ req.description }}</td>
+                    <td class="left" v-if="!req.isReviewed">
+                        <button
+                            class="button-accept"
+                            @click="onAcceptMarkRequest(req)"
+                        >
+                            Accept
+                        </button>
+                    </td>
+                    <td class="left" v-if="!req.isReviewed">
+                        <button
+                            class="button-decline"
+                            @click="onDeclineMarkRequest(req)"
+                        >
+                            Decline
+                        </button>
+                    </td>
+                    <td class="left" v-if="req.isApproved">
+                        Account is active.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -83,9 +132,17 @@ export default {
     },
     methods: {
         loadRequests() {
+            this.loadRegistrationRequests();
+            this.loadMarkRequests();
+        },
+        loadRegistrationRequests() {
             axios.get("/api/RegistrationReview/GetAll").then((res) => {
                 this.requests = res.data;
-                console.log(res.data);
+            });
+        },
+        loadMarkRequests() {
+            axios.get("/api/Admin/GetUnapprovedMarks").then((res) => {
+                this.markRequests = res.data;
             });
         },
         onAcceptRequest(userId) {
@@ -99,6 +156,18 @@ export default {
                     this.$swal.fire("Successfully saved.");
                     this.loadRequests();
                 });
+        },
+        onAcceptMarkRequest(markRequest) {
+            axios.put("/api/Admin/ApproveMarkRequest", markRequest).then(() => {
+                this.$swal.fire("Mark approved!");
+                this.loadMarkRequests();
+            });
+        },
+        onDeclineMarkRequest(markRequest) {
+            axios.put("/api/Admin/DeclineMarkRequest", markRequest).then(() => {
+                this.$swal.fire("Mark declined!");
+                this.loadMarkRequests();
+            });
         },
         onDeclineRequest(userId) {
             this.$swal
@@ -157,6 +226,7 @@ export default {
                 isAccountVerified: false,
             },
             requests: [],
+            markRequests: [],
             review: {
                 userId: "",
                 result: false,
@@ -180,7 +250,7 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
 }
-.flexbox-container-reservations {
+.flexbox-container-column {
     padding: 50px;
     padding-bottom: 1px;
     display: flex;

@@ -13,5 +13,7 @@ namespace Domain.Entities
         public virtual double GivenMark { get; set; }
         public virtual string Description { get; set; }
         public virtual int ServiceId { get; set; }
+        public virtual bool IsApproved { get; set; }
+        public virtual bool IsReviewed { get; set; }
     }
 }

@@ -25,6 +25,8 @@ namespace Domain.Mappings
             Property(x => x.GivenMark, map => map.Column("GivenMark"));
             Property(x => x.Description, map => map.Column("Description"));
             Property(x => x.ServiceId, map => map.Column("ServiceId"));
+            Property(x => x.IsApproved, map => map.Column("IsApproved"));
+            Property(x => x.IsReviewed, map => map.Column("IsReviewed"));
         }
     }
 }

@@ -6,11 +6,14 @@ using Domain.Repositories;
 using Domain.UnitOfWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using Services.Constants;
+using Services.HtmlWriter;
 using Services.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -310,6 +313,106 @@ namespace API.Controllers
             }
             
             return Ok();
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetUnapprovedMarks()
+        {
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll();
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+            var marks = UoW.GetRepository<IMarkReadRepository>().GetAll()
+                .Where(mark => !mark.IsReviewed);
+
+            var userMarkInformation = marks
+                .Join(services, m => m.ServiceId, s => s.ServiceId, (m, s) => new { m, s })
+                .Join(users, ms => ms.m.UserId, u => u.UserId, (ms, u) => new { ms, u })
+                .Join(users, msu => msu.ms.s.OwnerId, us => us.UserId, (msu, us) => new { msu, us })
+                .Select(information => new UserMarkInformationDTO
+                {
+                    UserName = information.msu.u.Name,
+                    UserSurname = information.msu.u.Surname,
+                    Email = information.us.Email,
+                    ServiceName = information.msu.ms.s.Name,
+                    Mark = information.msu.ms.m.GivenMark,
+                    Description = information.msu.ms.m.Description,
+                    IsApproved = information.msu.ms.m.IsApproved,
+                    MarkId = information.msu.ms.m.MarkId
+                });
+
+            return Ok(userMarkInformation);
+        }
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult ApproveMarkRequest(UserMarkInformationDTO mark)
+        {
+            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
+            oldMark.IsReviewed = true;
+            oldMark.IsApproved = true;
+
+            try
+            {
+                UoW.BeginTransaction();
+                UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
+                UoW.Commit();
+
+                var mailService = new MailingService(UoW)
+                {
+                    Body = GenerateMarkReviewMailBody(mark),
+                    Receiver = mark.Email,
+                    Title = "Mark review"
+                };
+                mailService.Send();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return BadRequest("Approval failed.");
+            }
+            return Ok("Mark reviewed");
+
+        }
+
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult DeclineMarkRequest(UserMarkInformationDTO mark)
+        {
+            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
+            oldMark.IsReviewed = true;
+            oldMark.IsApproved = false;
+
+            try
+            {
+                UoW.BeginTransaction();
+                UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
+                UoW.Commit();
+
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return BadRequest("Approval failed.");
+            }
+            return Ok("Mark reviewed");
+
+        }
+
+
+        private string GenerateMarkReviewMailBody(UserMarkInformationDTO mark)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("Your mark request has been reviewed and accepted!").Append(HtmlWriter.Br());
+            stringBuilder.Append(HtmlWriter.Br());
+
+            stringBuilder.Append(mark.Description);
+            stringBuilder.Append(HtmlWriter.Br());
+            stringBuilder.Append("Given mark: " + mark.Mark.ToString());
+
+
+
+            return stringBuilder.ToString();
         }
     }
 }

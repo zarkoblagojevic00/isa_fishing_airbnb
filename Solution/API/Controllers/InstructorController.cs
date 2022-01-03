@@ -32,7 +32,7 @@ namespace API.Controllers
             var additionalInstructorInfos = UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>();
             var currentAdditionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>()
                 .GetAll()
-                .Where(x => x.InstructorId == ownerId).FirstOrDefault();
+                .Where(x => x.UserId == ownerId).FirstOrDefault();
 
             var adventures = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
@@ -111,7 +111,7 @@ namespace API.Controllers
             var userId = GetUserIdFromCookie();
 
             var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
-                .Where(x => x.InstructorId == userId).FirstOrDefault();
+                .Where(x => x.UserId == userId).FirstOrDefault();
 
             additionalInstructorInfo.AvailableFrom = availability.Start;
             additionalInstructorInfo.AvailableTo = availability.End;
@@ -139,7 +139,7 @@ namespace API.Controllers
             var userId = GetUserIdFromCookie();
 
             var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
-                .Where(x => x.InstructorId == userId).FirstOrDefault();
+                .Where(x => x.UserId == userId).FirstOrDefault();
 
 
             AvailabilityPeriodDTO availability = new AvailabilityPeriodDTO
@@ -219,6 +219,8 @@ namespace API.Controllers
         {
             var userId = GetUserIdFromCookie();
             availabilityPeriod.UserId = userId;
+            availabilityPeriod.PeriodStart = availabilityPeriod.PeriodStart.ToLocalTime();
+            availabilityPeriod.PeriodEnd = availabilityPeriod.PeriodEnd.ToLocalTime();
 
             UserAvailability availability = availabilityPeriod.ToModel();
 
@@ -237,6 +239,31 @@ namespace API.Controllers
             }
 
             return Ok("Added availability");
+        }
+
+        [HttpDelete]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public void DeleteInstructorAvailabilityPeriod(UserAvailabilityPeriodDTO availabilityPeriod)
+        {
+            var userId = GetUserIdFromCookie();
+            availabilityPeriod.PeriodStart = availabilityPeriod.PeriodStart.ToLocalTime();
+            availabilityPeriod.PeriodEnd = availabilityPeriod.PeriodEnd.ToLocalTime();
+            var period = UoW.GetRepository<IUserAvailabilityReadRepository>().GetAll()
+                .Where(period => period.PeriodStart == availabilityPeriod.PeriodStart && period.PeriodEnd == availabilityPeriod.PeriodEnd)
+                .Where(period => period.UserId == userId)
+                .FirstOrDefault();
+            try
+            {
+                UoW.BeginTransaction();
+
+                UoW.GetRepository<IUserAvailabilityWriteRepository>().Delete(period);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+            }
         }
 
 

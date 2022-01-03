@@ -16,7 +16,7 @@ namespace Domain.Mappings
             Table("AdditionalInstructorInfos");
             Lazy(true);
 
-            Id(x => x.InstructorId, map => map.Column("InstructorId"));
+            Id(x => x.UserId, map => map.Column("UserId"));
             Property(x => x.AvailableFrom, map =>
             {
                 map.Column("AvailableFrom");

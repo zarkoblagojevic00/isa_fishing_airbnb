@@ -1,5 +1,4 @@
 <template>
-    <div>Scheduler</div>
     <VueCal
         :disable-views="['years', 'year']"
         :snap-to-time="30"
@@ -18,9 +17,8 @@
         :events="events"
         v-model:events="periods"
         today-button
-        @cell-click="cellClicked"
-        @event-drag-create="eventDragCreated"
-        @event-title-change="eventTitleChanged"
+        @event-drag-create="onEventDragCreated"
+        @event-delete="onEventDeleted"
     />
 </template>
 <script>
@@ -34,19 +32,36 @@ export default {
     },
     mounted() {
         this.loadAvailabilityPeriods();
-        console.log("init", this.eventsInitial);
     },
     methods: {
-        cellClicked() {
-            console.log(this.periods);
+        onEventDragCreated(event) {
+            if (this.isEventOverlappingWithAny(event)) {
+                this.loadAvailabilityPeriods();
+                //alert overlapping period
+            } else {
+                this.addAvailabilityPeriod(event);
+                this.loadAvailabilityPeriods();
+            }
         },
-        eventDragCreated(e) {
-            this.addAvailabilityPeriod(e);
-            console.log("drag", e);
+        onEventDeleted(event) {
+            this.deleteAvailabilityPeriod(event);
         },
-        eventTitleChanged(event, oldTitle) {
-            console.log(event);
-            console.log(oldTitle);
+        datesOverlap(first, second) {
+            if (first.start < second.end && first.end > second.start) {
+                return true;
+            }
+            return false;
+        },
+        isEventOverlappingWithAny(event) {
+            for (const period of this.events) {
+                if (this.datesOverlap(event, period)) {
+                    console.log("true");
+                    return true;
+                } else {
+                    console.log("false");
+                }
+            }
+            return false;
         },
         loadAvailabilityPeriods() {
             axios
@@ -54,33 +69,33 @@ export default {
                 .then(({ data }) => {
                     this.periods = data;
                     this.mapPeriodsToEvents();
-                    console.log(this.events);
                 });
         },
         addAvailabilityPeriod(event) {
             const period = {
-                periodStart: new Date(event.start),
-                periodEnd: new Date(event.end),
+                periodStart: new Date(event.start).toISOString(),
+                periodEnd: new Date(event.end).toISOString(),
                 status: true,
             };
             axios
                 .post("/api/Instructor/AddInstructorAvailabilityPeriod", period)
                 .then(() => {
                     console.log(period);
+                });
+        },
+        deleteAvailabilityPeriod(event) {
+            const period = {
+                periodStart: new Date(event.start),
+                periodEnd: new Date(event.end),
+                status: undefined,
+                userId: undefined,
+            };
+            axios
+                .delete("/api/Instructor/DeleteInstructorAvailabilityPeriod", {
+                    data: period,
                 })
-                .catch(function (error) {
-                    if (error.response) {
-                        // Request made and server responded
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log("Error", error.message);
-                    }
+                .then(() => {
+                    this.loadAvailabilityPeriods();
                 });
         },
         mapPeriodsToEvents() {

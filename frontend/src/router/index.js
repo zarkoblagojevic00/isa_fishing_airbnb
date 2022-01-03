@@ -59,7 +59,7 @@ const routes = [
         component: ClientHomepage,
     },
     {
-        path: "/adventure/:id",
+        path: "/adventure/:id/home",
         name: "AdventureProfile",
         component: AdventureProfile,
     },

@@ -109,7 +109,7 @@ namespace API.Controllers
                 UoW.BeginTransaction();
 
                 var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
-                    .FirstOrDefault(x => x.InstructorId == userId);
+                    .FirstOrDefault(x => x.UserId == userId);
 
                 var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
 

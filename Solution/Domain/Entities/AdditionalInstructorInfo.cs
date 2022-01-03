@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class AdditionalInstructorInfo
     {
-        public virtual int InstructorId { get; set; }
+        public virtual int UserId { get; set; }
         public virtual DateTime? AvailableFrom { get; set; }
         public virtual DateTime? AvailableTo { get; set; }
         public virtual string ShortBiography { get; set; }

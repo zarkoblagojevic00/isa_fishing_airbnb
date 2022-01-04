@@ -25,6 +25,7 @@ namespace Domain.Mappings
             Property(x => x.UserId, map => map.Column("UserId"));
             Property(x => x.IssuedEntityId, map => map.Column("IssuedEntityId"));
             Property(x => x.Reason, map => map.Column("Reason"));
+            Property(x => x.IsReviewed, map => map.Column("IsReviewed"));
             Property(x => x.CreatedDateTime, map =>
             {
                 map.Column("CreatedDateTime");

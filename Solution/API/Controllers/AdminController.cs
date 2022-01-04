@@ -399,6 +399,72 @@ namespace API.Controllers
         }
 
 
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult RespondToIssue(IssueInformationDTO issue)
+        {
+            var oldIssue = UoW.GetRepository<IIssueReadRepository>().GetById(issue.IssueId);
+            oldIssue.IsReviewed = true;
+
+
+            try
+            {
+                UoW.BeginTransaction();
+                UoW.GetRepository<IIssueWriteRepository>().Update(oldIssue);
+                UoW.Commit();
+                var mailService = new MailingService(UoW)
+                {
+                    Body = GenerateIssueReviewMailBody(issue),
+                    Receiver = issue.UserEmail,
+                    Title = "Issue review"
+                };
+                mailService.Send();
+                mailService.Receiver = issue.ServiceOwnerEmail;
+                mailService.Send();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return BadRequest("Issue review failed.");
+            }
+            return Ok("Issue reviewed");
+
+        }
+
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetUnapprovedIssues()
+        {
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll();
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+            var issues = UoW.GetRepository<IIssueReadRepository>().GetAll()
+                .Where(issue => !issue.IsReviewed);
+
+            var userIssueInformation = issues
+                .Join(services, ii => ii.IssuedEntityId, s => s.ServiceId, (ii, s) => new { ii, s })
+                .Join(users, iis => iis.ii.UserId, u => u.UserId, (iis, u) => new { iis, u })
+                .Join(users, iisu => iisu.iis.s.OwnerId, us => us.UserId, (iisu, us) => new { iisu, us })
+                .Select(information => new IssueInformationDTO
+                {
+                    IssueId = information.iisu.iis.ii.IssueId,
+                    IssuedEntityId = information.iisu.iis.s.ServiceId,
+                    UserName = information.iisu.u.Name,
+                    UserSurname = information.iisu.u.Surname,
+                    UserEmail = information.iisu.u.Email,
+                    ServiceOwnerName = information.us.Name,
+                    ServiceOwnerSurname = information.us.Surname,
+                    ServiceOwnerEmail = information.us.Email,
+                    Reason = information.iisu.iis.ii.Reason,
+                    Response = "",
+                    CreatedDateTime = information.iisu.iis.ii.CreatedDateTime,
+                    IsReviewed = information.iisu.iis.ii.IsReviewed,
+                });
+
+            return Ok(userIssueInformation);
+        }
+
+
         private string GenerateMarkReviewMailBody(UserMarkInformationDTO mark)
         {
             var stringBuilder = new StringBuilder();
@@ -409,6 +475,25 @@ namespace API.Controllers
             stringBuilder.Append(mark.Description);
             stringBuilder.Append(HtmlWriter.Br());
             stringBuilder.Append("Given mark: " + mark.Mark.ToString());
+
+
+
+            return stringBuilder.ToString();
+        }
+
+        private string GenerateIssueReviewMailBody(IssueInformationDTO issue)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("Issuer: " + issue.UserEmail);
+            stringBuilder.Append(HtmlWriter.Br());
+            stringBuilder.Append("Issuee: " + issue.ServiceOwnerEmail);
+            stringBuilder.Append(HtmlWriter.Br());
+            stringBuilder.Append("Issue text: " + issue.Reason);
+            stringBuilder.Append(HtmlWriter.Br());
+            stringBuilder.Append("Admin response: " + issue.Response);
+            stringBuilder.Append(HtmlWriter.Br());
+
 
 
 

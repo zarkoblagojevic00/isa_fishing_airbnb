@@ -14,5 +14,6 @@ namespace Domain.Entities
         public virtual int IssuedEntityId { get; set; }
         public virtual string Reason { get; set; }
         public virtual DateTime CreatedDateTime { get; set; }
+        public virtual bool IsReviewed { get; set; }
     }
 }

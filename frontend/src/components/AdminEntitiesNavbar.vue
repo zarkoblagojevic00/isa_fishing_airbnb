@@ -23,6 +23,11 @@
             </router-link>
         </li>
         <li>
+            <router-link class="link" :to="formatUrl('Issues')">
+                Issues
+            </router-link>
+        </li>
+        <li>
             <router-link class="link" :to="formatUrl('Analytics')">
                 Analytics
             </router-link>

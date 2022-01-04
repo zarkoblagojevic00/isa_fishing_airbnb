@@ -4,5 +4,6 @@
     [UserId] INT NULL, 
     [IssuedEntityId] INT NULL, 
     [Reason] NVARCHAR(MAX) NULL, 
-    [CreatedDateTime] DATETIME2 NULL
+    [CreatedDateTime] DATETIME2 NULL, 
+    [IsReviewed] BIT NULL
 )

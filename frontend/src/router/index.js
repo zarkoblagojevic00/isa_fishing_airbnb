@@ -26,6 +26,7 @@ import EditAdventure from "../views/EditAdventure.vue";
 import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
 import InstructorProfile from "../views/InstructorProfile.vue";
 import ClientHomepage from "../views/ClientHomepage.vue";
+import AdminIssues from "../views/AdminIssues.vue";
 
 const routes = [
     {
@@ -148,6 +149,11 @@ const routes = [
         path: "/admin/analytics",
         name: "AdminAnalytics",
         component: AdminAnalytics,
+    },
+    {
+        path: "/admin/issues",
+        name: "AdminIssues",
+        component: AdminIssues,
     },
     {
         path: "/adventure/:id/edit",

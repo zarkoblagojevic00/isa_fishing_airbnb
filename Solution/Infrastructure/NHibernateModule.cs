@@ -28,7 +28,7 @@ namespace Infrastructure
         protected override void Load(ContainerBuilder builder)
         {
             var configuration = new Configuration()
-                .SetProperty(Environment.ShowSql, "false")
+                .SetProperty(Environment.ShowSql, "true")
                 .SetProperty(Environment.FormatSql, "true")
                 .SetProperty(Environment.ReleaseConnections, "on_close");
 

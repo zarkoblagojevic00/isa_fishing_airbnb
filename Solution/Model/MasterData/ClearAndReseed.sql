@@ -11,6 +11,7 @@ DELETE FurtherClientInfo
 DELETE Images
 DELETE Issues
 DELETE LegacyCategories
+DELETE LinkNavigationBoat
 DELETE Marks
 DELETE PromoActions
 DELETE RegistrationReasons
@@ -26,15 +27,16 @@ DELETE ServiceTypes
 DELETE BoatTypes
 DELETE UserTypes
 
-DBCC CHECKIDENT ('[dbo].[Users]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Cities]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Countries]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Images]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Issues]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[LegacyCategories]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Marks]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[PromoActions]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Reports]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Reservations]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[Services]', RESEED, 1)
-DBCC CHECKIDENT ('[dbo].[SystemConfigurations]', RESEED, 1)
+DBCC CHECKIDENT ('[dbo].[Users]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Cities]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Countries]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Images]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Issues]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[LegacyCategories]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[LinkNavigationBoat]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Marks]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[PromoActions]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Reports]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Reservations]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[Services]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[SystemConfigurations]', RESEED, 100)

@@ -5,5 +5,5 @@
     [MinPoints] INT NULL, 
     [MaxPoints] INT NULL, 
     [Benefits] NVARCHAR(MAX) NULL, 
-    [Discount] DECIMAL(2) NULL
+    [Discount] DECIMAL(18, 3) NULL
 )

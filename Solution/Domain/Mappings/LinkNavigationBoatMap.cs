@@ -22,7 +22,7 @@ namespace Domain.Mappings
                 map.Generator(Generators.Identity);
             });
             Property(x => x.ServiceId, map => map.Column("ServiceId"));
-            Property(x => x.BoatServiceNavigationToolId, map => map.Column("BoatServiceNavigationToolId"));
+            Property(x => x.BoatServiceNavigationToolId, map => map.Column("BoatServiceNavigationToolsId"));
         }
     }
 }

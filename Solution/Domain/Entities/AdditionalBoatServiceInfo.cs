@@ -18,6 +18,8 @@ namespace Domain.Entities
 
     public enum BoatType
     {
-
+        Bass,
+        Cabin,
+        Vessel
     }
 }

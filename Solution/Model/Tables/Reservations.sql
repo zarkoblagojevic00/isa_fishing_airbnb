@@ -12,5 +12,5 @@
     [ReportId] INT NULL, 
     [MarkId] INT NULL, 
     [AdditionalEquipment] NVARCHAR(MAX) NULL, 
-    [Price] DECIMAL(2, 0) NULL
+    [Price] DECIMAL(18, 3) NULL
 )

@@ -24,6 +24,7 @@ using Domain.UnitOfWork;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using Infrastructure;
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Dialect;

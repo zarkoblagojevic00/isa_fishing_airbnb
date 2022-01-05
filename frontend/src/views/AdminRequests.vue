@@ -1,13 +1,18 @@
 <template>
-    <AdminEntitiesNavbar :baseUrl="baseUrlInstructor" />
+    <AdminEntitiesNavbar
+        :baseUrl="baseUrlInstructor"
+        @requestTypeChanged="onRequestTypeChanged"
+    />
     <div class="heading">
         <h1>Requests</h1>
         <router-link to="/admin/new-admin" class="button-new-admin"
             >New admin</router-link
         >
     </div>
-    <div class="flexbox-container-column"><b>Registration requests</b></div>
-    <div class="flexbox-container">
+    <div class="flexbox-container-column" v-if="requestMode == '0'">
+        <b>Registration requests</b>
+    </div>
+    <div class="flexbox-container" v-if="requestMode == '0'">
         <table class="reservations-table">
             <thead>
                 <tr>
@@ -25,7 +30,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody v-for="req in requests" :key="req.userId">
+            <tbody v-for="req in registrationRequests" :key="req.userId">
                 <tr>
                     <td class="left">{{ req.name }}</td>
                     <td class="left">{{ req.surname }}</td>
@@ -42,7 +47,7 @@
                     >
                         <button
                             class="button-accept"
-                            @click="onAcceptRequest(req.userId)"
+                            @click="onAcceptRegistrationRequest(req.userId)"
                         >
                             Accept
                         </button>
@@ -53,7 +58,7 @@
                     >
                         <button
                             class="button-decline"
-                            @click="onDeclineRequest(req.userId)"
+                            @click="onDeclineRegistrationRequest(req.userId)"
                         >
                             Decline
                         </button>
@@ -69,8 +74,10 @@
         </table>
     </div>
 
-    <div class="flexbox-container-column"><b>Mark requests</b></div>
-    <div class="flexbox-container">
+    <div class="flexbox-container-column" v-if="requestMode == '1'">
+        <b>Mark requests</b>
+    </div>
+    <div class="flexbox-container" v-if="requestMode == '1'">
         <table class="reservations-table">
             <thead>
                 <tr>
@@ -116,6 +123,48 @@
             </tbody>
         </table>
     </div>
+    <div class="flexbox-container-column" v-if="requestMode == '2'">
+        <b>Account deletion requests</b>
+    </div>
+    <div class="flexbox-container" v-if="requestMode == '2'">
+        <table class="reservations-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Email</th>
+                    <th>Reason</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody v-for="req in deletionRequests" :key="req.email">
+                <tr>
+                    <td class="left">{{ req.name }}</td>
+                    <td class="left">{{ req.surname }}</td>
+                    <td class="left">{{ req.email }}</td>
+                    <td class="left">{{ req.reason }}</td>
+                    <td class="left" v-if="!req.isReviewed">
+                        <button
+                            class="button-accept"
+                            @click="onAcceptDeletionRequest(req)"
+                        >
+                            Accept
+                        </button>
+                    </td>
+                    <td class="left" v-if="!req.isReviewed">
+                        <button
+                            class="button-decline"
+                            @click="onDeclineDeletionRequest(req)"
+                        >
+                            Decline
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -128,16 +177,24 @@ export default {
         AdminEntitiesNavbar,
     },
     mounted() {
-        this.loadRequests();
+        this.loadRequests(this.$route.params.data);
+        if (this.$route.params.data == undefined) this.requestMode = "0";
+        else this.requestMode = this.$route.params.data;
     },
     methods: {
-        loadRequests() {
-            this.loadRegistrationRequests();
-            this.loadMarkRequests();
+        onRequestTypeChanged(type) {
+            this.requestMode = type;
+            this.loadRequests(type);
+        },
+        loadRequests(type) {
+            if (type == "0") this.loadRegistrationRequests();
+            else if (type == "1") this.loadMarkRequests();
+            else if (type == "2") this.loadDeletionRequests();
+            else this.loadRegistrationRequests();
         },
         loadRegistrationRequests() {
             axios.get("/api/RegistrationReview/GetAll").then((res) => {
-                this.requests = res.data;
+                this.registrationRequests = res.data;
             });
         },
         loadMarkRequests() {
@@ -145,7 +202,71 @@ export default {
                 this.markRequests = res.data;
             });
         },
-        onAcceptRequest(userId) {
+        loadDeletionRequests() {
+            axios.get("/api/Admin/GetDeletionRequests").then((res) => {
+                this.deletionRequests = res.data;
+            });
+        },
+        onAcceptDeletionRequest(req) {
+            req.isApproved = true;
+            axios
+                .put("/api/Admin/RespondAccountDeletionRequest", req)
+                .then(() => {
+                    this.$swal.fire("Successfully saved.");
+                    this.loadRequests("2");
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        this.$swal.fire(error.response.data);
+                    }
+                });
+        },
+        onDeclineDeletionRequest(req) {
+            req.isApproved = false;
+            this.$swal
+                .fire({
+                    title: "Enter reason for declining request.",
+                    input: "text",
+                    inputAttributes: {
+                        autocapitalize: "off",
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    showLoaderOnConfirm: true,
+                    preConfirm: (reason) => {
+                        req.response = reason;
+                        axios
+                            .put(
+                                "/api/Admin/RespondAccountDeletionRequest",
+                                req
+                            )
+                            .then(() => this.loadRequests("2"))
+
+                            .catch(function (error) {
+                                if (error.response) {
+                                    // Request made and server responded
+                                    console.log(error.response.data);
+                                    console.log(error.response.status);
+                                    console.log(error.response.headers);
+                                } else if (error.request) {
+                                    // The request was made but no response was received
+                                    console.log(error.request);
+                                } else {
+                                    // Something happened in setting up the request that triggered an Error
+                                    console.log("Error", error.message);
+                                }
+                            });
+                    },
+                    allowOutsideClick: () => !this.$swal.isLoading(),
+                })
+                .then((result) => {
+                    console.log("result", result);
+                    if (result.isConfirmed) {
+                        this.$swal.fire("Successfully saved.");
+                    }
+                });
+        },
+        onAcceptRegistrationRequest(userId) {
             axios
                 .put("/api/RegistrationReview/ReviewRequest", {
                     userId: userId,
@@ -154,7 +275,7 @@ export default {
                 })
                 .then(() => {
                     this.$swal.fire("Successfully saved.");
-                    this.loadRequests();
+                    this.loadRequests("0");
                 });
         },
         onAcceptMarkRequest(markRequest) {
@@ -169,7 +290,7 @@ export default {
                 this.loadMarkRequests();
             });
         },
-        onDeclineRequest(userId) {
+        onDeclineRegistrationRequest(userId) {
             this.$swal
                 .fire({
                     title: "Enter reason for declining request.",
@@ -188,7 +309,7 @@ export default {
                                 result: false,
                                 reason: reason,
                             })
-                            .then(() => this.loadRequests());
+                            .then(() => this.loadRequests("0"));
                     },
                     allowOutsideClick: () => !this.$swal.isLoading(),
                 })
@@ -225,13 +346,15 @@ export default {
                 isAccountActive: false,
                 isAccountVerified: false,
             },
-            requests: [],
+            registrationRequests: [],
             markRequests: [],
             review: {
                 userId: "",
                 result: false,
                 reason: "",
             },
+            requestMode: "0",
+            deletionRequests: [],
         };
     },
 };
@@ -305,7 +428,7 @@ export default {
 }
 
 .button-accept {
-    background-color: #15ff00;
+    background-color: #52d146;
     border-radius: 12px;
     color: #000;
     cursor: pointer;
@@ -323,7 +446,7 @@ export default {
 }
 
 .button-decline {
-    background-color: #eb1414;
+    background-color: #992d2d;
     border-radius: 12px;
     color: #000;
     cursor: pointer;
@@ -341,6 +464,6 @@ export default {
 }
 
 button:hover {
-    background-color: #2843d8;
+    background-color: #3247be;
 }
 </style>

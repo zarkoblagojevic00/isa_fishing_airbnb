@@ -12,5 +12,6 @@ namespace Domain.Entities
         public virtual DateTime? RequestedDateTime { get; set; }
         public virtual string Reason { get; set; }
         public virtual bool IsReviewed { get; set; }
+        public virtual bool IsApproved { get; set; }
     }
 }

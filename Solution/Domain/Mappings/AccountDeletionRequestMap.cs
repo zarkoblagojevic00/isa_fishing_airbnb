@@ -24,6 +24,7 @@ namespace Domain.Mappings
             });
             Property(x => x.Reason, map => map.Column("Reason"));
             Property(x => x.IsReviewed, map => map.Column("IsReviewed"));
+            Property(x => x.IsApproved, map => map.Column("IsApproved"));
         }
     }
 }

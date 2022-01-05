@@ -130,6 +130,23 @@ namespace API.Controllers
                 return BadRequest(Responses.AccountDeletionRequestSubmitted);
             }
 
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
+                .Where(service => service.OwnerId == userId);
+            
+            var userReservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && x.UserId == userId && !x.IsCanceled);
+
+            var ownerReservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && services.Any(service => service.ServiceId == x.ServiceId) && !x.IsCanceled);
+
+
+            if (userReservationDates.Any() || ownerReservationDates.Any())
+            {
+                return BadRequest(Responses.CannotRequestDeletion);
+            }
+
             try
             {
                 UoW.BeginTransaction();
@@ -147,6 +164,21 @@ namespace API.Controllers
 
             return Ok(Responses.Ok);
         }
+
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true })]
+        public IActionResult GetUsersRequestForDeletion()
+        {
+            var userId = GetUserIdFromCookie();
+
+            var existingDeletionRequest = UoW.GetRepository<IAccountDeletionRequestReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.UserId == userId);
+
+            return Ok(existingDeletionRequest);
+        }
+
 
         [HttpPut]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true })]

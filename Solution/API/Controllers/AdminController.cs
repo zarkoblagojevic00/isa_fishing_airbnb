@@ -431,6 +431,48 @@ namespace API.Controllers
 
         }
 
+        [HttpPut]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult RespondAccountDeletionRequest(AccountDeletionRequestViewDTO request)
+        {
+            var oldRequest = UoW.GetRepository<IAccountDeletionRequestReadRepository>().GetAll()
+                .Where(req => request.UserId == request.UserId).FirstOrDefault();
+            oldRequest.IsReviewed = true;
+            oldRequest.IsApproved = request.IsApproved;
+
+
+            try
+            {
+                bool deleted = false;
+                if (request.IsApproved)
+                {
+                    deleted = DeleteRequestedUser(request.UserId);
+                    if (!deleted)
+                    {
+                        return BadRequest(Responses.CannotRequestDeletion);
+                    }
+                }
+                UoW.BeginTransaction();
+                UoW.GetRepository<IAccountDeletionRequestWriteRepository>().Update(oldRequest);
+                UoW.Commit();
+
+                var mailService = new MailingService(UoW)
+                {
+                    Body = GenerateAccountDeletionRequestMailBody(request),
+                    Receiver = request.Email,
+                    Title = "Account deletion review"
+                };
+                mailService.Send();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return BadRequest("Account deletion review failed.");
+            }
+            return Ok("Account deletion reviewed");
+
+        }
+
 
         [HttpGet]
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
@@ -464,6 +506,30 @@ namespace API.Controllers
             return Ok(userIssueInformation);
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult GetDeletionRequests()
+        {
+            var requests = UoW.GetRepository<IAccountDeletionRequestReadRepository>().GetAll()
+                .Where(request => !request.IsReviewed);
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+            var requestInformation = requests
+                .Join(users, r => r.UserId, u => u.UserId, (r, u) => new { r, u })
+                .Select(request => new AccountDeletionRequestViewDTO
+                {
+                    Name = request.u.Name,
+                    Surname = request.u.Surname,
+                    Email = request.u.Email,
+                    Reason = request.r.Reason,
+                    IsReviewed = request.r.IsReviewed,
+                    UserId = request.u.UserId,
+                    IsApproved = false
+                });
+
+            return Ok(requestInformation);
+        }
+
 
         private string GenerateMarkReviewMailBody(UserMarkInformationDTO mark)
         {
@@ -477,6 +543,24 @@ namespace API.Controllers
             stringBuilder.Append("Given mark: " + mark.Mark.ToString());
 
 
+
+            return stringBuilder.ToString();
+        }
+
+        private string GenerateAccountDeletionRequestMailBody(AccountDeletionRequestViewDTO request)
+        {
+            var stringBuilder = new StringBuilder();
+
+            if(request.IsApproved)
+                stringBuilder.Append("Your account deletion request has been reviewed and accepted!").Append(HtmlWriter.Br());
+            else
+                stringBuilder.Append("Your account deletion request has been reviewed and declined!").Append(HtmlWriter.Br());
+            stringBuilder.Append(HtmlWriter.Br());
+            if (!request.IsApproved)
+            {
+                stringBuilder.Append(request.Response);
+                stringBuilder.Append(HtmlWriter.Br());
+            }
 
             return stringBuilder.ToString();
         }
@@ -498,6 +582,56 @@ namespace API.Controllers
 
 
             return stringBuilder.ToString();
+        }
+
+        private bool DeleteRequestedUser(int userId)
+        {
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
+                            .Where(service => service.OwnerId == userId);
+
+            var userReservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && x.UserId == userId && !x.IsCanceled);
+
+            var ownerReservationDates = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.EndDateTime >= DateTime.Now && services.Any(service => service.ServiceId == x.ServiceId) && !x.IsCanceled);
+
+
+            if (userReservationDates.Any() || ownerReservationDates.Any())
+            {
+                return false;
+            }
+
+            try
+            {
+
+                UoW.BeginTransaction();
+
+                var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
+                    .FirstOrDefault(x => x.UserId == userId);
+
+                var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
+
+                if (user.UserType == UserType.Admin)
+                {
+                    UoW.Rollback();
+                    return false;
+                }
+
+                if (additionalInstructorInfo != null)
+                    UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>().Delete(additionalInstructorInfo);
+
+                UoW.GetRepository<IUserWriteRepository>().Delete(user);
+
+                UoW.Commit();
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return false;
+            }
+            return true;
         }
     }
 }

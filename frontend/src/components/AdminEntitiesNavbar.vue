@@ -17,10 +17,12 @@
                 <option value="2">Adventures</option>
             </select>
         </li>
-        <li>
-            <router-link class="link" :to="formatUrl('Requests')">
-                Requests
-            </router-link>
+        <li class="custom-select">
+            <select @change="onChangeRequests">
+                <option value="0">Registration requests</option>
+                <option value="1">Mark requests</option>
+                <option value="2">Account deletion requests</option>
+            </select>
         </li>
         <li>
             <router-link class="link" :to="formatUrl('Issues')">
@@ -64,6 +66,14 @@ export default {
                 params: { data },
             });
             this.$emit("serviceTypeChanged", e.target.value);
+        },
+        onChangeRequests(e) {
+            let data = e.target.value;
+            this.$router.push({
+                name: "AdminRequests", //use name for router push
+                params: { data },
+            });
+            this.$emit("requestTypeChanged", e.target.value);
         },
     },
 };

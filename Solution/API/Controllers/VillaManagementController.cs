@@ -150,6 +150,22 @@ namespace API.Controllers
                 }
             }
 
+            if (newVilla.AvailableFrom != null && newVilla.AvailableTo == null)
+            {
+                ModelState.AddModelError("AvailableTo", "The ending date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (newVilla.AvailableTo != null && newVilla.AvailableFrom == null)
+            {
+                ModelState.AddModelError("AvailableFrom", "The beginning date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (newVilla.AvailableFrom >= newVilla.AvailableTo)
+            {
+                ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
+            }
+
             var existingVilla = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
                 .FirstOrDefault(x => x.Name == newVilla.Name && x.OwnerId == GetUserIdFromCookie());
@@ -199,6 +215,22 @@ namespace API.Controllers
             if (!CheckOwnerShip(villa.VillaId.Value))
             {
                 return Unauthorized(Responses.ServiceOwnerNotLinked);
+            }
+
+            if (villa.AvailableFrom != null && villa.AvailableTo == null)
+            {
+                ModelState.AddModelError("AvailableTo", "The ending date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (villa.AvailableTo != null && villa.AvailableFrom == null)
+            {
+                ModelState.AddModelError("AvailableFrom", "The beginning date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (villa.AvailableFrom >= villa.AvailableTo)
+            {
+                ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
             }
 
             var reservationDates = UoW.GetRepository<IReservationReadRepository>()

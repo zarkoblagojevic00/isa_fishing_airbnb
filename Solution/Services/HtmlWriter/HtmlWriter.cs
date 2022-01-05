@@ -60,5 +60,29 @@ namespace Services.HtmlWriter
 
             return stringBuilder.ToString();
         }
+
+        public static string ReservationNotificationTemplate(Reservation reservation, Service service)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder
+                .Append("<h3>New reservation!</h3>")
+                .Append("<p> Dear user,</p>")
+                .Append(
+                    "<p> We are writing to inform you that a new reservation has been added to your calendar!The reservation specification is state bellow. If you are not expecting to have that reservation, contact the admins.</p>")
+                .Append("<p> Reservation details:</p>")
+                .Append("<ul>")
+                .Append("<li><strong> Service name </strong>:").Append(service.Name).Append("</li>")
+                .Append("<li><strong> Creation date </strong>:").Append(reservation.ReservedDateTime).Append("</li>")
+                .Append("<li><strong> Price per day</strong>:").Append(reservation.Price).Append("</li>")
+                .Append("<li><strong> Start date</strong>:").Append(reservation.StartDateTime).Append("</li>")
+                .Append("<li>< strong > End date </strong>:").Append(reservation.EndDateTime).Append("</li>")
+                .Append("</ul>")
+                .Append("<p> Some additional equipment:&nbsp;").Append(reservation.AdditionalEquipment).Append("</p>")
+                .Append("<p> &nbsp;</p>")
+                .Append("<p><em> Yours faithfully, ZAMISR </em></p>");
+            
+            return stringBuilder.ToString();
+        }
     }
 }

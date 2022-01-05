@@ -50,5 +50,7 @@ namespace API.DTOs
         [Required(ErrorMessage = "Capacity has to be specified for the Boat!")]
         [Range(0, int.MaxValue, ErrorMessage = "Capacity has to be a positive number!")]
         public int Capacity { get; set; }
+        public DateTime? AvailableFrom { get; set; }
+        public DateTime? AvailableTo { get; set; }
     }
 }

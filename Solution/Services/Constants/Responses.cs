@@ -21,6 +21,7 @@ namespace Services.Constants
         public static string MissingCookieInfo = "Missing information in cookie";
 
         public static string ServiceOwnerNotLinked = "Service and Owner specified are not linked";
+        public static string ServiceNotAvailableAtGivenTime = "Service is not available at that time";
 
         public static string WrongImageFormat = "Image was not in the correct format";
 

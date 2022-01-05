@@ -68,7 +68,9 @@ namespace API.Controllers
                 IsPercentageTaken = service.IsPercentageTakenFromCanceledReservations,
                 PercentageToTake = service.PercentageToTake,
                 Address = service.Address,
-                Capacity = service.Capacity
+                Capacity = service.Capacity,
+                AvailableFrom = service.AvailableFrom,
+                AvailableTo = service.AvailableTo
             });
         }
 
@@ -96,7 +98,9 @@ namespace API.Controllers
                     .GetAll()
                     .Where(z => z.ServiceId == x.ServiceId)
                     .Select(z => z.ImageId),
-                Address = x.Address
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo
             });
 
             return result;
@@ -106,6 +110,22 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.BoatOwner })]
         public IActionResult CreateBoat(BoatDTO newBoat)
         {
+            if (newBoat.AvailableFrom != null && newBoat.AvailableTo == null)
+            {
+                ModelState.AddModelError("AvailableTo", "The ending date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (newBoat.AvailableTo != null && newBoat.AvailableFrom == null)
+            {
+                ModelState.AddModelError("AvailableFrom", "The beginning date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (newBoat.AvailableFrom >= newBoat.AvailableTo)
+            {
+                ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
+            }
+
             var existingBoat = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
                 .FirstOrDefault(x => x.Name == newBoat.Name && x.OwnerId == GetUserIdFromCookie());
@@ -161,6 +181,22 @@ namespace API.Controllers
             if (!CheckOwnerShip(boat.BoatId.Value))
             {
                 return Unauthorized(Responses.ServiceOwnerNotLinked);
+            }
+
+            if (boat.AvailableFrom != null && boat.AvailableTo == null)
+            {
+                ModelState.AddModelError("AvailableTo", "The ending date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (boat.AvailableTo != null && boat.AvailableFrom == null)
+            {
+                ModelState.AddModelError("AvailableFrom", "The beginning date for availability needs to be specified!");
+                return BadRequest(ModelState);
+            }
+            if (boat.AvailableFrom >= boat.AvailableTo)
+            {
+                ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
             }
 
             var reservationDates = UoW.GetRepository<IReservationReadRepository>()
@@ -241,6 +277,8 @@ namespace API.Controllers
             boatService.Capacity = boat.Capacity;
             boatService.IsPercentageTakenFromCanceledReservations = boat.IsPercentageTaken;
             boatService.PercentageToTake = boat.PercentageToTake;
+            boatService.AvailableFrom = boat.AvailableFrom;
+            boatService.AvailableTo = boat.AvailableTo;
 
             additionalInfo.Length = boat.Length;
             additionalInfo.BoatType = boat.BoatType;
@@ -296,7 +334,9 @@ namespace API.Controllers
                 TermsOfUse = newBoat.TermsOfUse,
                 Capacity = newBoat.Capacity,
                 IsPercentageTakenFromCanceledReservations = newBoat.IsPercentageTaken,
-                PercentageToTake = newBoat.PercentageToTake
+                PercentageToTake = newBoat.PercentageToTake,
+                AvailableFrom = newBoat.AvailableFrom,
+                AvailableTo = newBoat.AvailableTo
             };
         }
     }

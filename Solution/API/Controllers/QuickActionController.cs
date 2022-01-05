@@ -56,7 +56,17 @@ namespace API.Controllers
             {
                 return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
-            
+
+            var service = UoW.GetRepository<IServiceReadRepository>().GetById(newAction.ServiceId);
+            if (service.AvailableTo != null && service.AvailableFrom != null)
+            {
+                if (!(service.AvailableFrom <= newAction.StartDateTime &&
+                      service.AvailableTo >= newAction.EndDateTime))
+                {
+                    return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
+                }
+            }
+
             var dateToCheck = new CalendarItem()
             {
                 StartDateTime = newAction.StartDateTime,
@@ -115,6 +125,16 @@ namespace API.Controllers
             else if (relevantAction.IsTaken)
             {
                 return BadRequest(Responses.PromoActionTaken);
+            }
+
+            var service = UoW.GetRepository<IServiceReadRepository>().GetById(action.ServiceId);
+            if (service.AvailableTo != null && service.AvailableFrom != null)
+            {
+                if (!(service.AvailableFrom <= action.StartDateTime &&
+                      service.AvailableTo >= action.EndDateTime))
+                {
+                    return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
+                }
             }
 
             if (action.StartDateTime != relevantAction.StartDateTime ||

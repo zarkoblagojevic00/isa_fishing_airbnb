@@ -14,6 +14,7 @@ using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
 using Services;
 using Services.Constants;
+using Services.HtmlWriter;
 using Services.Validators;
 
 namespace API.Controllers
@@ -146,6 +147,16 @@ namespace API.Controllers
                 return BadRequest(Responses.ServiceOwnerNotLinked);
             }
 
+            var service = UoW.GetRepository<IServiceReadRepository>().GetById(reservationDto.ServiceId);
+            if (service.AvailableTo != null && service.AvailableFrom != null)
+            {
+                if (!(service.AvailableFrom <= reservationDto.StartDateTime &&
+                      service.AvailableTo >= reservationDto.EndDateTime))
+                {
+                    return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
+                }
+            }
+
             var userReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
                 .Where(x => x.UserId == user.UserId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
@@ -181,13 +192,14 @@ namespace API.Controllers
                 UoW.GetRepository<IReservationWriteRepository>().Add(newReservation);
 
                 UoW.Commit();
+
+                NotifyUser(newReservation, service, user);
             }
             catch (Exception e)
             {
                 UoW.Rollback();
                 return Problem(e.Message);
             }
-
             return Ok(Responses.Ok);
         }
 
@@ -310,6 +322,20 @@ namespace API.Controllers
                 StartDateTime = reservation.StartDateTime,
                 EndDateTime = reservation.EndDateTime
             };
+        }
+
+        private void NotifyUser(Reservation newReservation, Service service, User user)
+        {
+            var html = HtmlWriter.ReservationNotificationTemplate(newReservation, service);
+
+            var mailingService = new MailingService(UoW)
+            {
+                Body = html,
+                Receiver = user.Email,
+                Title = "Info"
+            };
+
+            mailingService.Send();
         }
     }
 }

@@ -27,6 +27,7 @@ import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
 import InstructorProfile from "../views/InstructorProfile.vue";
 import ClientHomepage from "../views/ClientHomepage.vue";
 import AdminIssues from "../views/AdminIssues.vue";
+import InstructorAnalytics from "../views/InstructorAnalytics.vue";
 
 const routes = [
     {
@@ -84,6 +85,11 @@ const routes = [
         path: "/instructor/services",
         name: "InstructorServices",
         component: InstructorServices,
+    },
+    {
+        path: "/instructor/analytics",
+        name: "InstructorAnalytics",
+        component: InstructorAnalytics,
     },
     {
         path: "/instructor/availability",

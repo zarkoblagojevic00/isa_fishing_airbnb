@@ -69,6 +69,59 @@ namespace API.Controllers
             return Ok(ownerId);
         }
 
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetMarkedReservationsWithBasicUserInfo()
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll();
+
+            var marks = UoW.GetRepository<IMarkReadRepository>()
+                .GetAll();
+
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+            var userReservations = reservations
+                .Join(adventures, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(marks, ra => ra.r.MarkId, m => m.MarkId, (ra, m) => new {ra, m })
+                .Join(users, ram => ram.ra.r.UserId, u => u.UserId, (ram, u) => new { ram, u })
+                .Select(reservation => new ReservationUserDTO
+                {
+                    AdditionalEquipment = reservation.ram.ra.r.AdditionalEquipment,
+                    IsCanceled = reservation.ram.ra.r.IsCanceled,
+                    IsPromo = reservation.ram.ra.r.IsPromo,
+                    IsServiceUnavailableMarker = reservation.ram.ra.r.IsServiceUnavailableMarker,
+                    MarkId = reservation.ram.ra.r.MarkId,
+                    Mark = reservation.ram.m.GivenMark,
+                    Price = reservation.ram.ra.r.Price,
+                    ReportId = reservation.ram.ra.r.ReportId,
+                    ReservationId = reservation.ram.ra.r.ReservationId,
+                    ReservedDateTime = reservation.ram.ra.r.ReservedDateTime,
+                    ServiceId = reservation.ram.ra.r.ServiceId,
+                    ServiceName = reservation.ram.ra.a.Name,
+                    UserId = reservation.ram.ra.r.UserId,
+                    UsersName = reservation.u.Name,
+                    UsersSurname = reservation.u.Surname,
+                    UsersPhoneNumber = reservation.u.PhoneNumber,
+                    ServiceFrom = reservation.ram.ra.r.StartDateTime,
+                    ServiceTo = reservation.ram.ra.r.EndDateTime,
+                });
+
+            var distinctReservations = userReservations
+                .GroupBy(res => res.ReservationId)
+                .Select(res => res.First());
+
+            return Ok(distinctReservations);
+        }
+
+
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
         public IActionResult GetReservationsWithBasicUserInfo()
@@ -79,28 +132,89 @@ namespace API.Controllers
                .GetAll()
                .Where(x => x.OwnerId == ownerId);
 
-            var bla = adventures.Select(y => y.ServiceId).ToArray();
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll();
+
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+            var userReservations = reservations
+                .Join(adventures, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(users, ra => ra.r.UserId, u => u.UserId, (ra, u) => new { ra, u })
+                .Select(reservation => new ReservationUserDTO
+                {
+                    AdditionalEquipment = reservation.ra.r.AdditionalEquipment,
+                    IsCanceled = reservation.ra.r.IsCanceled,
+                    IsPromo = reservation.ra.r.IsPromo,
+                    IsServiceUnavailableMarker = reservation.ra.r.IsServiceUnavailableMarker,
+                    MarkId = reservation.ra.r.MarkId,
+                    Price = reservation.ra.r.Price,
+                    ReportId = reservation.ra.r.ReportId,
+                    ReservationId = reservation.ra.r.ReservationId,
+                    ReservedDateTime = reservation.ra.r.ReservedDateTime,
+                    ServiceId = reservation.ra.r.ServiceId,
+                    ServiceName = reservation.ra.a.Name,
+                    UserId = reservation.ra.r.UserId,
+                    UsersName = reservation.u.Name,
+                    UsersSurname = reservation.u.Surname,
+                    UsersPhoneNumber = reservation.u.PhoneNumber,
+                    ServiceFrom = reservation.ra.r.StartDateTime,
+                    ServiceTo = reservation.ra.r.EndDateTime,
+                    Capacity = reservation.ra.a.Capacity,
+                });
+
+            var distinctReservations = userReservations
+                .GroupBy(res => res.ReservationId)
+                .Select(res => res.First());
+
+            return Ok(distinctReservations);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetFinishedReservationsWithBasicUserInfo()
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
             var reservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.ServiceId.In(bla));
+                .Where(res => res.EndDateTime < DateTime.Now);
 
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
 
+            var userReservations = reservations
+                .Join(adventures, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(users, ra => ra.r.UserId, u => u.UserId, (ra, u) => new { ra, u })
+                .Select(reservation => new ReservationUserDTO
+                {
+                    AdditionalEquipment = reservation.ra.r.AdditionalEquipment,
+                    IsCanceled = reservation.ra.r.IsCanceled,
+                    IsPromo = reservation.ra.r.IsPromo,
+                    IsServiceUnavailableMarker = reservation.ra.r.IsServiceUnavailableMarker,
+                    MarkId = reservation.ra.r.MarkId,
+                    Price = reservation.ra.r.Price,
+                    ReportId = reservation.ra.r.ReportId,
+                    ReservationId = reservation.ra.r.ReservationId,
+                    ReservedDateTime = reservation.ra.r.ReservedDateTime,
+                    ServiceId = reservation.ra.r.ServiceId,
+                    ServiceName = reservation.ra.a.Name,
+                    UserId = reservation.ra.r.UserId,
+                    UsersName = reservation.u.Name,
+                    UsersSurname = reservation.u.Surname,
+                    UsersPhoneNumber = reservation.u.PhoneNumber,
+                    ServiceFrom = reservation.ra.r.StartDateTime,
+                    ServiceTo = reservation.ra.r.EndDateTime,
+                    Capacity = reservation.ra.a.Capacity,
+                });
 
-            IEnumerable<ReservationUserDTO> userReservations = MapReservationsAndUsers(reservations);
+            var distinctReservations = userReservations
+                .GroupBy(res => res.ReservationId)
+                .Select(res => res.First());
 
-            foreach (var reservation in userReservations)
-            {
-                var adventure = UoW.GetRepository<IServiceReadRepository>().GetById(reservation.ServiceId);
-                reservation.ServiceName = adventure.Name;
-                reservation.Capacity = adventure.Capacity;
-            }
-
-            if (!userReservations.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(userReservations);
+            return Ok(distinctReservations);
         }
 
 
@@ -266,6 +380,64 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetServiceAverageMarks()
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll();
+
+            var marks = UoW.GetRepository<IMarkReadRepository>()
+                .GetAll();
+
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+            var userReservations = reservations
+                .Join(adventures, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(marks, ra => ra.r.MarkId, m => m.MarkId, (ra, m) => new { ra, m })
+                .Join(users, ram => ram.ra.r.UserId, u => u.UserId, (ram, u) => new { ram, u })
+                .Select(reservation => new ReservationUserDTO
+                {
+                    AdditionalEquipment = reservation.ram.ra.r.AdditionalEquipment,
+                    IsCanceled = reservation.ram.ra.r.IsCanceled,
+                    IsPromo = reservation.ram.ra.r.IsPromo,
+                    IsServiceUnavailableMarker = reservation.ram.ra.r.IsServiceUnavailableMarker,
+                    MarkId = reservation.ram.ra.r.MarkId,
+                    Mark = reservation.ram.m.GivenMark,
+                    Price = reservation.ram.ra.r.Price,
+                    ReportId = reservation.ram.ra.r.ReportId,
+                    ReservationId = reservation.ram.ra.r.ReservationId,
+                    ReservedDateTime = reservation.ram.ra.r.ReservedDateTime,
+                    ServiceId = reservation.ram.ra.r.ServiceId,
+                    ServiceName = reservation.ram.ra.a.Name,
+                    UserId = reservation.ram.ra.r.UserId,
+                    UsersName = reservation.u.Name,
+                    UsersSurname = reservation.u.Surname,
+                    UsersPhoneNumber = reservation.u.PhoneNumber,
+                    ServiceFrom = reservation.ram.ra.r.StartDateTime,
+                    ServiceTo = reservation.ram.ra.r.EndDateTime,
+                });
+
+            var distinctReservations = userReservations
+                .GroupBy(res => res.ReservationId)
+                .Select(res => res.First());
+
+            var averageMarks = distinctReservations.GroupBy(res => new { ServiceName = res.ServiceName })
+               .Select(res => new ServiceAverageMarkDTO
+               {
+                   AverageMark = res.Average(p => p.Mark).Value,
+                   ServiceName = res.Key.ServiceName
+               });
+
+            return Ok(averageMarks);
+        }
+
 
         private Report CreateNewReport(ReportDTO report)
         {
@@ -276,40 +448,5 @@ namespace API.Controllers
             };
         }
 
-        private IEnumerable<ReservationUserDTO> MapReservationsAndUsers(IEnumerable<Reservation> reservations)
-        {
-            List<ReservationUserDTO> userReservations = new List<ReservationUserDTO>();
-            var usersReadRepository = UoW.GetRepository<IUserReadRepository>();
-
-            foreach(var reservation in reservations)
-            {
-                User user = usersReadRepository.GetById(reservation.UserId);
-                ReservationUserDTO dto = new ReservationUserDTO
-                {
-                    AdditionalEquipment = reservation.AdditionalEquipment,
-                    IsCanceled = reservation.IsCanceled,
-                    IsPromo = reservation.IsPromo,
-                    IsServiceUnavailableMarker = reservation.IsServiceUnavailableMarker,
-                    MarkId = reservation.MarkId,
-                    Price = reservation.Price,
-                    ReportId = reservation.ReportId,
-                    ReservationId = reservation.ReservationId,
-                    ReservedDateTime = reservation.ReservedDateTime,
-                    ServiceId = reservation.ServiceId,
-                    UserId = reservation.UserId,
-                    UsersName = user.Name,
-                    UsersSurname = user.Surname,
-                    UsersPhoneNumber = user.PhoneNumber,
-                    ServiceFrom = reservation.StartDateTime,
-                    ServiceTo = reservation.EndDateTime,
-                    
-                };
-                userReservations.Add(dto);
-            }
-
-
-            return userReservations;
-
-        }
     }
 }

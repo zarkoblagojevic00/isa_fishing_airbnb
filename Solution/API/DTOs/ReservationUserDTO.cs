@@ -20,6 +20,7 @@ namespace API.DTOs
         public bool IsServiceUnavailableMarker { get; set; }
         public int? ReportId { get; set; }
         public int? MarkId { get; set; }
+        public double? Mark { get; set; }
         public string AdditionalEquipment { get; set; }
         public double Price { get; set; }
         public string UsersName { get; set; }

@@ -32,6 +32,7 @@ namespace API.Controllers
             var result = villas.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()
             {
                 AdditionalEquipment = x.AdditionalEquipment,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 AvailableFrom = x.AvailableFrom,
                 AvailableTo = x.AvailableTo,
@@ -74,6 +75,7 @@ namespace API.Controllers
                 VillaId = villaId,
                 Name = service.Name,
                 PricePerDay = service.PricePerDay,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(service.CityId).Name,
                 Address = service.Address,
                 Longitude = service.Longitude,
                 Latitude = service.Latitude,
@@ -108,6 +110,7 @@ namespace API.Controllers
             var result = villas.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()
             {
                 AdditionalEquipment = x.AdditionalEquipment,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 AvailableFrom = x.AvailableFrom,
                 AvailableTo = x.AvailableTo,

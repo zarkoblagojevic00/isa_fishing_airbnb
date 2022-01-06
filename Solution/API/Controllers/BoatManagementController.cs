@@ -67,6 +67,7 @@ namespace API.Controllers
                 PricePerDay = service.PricePerDay,
                 IsPercentageTaken = service.IsPercentageTakenFromCanceledReservations,
                 PercentageToTake = service.PercentageToTake,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(service.CityId).Name,
                 Address = service.Address,
                 Capacity = service.Capacity,
                 AvailableFrom = service.AvailableFrom,
@@ -98,6 +99,7 @@ namespace API.Controllers
                     .GetAll()
                     .Where(z => z.ServiceId == x.ServiceId)
                     .Select(z => z.ImageId),
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 AvailableFrom = x.AvailableFrom,
                 AvailableTo = x.AvailableTo

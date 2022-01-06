@@ -27,6 +27,7 @@ namespace Domain.Mappings
             Property(x => x.ServiceType, map => map.Column("ServiceType"));
             Property(x => x.Name, map => map.Column("Name"));
             Property(x => x.PricePerDay, map => map.Column("PricePerDay"));
+            Property(x => x.CityId, map => map.Column("CityId"));
             Property(x => x.Address, map => map.Column("Address"));
             Property(x => x.Longitude, map => map.Column("Longitude"));
             Property(x => x.Latitude, map => map.Column("Latitude"));
@@ -46,7 +47,6 @@ namespace Domain.Mappings
             Property(x => x.Capacity, map => map.Column("Capacity"));
             Property(x => x.IsPercentageTakenFromCanceledReservations, map => map.Column("IsPercentageTakenFromCanceledReservations"));
             Property(x => x.PercentageToTake, map => map.Column("PercentageToTake"));
-
         }
     }
 }

@@ -12,6 +12,10 @@ namespace API.DTOs
         [Required(ErrorMessage = "Name is mandatory for the Adventure!")]
         public string Name { get; set; }
         public int OwnerId { get; set; }
+
+        // TODO: City name should be reqired
+        public string CityName { get; set; }
+
         [Required(ErrorMessage = "Address is mandatory for the adventure!")]
         public string Address { get; set; }
 

@@ -16,7 +16,10 @@ namespace API.DTOs
         [Required(ErrorMessage = "You have to specify the price per day for the Villa!")]
         [Range(0.0, Double.MaxValue, ErrorMessage = "Price has to be more than 0!")]
         public double PricePerDay { get; set; }
-        
+
+        // TODO: City name should be reqired
+        public string CityName { get; set; }
+
         [Required(ErrorMessage = "Address is mandatory for the Villa!")]
         public string Address { get; set; }
         

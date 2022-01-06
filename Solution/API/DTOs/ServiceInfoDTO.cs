@@ -15,6 +15,7 @@ namespace API.DTOs
         public int OwnerId { get; set; }
         public string OwnerName { get; set; }
         public string OwnerSurname { get; set; }
+        public string CityName { get; set; }
         public string Address { get; set; }
         public string PromoDescription { get; set; }
         public double PricePerDay { get; set; }

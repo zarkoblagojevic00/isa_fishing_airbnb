@@ -45,6 +45,8 @@ namespace API.DTOs
         public bool IsPercentageTaken { get; set; }
         [Range(0, 100.0, ErrorMessage = "Percentage can range from 0 to 100!")]
         public double PercentageToTake { get; set; }
+        // TODO: City name should be reqired
+        public string CityName { get; set; }
         [Required(ErrorMessage = "Address is mandatory for the Boat!")]
         public string Address { get; set; }
         [Required(ErrorMessage = "Capacity has to be specified for the Boat!")]

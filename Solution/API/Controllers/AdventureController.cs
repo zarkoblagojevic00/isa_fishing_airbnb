@@ -82,6 +82,7 @@ namespace API.Controllers
             {
                 Name = adventure.Name,
                 PricePerDay = adventure.PricePerDay,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(adventure.CityId).Name,
                 Address = adventure.Address,
                 Longitude = adventure.Longitude,
                 Latitude = adventure.Latitude,
@@ -121,6 +122,7 @@ namespace API.Controllers
             {
                 Name = x.Name,
                 PricePerDay = x.PricePerDay,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 Longitude = x.Longitude,
                 Latitude = x.Latitude,
@@ -163,6 +165,7 @@ namespace API.Controllers
             {
                 Name = x.Name,
                 PricePerDay = x.PricePerDay,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 Longitude = x.Longitude,
                 Latitude = x.Latitude,
@@ -210,6 +213,7 @@ namespace API.Controllers
             {
                 Name = x.Name,
                 PricePerDay = x.PricePerDay,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
                 Address = x.Address,
                 Longitude = x.Longitude,
                 Latitude = x.Latitude,

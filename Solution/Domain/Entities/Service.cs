@@ -13,6 +13,7 @@ namespace Domain.Entities
         public virtual ServiceType ServiceType { get; set; }
         public virtual string Name { get; set; }
         public virtual double PricePerDay { get; set; }
+        public virtual int CityId { get; set; }
         public virtual string Address { get; set; }
         public virtual double Longitude { get; set; }
         public virtual double Latitude { get; set; }

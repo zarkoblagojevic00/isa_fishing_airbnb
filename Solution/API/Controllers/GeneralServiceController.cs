@@ -119,6 +119,11 @@ namespace API.Controllers
 
                 UoW.GetRepository<IReservationWriteRepository>().Update(reservation);
 
+                if (!report.ShownUp)
+                {
+                    new PenalizationService(UoW).PenalizeUser(reservation.ReservationId);
+                }
+
                 UoW.Commit();
             }
             catch (Exception e)
@@ -129,7 +134,7 @@ namespace API.Controllers
 
             return Ok(Responses.Ok);
         }
-
+        
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult CreateReservationForUser(NewReservationDTO reservationDto)
@@ -306,7 +311,9 @@ namespace API.Controllers
             return new Report()
             {
                 CreatedDateTime = DateTime.Now,
-                ReportText = report.ReportText
+                ReportText = report.ReportText,
+                ShownUp = report.ShownUp,
+                SuggestPenalty = report.SuggestPenalty
             };
         }
 

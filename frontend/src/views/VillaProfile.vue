@@ -92,7 +92,7 @@
                 <AddNewVilla
                     v-if="mode == 'AddNewVilla'"
                     :changeMode="ChangeMode"
-                    :villaId="0"
+                    :villaId="-1"
                 />
                 <AddNewVilla
                     v-if="mode == 'UpdateVilla'"
@@ -147,7 +147,7 @@ export default {
     data() {
         return {
             mode: "ViewVillas",
-            chosenVilla: 1,
+            chosenVilla: 0,
         };
     },
     methods: {
@@ -157,7 +157,7 @@ export default {
         },
         ChangeMode(newMode) {
             if (newMode == "AddNewVilla") {
-                this.chosenVilla = 0;
+                this.chosenVilla = -1;
             }
             this.mode = newMode;
         },

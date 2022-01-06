@@ -28,6 +28,8 @@ namespace Domain.Mappings
                 map.Column("CreatedDateTime");
                 map.Type(NHibernateUtil.DateTime);
             });
+            Property(x => x.SuggestPenalty, map => map.Column("SuggestPenalty"));
+            Property(x => x.ShownUp, map => map.Column("ShownUp"));
         }
     }
 }

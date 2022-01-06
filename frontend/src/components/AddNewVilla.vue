@@ -193,7 +193,7 @@ export default {
             numberOfBeds: 0,
             numberOfRooms: 0,
             errors: [],
-            mode: this.$props.villaId == 0 ? "Adding" : "Editing",
+            mode: this.$props.villaId == -1 ? "Adding" : "Editing",
             imageIds: [],
         };
     },

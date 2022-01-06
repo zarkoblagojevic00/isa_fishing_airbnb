@@ -29,4 +29,5 @@ IF @Environment = 'LOCAL'
 		:r .\LOCAL\PromoActions.Table.sql
 		:r .\LOCAL\AdditionalInstructorInfos.Table.sql
 		:r .\LOCAL\NavigationTools.Table.sql
+		:r .\LOCAL\Images.Table.sql
 	END

@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />
+    <None Include="MasterData\LOCAL\Images.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish\LOCAL.Model.publish.xml" />

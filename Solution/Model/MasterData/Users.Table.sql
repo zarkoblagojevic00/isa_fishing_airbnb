@@ -11,6 +11,7 @@ INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, P
 	INSERT INTO FurtherClientInfo (UserId, CollectedPoints, NumberOfPenalties) VALUES (5, 0, 0)
 INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (6, 2, 'Brodisa', 'Vlasnikovic', 'brodisa', 'Bulevar vecnih ratnika 140', 138, '066103132', 'ljubovicstefan@gmail.com', 1, 1)
 INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (7, 4, 'Admin', 'Adminovic', 'adminadmin', 'Bulevar vecnih ratnika 140', 138, '066103132', 'srdjansukovic@gmail.com', 1, 1)
+INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (8, 0, 'Žarko', 'Blagojević', 'strongmf', 'Bulevar vecnih ratnika 150', 138, '0661115555', 'zarexblage00@gmail.com', 1, 1)
 
 SET IDENTITY_INSERT Users OFF;
 

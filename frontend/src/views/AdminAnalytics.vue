@@ -20,6 +20,7 @@
     </div>
 
     <div class="flexbox-container">
+        <h3>Finished reservations</h3>
         <table class="reservations-table">
             <thead>
                 <tr>
@@ -51,9 +52,12 @@
             </tbody>
         </table>
     </div>
-    <div class="flexbox-revenue">
-        <div>Overall revenue:&emsp;</div>
-        <div>{{ overallRevenue }}</div>
+    <div class="flexbox-container-reservations">
+        <h3>Calculate revenue within date range</h3>
+        <div class="flexbox-revenue">
+            <v-date-picker v-model="range" is-range />
+            <h3 class="revenue">Total revenue: {{ overallRevenue }}</h3>
+        </div>
     </div>
 </template>
 
@@ -77,6 +81,7 @@ export default {
             systemConfig: {},
             reservationRevenues: [],
             overallRevenue: 0,
+            range: "",
         };
     },
     methods: {
@@ -126,6 +131,33 @@ export default {
             });
         },
     },
+    watch: {
+        range: {
+            handler: function () {
+                this.range.start.setHours(0, 0, 0, 0);
+                this.range.end.setHours(23, 59, 59, 999);
+
+                let finishedReservationsFiltered =
+                    this.reservationRevenues.filter((el) => {
+                        return (
+                            new Date(el.serviceEnd) >= this.range.start &&
+                            new Date(el.serviceEnd) <= this.range.end
+                        );
+                    });
+                if (finishedReservationsFiltered.length > 0) {
+                    this.overallRevenue = finishedReservationsFiltered
+                        .map((res) => res.price)
+                        .reduce((a, b) => a + b);
+                    this.overallRevenue = Number(this.overallRevenue).toFixed(
+                        2
+                    );
+                } else {
+                    this.overallRevenue = 0;
+                }
+            },
+            deep: true,
+        },
+    },
 };
 </script>
 
@@ -149,6 +181,10 @@ export default {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
+}
+
+.revenue {
+    padding: 50px;
 }
 
 .flexbox-row {

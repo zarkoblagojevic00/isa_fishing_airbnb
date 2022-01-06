@@ -213,8 +213,8 @@ namespace API.Controllers
         public IActionResult GetReservationRevenue()
         {
             var reservations = UoW.GetRepository<IReservationReadRepository>().GetAll()
-                .Where(x => !x.IsCanceled);
-                //.Where(x => x.EndDateTime < DateTime.Now);
+                .Where(x => !x.IsCanceled)
+                .Where(res => res.EndDateTime < DateTime.Now);
 
             var services = UoW.GetRepository<IServiceReadRepository>().GetAll();
             var users = UoW.GetRepository<IUserReadRepository>().GetAll();

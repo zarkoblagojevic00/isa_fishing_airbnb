@@ -115,39 +115,39 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"4\" days from n" +
                         "ow until \"6\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table14.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "BeginDaysAfterToday",
                             "7"});
-                table14.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "EndDaysAfterToday",
                             "9"});
-                table14.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "PricePerDay",
                             "5"});
-                table14.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "Capacity",
                             "3"});
 #line 9
  testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table14, "And ");
+                        "properties", ((string)(null)), table16, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table15.AddRow(new string[] {
+                table17.AddRow(new string[] {
                             "HttpMethod",
                             "post"});
-                table15.AddRow(new string[] {
+                table17.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/QuickAction/CreateNewQuickAction"});
-                table15.AddRow(new string[] {
+                table17.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 16
- testRunner.When("a request is sent to the API", ((string)(null)), table15, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table17, "When ");
 #line hidden
 #line 22
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -205,42 +205,42 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"4\" days from n" +
                         "ow until \"6\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table16.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "BeginDaysAfterToday",
                             "1"});
-                table16.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "EndDaysAfterToday",
                             "2"});
-                table16.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "PricePerDay",
                             "5"});
-                table16.AddRow(new string[] {
+                table18.AddRow(new string[] {
                             "Capacity",
                             "3"});
 #line 31
  testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table16, "And ");
+                        "properties", ((string)(null)), table18, "And ");
 #line hidden
 #line 37
  testRunner.And("that QuickActionDTO had the PromoActionId set previously", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table17.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "HttpMethod",
                             "put"});
-                table17.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/QuickAction/UpdateQuickAction"});
-                table17.AddRow(new string[] {
+                table19.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 39
- testRunner.When("a request is sent to the API", ((string)(null)), table17, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table19, "When ");
 #line hidden
 #line 45
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -297,42 +297,42 @@ this.ScenarioInitialize(scenarioInfo);
 #line 53
  testRunner.And("previously created promo action was taken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table18.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "BeginDaysAfterToday",
                             "1"});
-                table18.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "EndDaysAfterToday",
                             "2"});
-                table18.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "PricePerDay",
                             "5"});
-                table18.AddRow(new string[] {
+                table20.AddRow(new string[] {
                             "Capacity",
                             "3"});
 #line 54
  testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table18, "And ");
+                        "properties", ((string)(null)), table20, "And ");
 #line hidden
 #line 60
  testRunner.And("that QuickActionDTO had the PromoActionId set previously", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table19.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "HttpMethod",
                             "put"});
-                table19.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/QuickAction/UpdateQuickAction"});
-                table19.AddRow(new string[] {
+                table21.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 62
- testRunner.When("a request is sent to the API", ((string)(null)), table19, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table21, "When ");
 #line hidden
 #line 68
  testRunner.Then("a \"400\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

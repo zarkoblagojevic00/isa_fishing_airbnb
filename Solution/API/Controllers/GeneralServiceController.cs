@@ -173,21 +173,8 @@ namespace API.Controllers
                     return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
                 }
             }
-
-            var userReservations = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.UserId == user.UserId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
-                .Select(x => new CalendarItem()
-                {
-                    StartDateTime = x.StartDateTime,
-                    EndDateTime = x.EndDateTime
-                });
-
-            var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.ServiceId == reservationDto.ServiceId && !x.IsCanceled && x.EndDateTime > DateTime.Now);
-
-            var union = userReservations.Union(serviceReservations);
+            
+            var union = GetRelevantDateIntervals(service.ServiceId, user.UserId);
             var intervalToCheck = new CalendarItem()
             {
                 StartDateTime = reservationDto.StartDateTime,
@@ -354,6 +341,38 @@ namespace API.Controllers
             };
 
             mailingService.Send();
+        }
+
+        private IEnumerable<CalendarItem> GetRelevantDateIntervals(int serviceId, int userId)
+        {
+            var userReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.UserId == userId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceQuickActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            return userReservations.Union(serviceReservations).Union(serviceQuickActions);
         }
     }
 }

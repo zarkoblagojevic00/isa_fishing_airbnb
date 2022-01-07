@@ -14,6 +14,7 @@ using Domain.Entities;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using IntegrationTests;
 using IntegrationTests.Steps;
 using Microsoft.AspNetCore.Mvc;
@@ -60,8 +61,14 @@ namespace AcceptanceTests.Steps
             var mutex = new Mutex();
             foreach (var request in transformedRequests)
             {
-                var task = SendRequestsAndSerializeAnswers(mutex, owner, request, responses);
+                var task = new Task<int>(() => SendRequests(mutex, owner, JsonConvert.SerializeObject(request), responses,
+                    "api/GeneralService/CreateReservationForUser").Result);
                 tasks.Add(task);
+            }
+
+            foreach (var task in tasks)
+            {
+                task.Start();
             }
 
             await Task.WhenAll(tasks);
@@ -69,7 +76,79 @@ namespace AcceptanceTests.Steps
             CommonSteps.FeatureContext.Set(responses, "response");
         }
 
-        [Then(@"only one request should succeed")]
+        [When(@"The user with mail ""(.*)"" sends multiple reservations and quick action requests for service with name ""(.*)"" at the same time with the following properties")]
+        public async Task UserWithEmailSendsMultipleReservationAndQuickActionRequestsForService(string email, string name,
+            Table table)
+        {
+            var requests = table.CreateSet<ReservationDTOParameter>();
+
+            var transformedReservationDtos = new List<NewReservationDTO>();
+            var transformedQuickActionDtos = new List<QuickActionDTO>();
+            
+            var uow = CommonSteps.FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            var owner = uow.GetRepository<IUserReadRepository>().GetAll().First(x => x.Email == email);
+
+            foreach (var request in requests)
+            {
+                if (request.IsQuickAction)
+                {
+                    var actionDto = new QuickActionDTO()
+                    {
+                        Capacity = 5,
+                        AddedBenefits = "some benefits",
+                        Place = "some place",
+                        PricePerDay = request.Price,
+                        ServiceId = uow.GetRepository<IServiceReadRepository>().GetAll()
+                            .First(x => x.OwnerId == owner.UserId && x.Name == name).ServiceId,
+                        StartDateTime = DateTime.Now.AddDays(request.From),
+                        EndDateTime = DateTime.Now.AddDays(request.To)
+                    };
+                    transformedQuickActionDtos.Add(actionDto);
+                }
+                else
+                {
+                    var reservationDto = new NewReservationDTO()
+                    {
+                        UserMail = request.UserMail,
+                        ServiceId = uow.GetRepository<IServiceReadRepository>().GetAll()
+                            .First(x => x.OwnerId == owner.UserId && x.Name == name).ServiceId,
+                        AdditionalEquipment = request.AdditionalEquipment,
+                        StartDateTime = DateTime.Now.AddDays(request.From),
+                        EndDateTime = DateTime.Now.AddDays(request.To),
+                        Price = request.Price
+                    };
+                    transformedReservationDtos.Add(reservationDto);
+                }
+            }
+            
+            var responses = new List<HttpResponseMessage>();
+            var tasks = new List<Task>();
+            var mutex = new Mutex();
+
+            foreach (var request in transformedReservationDtos)
+            {
+                var task = new Task<int>(() => SendRequests(mutex, owner, JsonConvert.SerializeObject(request), responses,
+                    "api/GeneralService/CreateReservationForUser").Result);
+                tasks.Add(task);
+            }
+
+            foreach (var request in transformedQuickActionDtos)
+            {
+                var task = new Task<int>(() => SendRequests(mutex, owner, JsonConvert.SerializeObject(request), responses,
+                    "api/QuickAction/CreateNewQuickAction").Result);
+                tasks.Add(task);
+            }
+
+            foreach (var task in tasks)
+            {
+                task.Start();
+            }
+
+            await Task.WhenAll(tasks);
+            CommonSteps.FeatureContext.Set(responses, "response");
+        }
+
+        [Then(@"only one request should ok")]
         public async Task OnlyOneRequestShouldSucceed()
         {
             var responses = CommonSteps.FeatureContext.Get<List<HttpResponseMessage>>("response");
@@ -87,7 +166,8 @@ namespace AcceptanceTests.Steps
             successCounter.Should().Be(1);
         }
 
-        private async Task<int> SendRequestsAndSerializeAnswers(Mutex mutex, User owner, NewReservationDTO dto, List<HttpResponseMessage> results)
+        private async Task<int> SendRequests(Mutex mutex, User owner, string json, List<HttpResponseMessage> results,
+            string path)
         {
             var cookieContainer = new CookieContainer();
             var clientHandler = new HttpClientHandler()
@@ -96,12 +176,12 @@ namespace AcceptanceTests.Steps
             };
             var client = new HttpClient(clientHandler);
 
-            cookieContainer.Add(new Cookie("userId", owner.UserId.ToString()){Domain = TestConstants.Domain});
-            cookieContainer.Add(new Cookie("email", owner.Email){Domain = TestConstants.Domain});
+            cookieContainer.Add(new Cookie("userId", owner.UserId.ToString()) { Domain = TestConstants.Domain });
+            cookieContainer.Add(new Cookie("email", owner.Email) { Domain = TestConstants.Domain });
 
-            var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.Unicode, "application/json");
+            var content = new StringContent(json, Encoding.Unicode, "application/json");
 
-            var response = await client.PostAsync(TestConstants.Localhost + "api/GeneralService/CreateReservationForUser", content);
+            var response = await client.PostAsync(TestConstants.Localhost + path, content);
 
             mutex.WaitOne();
 

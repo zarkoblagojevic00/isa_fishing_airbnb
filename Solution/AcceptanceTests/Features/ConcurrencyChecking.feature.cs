@@ -70,14 +70,14 @@ namespace AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Two requests received for creating reservation from the same villa owner", new string[] {
+        [TechTalk.SpecRun.ScenarioAttribute("Multiple requests received for creating reservation from the same villa owner", new string[] {
                 "mytag"}, SourceLine=3)]
-        public virtual void TwoRequestsReceivedForCreatingReservationFromTheSameVillaOwner()
+        public virtual void MultipleRequestsReceivedForCreatingReservationFromTheSameVillaOwner()
         {
             string[] tagsOfScenario = new string[] {
                     "mytag"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Two requests received for creating reservation from the same villa owner", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Multiple requests received for creating reservation from the same villa owner", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 4
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -171,7 +171,149 @@ this.ScenarioInitialize(scenarioInfo);
                         "e with name \"Test villa 2\" at the same time with the following properties", ((string)(null)), table5, "When ");
 #line hidden
 #line 22
- testRunner.Then("only one request should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("only one request should ok", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Multiple requests received for creating reservation and quick action for the same" +
+            " villa owner", SourceLine=23)]
+        public virtual void MultipleRequestsReceivedForCreatingReservationAndQuickActionForTheSameVillaOwner()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Multiple requests received for creating reservation and quick action for the same" +
+                    " villa owner", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 24
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 25
+ testRunner.Given("there was a villa in the database named \"Test villa 2\" linked with villa owner wi" +
+                        "th email \"testvillaowner2@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 26
+ testRunner.And("there were no actions or reservations for the service named \"Test villa 2\" and li" +
+                        "nked to owner with mail \"testvillaowner2@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table6.AddRow(new string[] {
+                            "Email",
+                            "testnormuser@gmail.com"});
+                table6.AddRow(new string[] {
+                            "Name",
+                            "TestUser"});
+                table6.AddRow(new string[] {
+                            "Surname",
+                            "TestUser"});
+                table6.AddRow(new string[] {
+                            "Password",
+                            "tester"});
+                table6.AddRow(new string[] {
+                            "Address",
+                            "test adr"});
+#line 27
+ testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table6, "And ");
+#line hidden
+#line 34
+ testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "UserMail",
+                            "Price",
+                            "AdditionalEquipment",
+                            "From",
+                            "To",
+                            "IsQuickAction"});
+                table7.AddRow(new string[] {
+                            "",
+                            "5",
+                            "some benefits",
+                            "3",
+                            "5",
+                            "true"});
+                table7.AddRow(new string[] {
+                            "testnormuser@gmail.com",
+                            "5",
+                            "",
+                            "2",
+                            "4",
+                            "false"});
+                table7.AddRow(new string[] {
+                            "testnormuser@gmail.com",
+                            "5",
+                            "",
+                            "2",
+                            "4",
+                            "false"});
+                table7.AddRow(new string[] {
+                            "",
+                            "5",
+                            "some benefits",
+                            "3",
+                            "5",
+                            "true"});
+                table7.AddRow(new string[] {
+                            "",
+                            "5",
+                            "some benefits",
+                            "3",
+                            "5",
+                            "true"});
+                table7.AddRow(new string[] {
+                            "testnormuser@gmail.com",
+                            "5",
+                            "",
+                            "2",
+                            "4",
+                            "false"});
+                table7.AddRow(new string[] {
+                            "",
+                            "5",
+                            "some benefits",
+                            "3",
+                            "5",
+                            "true"});
+                table7.AddRow(new string[] {
+                            "",
+                            "5",
+                            "some benefits",
+                            "3",
+                            "5",
+                            "true"});
+                table7.AddRow(new string[] {
+                            "testnormuser@gmail.com",
+                            "5",
+                            "",
+                            "2",
+                            "4",
+                            "false"});
+#line 35
+ testRunner.When("The user with mail \"testvillaowner2@gmail.com\" sends multiple reservations and qu" +
+                        "ick action requests for service with name \"Test villa 2\" at the same time with t" +
+                        "he following properties", ((string)(null)), table7, "When ");
+#line hidden
+#line 46
+ testRunner.Then("only one request should ok", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

@@ -13,5 +13,6 @@ namespace AcceptanceTests.Parameters
         public string AdditionalEquipment { get; set; }
         public int From { get; set; }
         public int To { get; set; }
+        public bool IsQuickAction { get; set; }
     }
 }

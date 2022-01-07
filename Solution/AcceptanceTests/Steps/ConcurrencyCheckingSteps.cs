@@ -66,11 +66,7 @@ namespace AcceptanceTests.Steps
                 tasks.Add(task);
             }
 
-            foreach (var task in tasks)
-            {
-                task.Start();
-            }
-
+            Parallel.ForEach(tasks, task => task.Start());
             await Task.WhenAll(tasks);
 
             CommonSteps.FeatureContext.Set(responses, "response");
@@ -138,12 +134,8 @@ namespace AcceptanceTests.Steps
                     "api/QuickAction/CreateNewQuickAction").Result);
                 tasks.Add(task);
             }
-
-            foreach (var task in tasks)
-            {
-                task.Start();
-            }
-
+            
+            Parallel.ForEach(tasks, task => task.Start());
             await Task.WhenAll(tasks);
             CommonSteps.FeatureContext.Set(responses, "response");
         }

@@ -33,7 +33,7 @@ namespace Services
                 try
                 {
                     var service = uow.GetRepository<IServiceReadRepository>()
-                        .GetById(serviceId, LockMode.Upgrade);
+                        .GetById(serviceId, LockMode.UpgradeNoWait);
                     return service;
                 }
                 catch

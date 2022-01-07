@@ -12,6 +12,7 @@ using Domain.Entities.Abstractions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
+using NHibernate;
 using Services;
 using Services.Constants;
 using Services.HtmlWriter;
@@ -152,7 +153,18 @@ namespace API.Controllers
                 return BadRequest(Responses.ServiceOwnerNotLinked);
             }
 
-            var service = UoW.GetRepository<IServiceReadRepository>().GetById(reservationDto.ServiceId);
+            UoW.BeginTransaction();
+
+            var service = new Service();
+            try
+            {
+                service = new ServiceLocker(UoW).ObtainLockedService(reservationDto.ServiceId);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
+            
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= reservationDto.StartDateTime &&
@@ -161,21 +173,8 @@ namespace API.Controllers
                     return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
                 }
             }
-
-            var userReservations = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.UserId == user.UserId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
-                .Select(x => new CalendarItem()
-                {
-                    StartDateTime = x.StartDateTime,
-                    EndDateTime = x.EndDateTime
-                });
-
-            var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.ServiceId == reservationDto.ServiceId && !x.IsCanceled && x.EndDateTime > DateTime.Now);
-
-            var union = userReservations.Union(serviceReservations);
+            
+            var union = GetRelevantDateIntervals(service.ServiceId, user.UserId);
             var intervalToCheck = new CalendarItem()
             {
                 StartDateTime = reservationDto.StartDateTime,
@@ -190,7 +189,6 @@ namespace API.Controllers
 
             try
             {
-                UoW.BeginTransaction();
 
                 var newReservation = CreateNewReservation(reservationDto, user.UserId);
 
@@ -343,6 +341,38 @@ namespace API.Controllers
             };
 
             mailingService.Send();
+        }
+
+        private IEnumerable<CalendarItem> GetRelevantDateIntervals(int serviceId, int userId)
+        {
+            var userReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.UserId == userId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceQuickActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            return userReservations.Union(serviceReservations).Union(serviceQuickActions);
         }
     }
 }

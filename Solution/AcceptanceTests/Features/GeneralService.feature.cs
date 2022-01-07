@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace IntegrationTests.Features
+namespace AcceptanceTests.Features
 {
     using TechTalk.SpecFlow;
     using System;
@@ -111,30 +111,30 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"-6\" days from " +
                         "now until \"-3\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table4.AddRow(new string[] {
+                table8.AddRow(new string[] {
                             "ReportText",
                             "testing submitting report feature"});
 #line 8
  testRunner.And("the ReportDTO was created and linked to previously created reservation as content" +
-                        " with following properties", ((string)(null)), table4, "And ");
+                        " with following properties", ((string)(null)), table8, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table5.AddRow(new string[] {
+                table9.AddRow(new string[] {
                             "HttpMethod",
                             "post"});
-                table5.AddRow(new string[] {
+                table9.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/GeneralService/SubmitReport"});
-                table5.AddRow(new string[] {
+                table9.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 12
- testRunner.When("a request is sent to the API", ((string)(null)), table5, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table9, "When ");
 #line hidden
 #line 18
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -184,26 +184,26 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
                         "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table6.AddRow(new string[] {
+                table10.AddRow(new string[] {
                             "Email",
                             "testnormuser@gmail.com"});
-                table6.AddRow(new string[] {
+                table10.AddRow(new string[] {
                             "Name",
                             "TestUser"});
-                table6.AddRow(new string[] {
+                table10.AddRow(new string[] {
                             "Surname",
                             "TestUser"});
-                table6.AddRow(new string[] {
+                table10.AddRow(new string[] {
                             "Password",
                             "tester"});
-                table6.AddRow(new string[] {
+                table10.AddRow(new string[] {
                             "Address",
                             "test adr"});
 #line 25
- testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table6, "And ");
+ testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table10, "And ");
 #line hidden
 #line 32
  testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -216,36 +216,36 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
                         "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table7.AddRow(new string[] {
+                table11.AddRow(new string[] {
                             "BeginDaysAfterToday",
                             "3"});
-                table7.AddRow(new string[] {
+                table11.AddRow(new string[] {
                             "EndDaysAfterToday",
                             "6"});
-                table7.AddRow(new string[] {
+                table11.AddRow(new string[] {
                             "PricePerDay",
                             "10"});
 #line 35
  testRunner.And("a NewReservationParameter was created as content for the previously created user " +
-                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table7, "And ");
+                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table11, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table8.AddRow(new string[] {
+                table12.AddRow(new string[] {
                             "HttpMethod",
                             "post"});
-                table8.AddRow(new string[] {
+                table12.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/GeneralService/CreateReservationForUser"});
-                table8.AddRow(new string[] {
+                table12.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 41
- testRunner.When("a request is sent to the API", ((string)(null)), table8, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table12, "When ");
 #line hidden
 #line 47
  testRunner.Then("a \"400\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -291,26 +291,26 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
                         "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table9.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Email",
                             "testnormuser@gmail.com"});
-                table9.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Name",
                             "TestUser"});
-                table9.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Surname",
                             "TestUser"});
-                table9.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Password",
                             "tester"});
-                table9.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Address",
                             "test adr"});
 #line 53
- testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table9, "And ");
+ testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table13, "And ");
 #line hidden
 #line 60
  testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -323,36 +323,36 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
                         "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table10.AddRow(new string[] {
+                table14.AddRow(new string[] {
                             "BeginDaysAfterToday",
                             "10"});
-                table10.AddRow(new string[] {
+                table14.AddRow(new string[] {
                             "EndDaysAfterToday",
                             "16"});
-                table10.AddRow(new string[] {
+                table14.AddRow(new string[] {
                             "PricePerDay",
                             "10"});
 #line 63
  testRunner.And("a NewReservationParameter was created as content for the previously created user " +
-                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table10, "And ");
+                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table14, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
-                table11.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "HttpMethod",
                             "post"});
-                table11.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/GeneralService/CreateReservationForUser"});
-                table11.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
 #line 69
- testRunner.When("a request is sent to the API", ((string)(null)), table11, "When ");
+ testRunner.When("a request is sent to the API", ((string)(null)), table15, "When ");
 #line hidden
 #line 75
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

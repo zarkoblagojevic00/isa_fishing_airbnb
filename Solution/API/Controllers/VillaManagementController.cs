@@ -179,6 +179,15 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var existingCity = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == newVilla.CityName);
+            if (existingCity == null)
+            {
+                ModelState.AddModelError("CityName", "City that is being requested doesn't exist");
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var currentUser = GetUserIdFromCookie();
@@ -233,6 +242,25 @@ namespace API.Controllers
             if (villa.AvailableFrom >= villa.AvailableTo)
             {
                 ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
+            }
+
+            var existingCity = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == villa.CityName);
+            if (existingCity == null)
+            {
+                ModelState.AddModelError("CityName", "City that is being requested doesn't exist");
+                return BadRequest(ModelState);
+            }
+
+            var existingVilla = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x =>
+                    x.OwnerId == GetUserIdFromCookie() && x.ServiceId != villa.VillaId && x.Name == villa.Name);
+            if (existingVilla != null)
+            {
+                ModelState.AddModelError("Name", "There is already another villa with that name that you possess!");
                 return BadRequest(ModelState);
             }
 

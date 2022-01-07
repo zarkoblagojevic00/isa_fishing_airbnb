@@ -57,7 +57,18 @@ namespace API.Controllers
                 return Unauthorized(Responses.ServiceOwnerNotLinked);
             }
 
-            var service = UoW.GetRepository<IServiceReadRepository>().GetById(newAction.ServiceId);
+            UoW.BeginTransaction();
+
+            var service = new Service();
+            try
+            {
+                service = new ServiceLocker(UoW).ObtainLockedService(newAction.ServiceId);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
+
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= newAction.StartDateTime &&
@@ -85,8 +96,6 @@ namespace API.Controllers
 
             try
             {
-                UoW.BeginTransaction();
-
                 UoW.GetRepository<IPromoActionWriteRepository>().Add(action);
 
                 UoW.Commit();
@@ -127,7 +136,18 @@ namespace API.Controllers
                 return BadRequest(Responses.PromoActionTaken);
             }
 
-            var service = UoW.GetRepository<IServiceReadRepository>().GetById(action.ServiceId);
+            UoW.BeginTransaction();
+
+            var service = new Service();
+            try
+            {
+                service = new ServiceLocker(UoW).ObtainLockedService(action.ServiceId);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
+
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= action.StartDateTime &&
@@ -160,8 +180,6 @@ namespace API.Controllers
 
             try
             {
-                UoW.BeginTransaction();
-
                 UoW.GetRepository<IPromoActionWriteRepository>().Update(relevantAction);
 
                 UoW.Commit();

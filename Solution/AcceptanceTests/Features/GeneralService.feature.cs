@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace IntegrationTests.Features
+namespace AcceptanceTests.Features
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,22 +19,22 @@ namespace IntegrationTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [TechTalk.SpecRun.FeatureAttribute("QuickActions", SourceFile="Features\\QuickActions.feature", SourceLine=0)]
-    public partial class QuickActionsFeature
+    [TechTalk.SpecRun.FeatureAttribute("GeneralService", SourceFile="Features\\GeneralService.feature", SourceLine=0)]
+    public partial class GeneralServiceFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "QuickActions.feature"
+#line 1 "GeneralService.feature"
 #line hidden
         
         [TechTalk.SpecRun.FeatureInitialize()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "QuickActions", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "GeneralService", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -70,12 +70,12 @@ namespace IntegrationTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Create new Promo action", SourceLine=2)]
-        public virtual void CreateNewPromoAction()
+        [TechTalk.SpecRun.ScenarioAttribute("Submitting a report", SourceLine=2)]
+        public virtual void SubmittingAReport()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create new Promo action", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Submitting a report", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 3
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -108,31 +108,236 @@ this.ScenarioInitialize(scenarioInfo);
                         "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
- testRunner.And("there was a promo action for the service \"Test Villa\" lasting from \"1\" days from " +
-                        "now until \"3\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"-6\" days from " +
+                        "now until \"-3\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table6.AddRow(new string[] {
+                            "ReportText",
+                            "testing submitting report feature"});
 #line 8
- testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"4\" days from n" +
-                        "ow until \"6\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the ReportDTO was created and linked to previously created reservation as content" +
+                        " with following properties", ((string)(null)), table6, "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table7.AddRow(new string[] {
+                            "HttpMethod",
+                            "post"});
+                table7.AddRow(new string[] {
+                            "RelativeResourceUrl",
+                            "/api/GeneralService/SubmitReport"});
+                table7.AddRow(new string[] {
+                            "CookieEmail",
+                            "testvillaowner@gmail.com"});
+#line 12
+ testRunner.When("a request is sent to the API", ((string)(null)), table7, "When ");
+#line hidden
+#line 18
+ testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 19
+ testRunner.Then("a new report will be created for the service with name \"Test Villa\" in \"60\" secon" +
+                        "ds", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has an overlapping reservation", SourceLine=20)]
+        public virtual void CreatingAReservationForUserWhoHasAnOverlappingReservation()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating a reservation for user who has an overlapping reservation", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 21
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 22
+ testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 23
+ testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
+                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 24
+ testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
+                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table8.AddRow(new string[] {
+                            "Email",
+                            "testnormuser@gmail.com"});
+                table8.AddRow(new string[] {
+                            "Name",
+                            "TestUser"});
+                table8.AddRow(new string[] {
+                            "Surname",
+                            "TestUser"});
+                table8.AddRow(new string[] {
+                            "Password",
+                            "tester"});
+                table8.AddRow(new string[] {
+                            "Address",
+                            "test adr"});
+#line 25
+ testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table8, "And ");
+#line hidden
+#line 32
+ testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 33
+ testRunner.And("there was a reservation for previously created user lasting from \"1\" days from no" +
+                        "w until \"5\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 34
+ testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
+                        "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table9.AddRow(new string[] {
+                            "BeginDaysAfterToday",
+                            "3"});
+                table9.AddRow(new string[] {
+                            "EndDaysAfterToday",
+                            "6"});
+                table9.AddRow(new string[] {
+                            "PricePerDay",
+                            "10"});
+#line 35
+ testRunner.And("a NewReservationParameter was created as content for the previously created user " +
+                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table9, "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table10.AddRow(new string[] {
+                            "HttpMethod",
+                            "post"});
+                table10.AddRow(new string[] {
+                            "RelativeResourceUrl",
+                            "/api/GeneralService/CreateReservationForUser"});
+                table10.AddRow(new string[] {
+                            "CookieEmail",
+                            "testvillaowner@gmail.com"});
+#line 41
+ testRunner.When("a request is sent to the API", ((string)(null)), table10, "When ");
+#line hidden
+#line 47
+ testRunner.Then("a \"400\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has no overlapping reservations", SourceLine=48)]
+        public virtual void CreatingAReservationForUserWhoHasNoOverlappingReservations()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating a reservation for user who has no overlapping reservations", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 49
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 50
+ testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 51
+ testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
+                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 52
+ testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
+                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table11.AddRow(new string[] {
+                            "Email",
+                            "testnormuser@gmail.com"});
+                table11.AddRow(new string[] {
+                            "Name",
+                            "TestUser"});
+                table11.AddRow(new string[] {
+                            "Surname",
+                            "TestUser"});
+                table11.AddRow(new string[] {
+                            "Password",
+                            "tester"});
+                table11.AddRow(new string[] {
+                            "Address",
+                            "test adr"});
+#line 53
+ testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table11, "And ");
+#line hidden
+#line 60
+ testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 61
+ testRunner.And("there was a reservation for previously created user lasting from \"1\" days from no" +
+                        "w until \"5\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 62
+ testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
+                        "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
                 TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
                             "Value"});
                 table12.AddRow(new string[] {
                             "BeginDaysAfterToday",
-                            "7"});
+                            "10"});
                 table12.AddRow(new string[] {
                             "EndDaysAfterToday",
-                            "9"});
+                            "16"});
                 table12.AddRow(new string[] {
                             "PricePerDay",
-                            "5"});
-                table12.AddRow(new string[] {
-                            "Capacity",
-                            "3"});
-#line 9
- testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table12, "And ");
+                            "10"});
+#line 63
+ testRunner.And("a NewReservationParameter was created as content for the previously created user " +
+                        "and service with name \"Test Villa\" with the following properties", ((string)(null)), table12, "And ");
 #line hidden
                 TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                             "Field",
@@ -142,200 +347,19 @@ this.ScenarioInitialize(scenarioInfo);
                             "post"});
                 table13.AddRow(new string[] {
                             "RelativeResourceUrl",
-                            "/api/QuickAction/CreateNewQuickAction"});
+                            "/api/GeneralService/CreateReservationForUser"});
                 table13.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 16
+#line 69
  testRunner.When("a request is sent to the API", ((string)(null)), table13, "When ");
 #line hidden
-#line 22
+#line 75
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 23
- testRunner.And("service with the name \"Test Villa\" should have the promo action with the properti" +
-                        "es from current content", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [TechTalk.SpecRun.ScenarioAttribute("Update existing Promo action that wasn\'t taken", SourceLine=24)]
-        public virtual void UpdateExistingPromoActionThatWasntTaken()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update existing Promo action that wasn\'t taken", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 25
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            bool isScenarioIgnored = default(bool);
-            bool isFeatureIgnored = default(bool);
-            if ((tagsOfScenario != null))
-            {
-                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((this._featureTags != null))
-            {
-                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((isScenarioIgnored || isFeatureIgnored))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 26
- testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 27
- testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
-                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 28
- testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
-                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 29
- testRunner.And("there was a promo action for the service \"Test Villa\" lasting from \"1\" days from " +
-                        "now until \"3\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 30
- testRunner.And("there was a reservation for the service \"Test Villa\" lasting from \"4\" days from n" +
-                        "ow until \"6\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-                TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Field",
-                            "Value"});
-                table14.AddRow(new string[] {
-                            "BeginDaysAfterToday",
-                            "1"});
-                table14.AddRow(new string[] {
-                            "EndDaysAfterToday",
-                            "2"});
-                table14.AddRow(new string[] {
-                            "PricePerDay",
-                            "5"});
-                table14.AddRow(new string[] {
-                            "Capacity",
-                            "3"});
-#line 31
- testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table14, "And ");
-#line hidden
-#line 37
- testRunner.And("that QuickActionDTO had the PromoActionId set previously", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-                TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Field",
-                            "Value"});
-                table15.AddRow(new string[] {
-                            "HttpMethod",
-                            "put"});
-                table15.AddRow(new string[] {
-                            "RelativeResourceUrl",
-                            "/api/QuickAction/UpdateQuickAction"});
-                table15.AddRow(new string[] {
-                            "CookieEmail",
-                            "testvillaowner@gmail.com"});
-#line 39
- testRunner.When("a request is sent to the API", ((string)(null)), table15, "When ");
-#line hidden
-#line 45
- testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 46
- testRunner.And("service with the name \"Test Villa\" should have the promo action with the properti" +
-                        "es from current content", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [TechTalk.SpecRun.ScenarioAttribute("Update existin Promo action that is taken", SourceLine=47)]
-        public virtual void UpdateExistinPromoActionThatIsTaken()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update existin Promo action that is taken", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 48
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            bool isScenarioIgnored = default(bool);
-            bool isFeatureIgnored = default(bool);
-            if ((tagsOfScenario != null))
-            {
-                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((this._featureTags != null))
-            {
-                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((isScenarioIgnored || isFeatureIgnored))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 49
- testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 50
- testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
-                        " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 51
- testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
-                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 52
- testRunner.And("there was a promo action for the service \"Test Villa\" lasting from \"1\" days from " +
-                        "now until \"3\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 53
- testRunner.And("previously created promo action was taken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-                TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Field",
-                            "Value"});
-                table16.AddRow(new string[] {
-                            "BeginDaysAfterToday",
-                            "1"});
-                table16.AddRow(new string[] {
-                            "EndDaysAfterToday",
-                            "2"});
-                table16.AddRow(new string[] {
-                            "PricePerDay",
-                            "5"});
-                table16.AddRow(new string[] {
-                            "Capacity",
-                            "3"});
-#line 54
- testRunner.And("a QuickActionParameter was created for the villa \"Test Villa\" with the following " +
-                        "properties", ((string)(null)), table16, "And ");
-#line hidden
-#line 60
- testRunner.And("that QuickActionDTO had the PromoActionId set previously", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-                TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Field",
-                            "Value"});
-                table17.AddRow(new string[] {
-                            "HttpMethod",
-                            "put"});
-                table17.AddRow(new string[] {
-                            "RelativeResourceUrl",
-                            "/api/QuickAction/UpdateQuickAction"});
-                table17.AddRow(new string[] {
-                            "CookieEmail",
-                            "testvillaowner@gmail.com"});
-#line 62
- testRunner.When("a request is sent to the API", ((string)(null)), table17, "When ");
-#line hidden
-#line 68
- testRunner.Then("a \"400\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 76
+ testRunner.And("there should be a new reservation based on sent content created for the previousl" +
+                        "y created user and service with name \"Test Villa\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

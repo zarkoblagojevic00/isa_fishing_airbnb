@@ -21,6 +21,11 @@ namespace Domain.UnitOfWork
             return Context.Resolve<T>(GetBaseSession());
         }
 
+        public ISession GetSession()
+        {
+            return Session;
+        }
+
         private TypedParameter GetBaseSession()
         {
             return new TypedParameter(typeof(ISession), Session);

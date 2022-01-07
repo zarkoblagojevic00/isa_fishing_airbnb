@@ -158,9 +158,10 @@ namespace IntegrationTests.Steps
             {
                 testVillaOwner = new User()
                 {
-                    Email = TestConstants.TestVillaOwnerMail,
+                    Email = email,
                     IsAccountVerified = true,
-                    IsAccountActive = true
+                    IsAccountActive = true,
+                    UserType = UserType.VillaOwner
                 };
                 uow.GetRepository<IUserWriteRepository>().Add(testVillaOwner);
             }
@@ -363,6 +364,33 @@ namespace IntegrationTests.Steps
             uow.Commit();
 
             ScenarioContext.Set(user, TestConstants.TestUser);
+        }
+
+        [Given(@"there were no actions or reservations for the service named ""(.*)"" and linked to owner with mail ""(.*)""")]
+        public void ThereWereNoActionsOrReservationsLinkedToService(string name, string email)
+        {
+            var uow = FeatureContext.Get<ILifetimeScope>().Resolve<IUnitOfWork>();
+            var owner = uow.GetRepository<IUserReadRepository>().GetAll().First(x => x.Email == email);
+            var service = uow.GetRepository<IServiceReadRepository>().GetAll()
+                .First(x => x.OwnerId == owner.UserId && x.Name == name);
+
+            uow.BeginTransaction();
+
+            var reservations = uow.GetRepository<IReservationReadRepository>().GetAll()
+                .Where(x => x.ServiceId == service.ServiceId);
+            foreach (var reservation in reservations)
+            {
+                uow.GetRepository<IReservationWriteRepository>().Delete(reservation);
+            }
+
+            var promoActions = uow.GetRepository<IPromoActionReadRepository>().GetAll()
+                .Where(x => x.ServiceId == service.ServiceId);
+            foreach (var promoAction in promoActions)
+            {
+                uow.GetRepository<IPromoActionWriteRepository>().Delete(promoAction);
+            }
+
+            uow.Commit();
         }
 
         [When(@"a request is sent to the API")]

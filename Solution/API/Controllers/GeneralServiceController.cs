@@ -12,6 +12,7 @@ using Domain.Entities.Abstractions;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
+using NHibernate;
 using Services;
 using Services.Constants;
 using Services.HtmlWriter;
@@ -152,7 +153,18 @@ namespace API.Controllers
                 return BadRequest(Responses.ServiceOwnerNotLinked);
             }
 
-            var service = UoW.GetRepository<IServiceReadRepository>().GetById(reservationDto.ServiceId);
+            UoW.BeginTransaction();
+
+            var service = new Service();
+            try
+            {
+                service = new ServiceLocker(UoW).ObtainLockedService(reservationDto.ServiceId);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
+            
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= reservationDto.StartDateTime &&
@@ -190,7 +202,6 @@ namespace API.Controllers
 
             try
             {
-                UoW.BeginTransaction();
 
                 var newReservation = CreateNewReservation(reservationDto, user.UserId);
 

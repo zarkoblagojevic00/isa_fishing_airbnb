@@ -138,6 +138,14 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var existingCity = UoW.GetRepository<ICityReadRepository>().GetAll()
+                .FirstOrDefault(x => x.Name == newBoat.CityName);
+            if (existingCity == null)
+            {
+                ModelState.AddModelError("CityName", "City that is being requested doesn't exist");
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 UoW.BeginTransaction();
@@ -198,6 +206,25 @@ namespace API.Controllers
             if (boat.AvailableFrom >= boat.AvailableTo)
             {
                 ModelState.AddModelError("AvailableFrom", "Beginning date is greater than ending date!");
+                return BadRequest(ModelState);
+            }
+
+            var existingCity = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.Name == boat.CityName);
+            if (existingCity == null)
+            {
+                ModelState.AddModelError("CityName", "City that is being requested doesn't exist");
+                return BadRequest(ModelState);
+            }
+
+            var existingBoat = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x =>
+                    x.OwnerId == GetUserIdFromCookie() && x.ServiceId != boat.BoatId && x.Name == boat.Name);
+            if (existingBoat != null)
+            {
+                ModelState.AddModelError("Name", "There is already another boat with that name that you possess!");
                 return BadRequest(ModelState);
             }
 
@@ -281,6 +308,10 @@ namespace API.Controllers
             boatService.PercentageToTake = boat.PercentageToTake;
             boatService.AvailableFrom = boat.AvailableFrom;
             boatService.AvailableTo = boat.AvailableTo;
+            boatService.CityId = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .First(x => x.Name == boat.CityName)
+                .CityId;
 
             additionalInfo.Length = boat.Length;
             additionalInfo.BoatType = boat.BoatType;
@@ -338,7 +369,8 @@ namespace API.Controllers
                 IsPercentageTakenFromCanceledReservations = newBoat.IsPercentageTaken,
                 PercentageToTake = newBoat.PercentageToTake,
                 AvailableFrom = newBoat.AvailableFrom,
-                AvailableTo = newBoat.AvailableTo
+                AvailableTo = newBoat.AvailableTo,
+                CityId = UoW.GetRepository<ICityReadRepository>().GetAll().First(x => x.Name == newBoat.CityName).CityId
             };
         }
     }

@@ -7,7 +7,7 @@ using API.Attributes;
 using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
-using Domain.Entities.Abstractions;
+using Domain.Entities.Helpers;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;

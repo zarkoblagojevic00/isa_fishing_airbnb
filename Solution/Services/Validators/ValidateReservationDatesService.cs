@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
-using Domain.Entities.Abstractions;
+using Domain.Entities.Helpers;
 using Domain.UnitOfWork;
 
 namespace Services.Validators
@@ -13,23 +13,12 @@ namespace Services.Validators
     {
         public bool CalendarItemOverlap(CalendarItem first, CalendarItem second)
         {
-            return first.StartDateTime < second.EndDateTime && second.StartDateTime < first.EndDateTime;
+            return first.IsOverlapping(second);
         }
 
         public bool CalendarItemOverlapsWithAny(CalendarItem reservation, IEnumerable<CalendarItem> otherReservations)
         {
-            var ret = false;
-
-            foreach (var res in otherReservations)
-            {
-                if (CalendarItemOverlap(reservation, res))
-                {
-                    ret = true;
-                    break;
-                }
-            }
-
-            return ret;
+            return reservation.AnyOverlapping(otherReservations);
         }
     }
 }

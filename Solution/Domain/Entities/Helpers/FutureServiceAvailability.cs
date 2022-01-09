@@ -46,26 +46,36 @@ namespace Domain.Entities.Helpers
         private bool IsMarkSatisfied(double givenMark)
         {
             double offset = 0.5;
-            return givenMark - offset < AverageMark && AverageMark <= givenMark + offset;
+            return givenMark == 0 || (givenMark - offset < AverageMark && AverageMark <= givenMark + offset);
         }
 
         private bool IsCapacitySatisfied(int capacity)
         {
-            return capacity < Service.Capacity;
+            return capacity == 0 || capacity < Service.Capacity;
         }
 
         private bool IsPriceRangeSatisfied(PriceRange priceRange)
         {
+            if (priceRange.From == 0 && priceRange.To == 0)
+                return true;
             return priceRange.IsPriceWithinRange(Service.PricePerDay);
         }
 
         private bool IsDateRangeSatisfied(CalendarItem dateRange)
         {
-            return !dateRange.AnyOverlapping(FutureReservations) && IsGlobalAvailabilitySatisfied(dateRange);
+            return IsFutureReservationsSatisfied(dateRange) && IsGlobalAvailabilitySatisfied(dateRange);
+        }
+
+        private bool IsFutureReservationsSatisfied(CalendarItem dateRange)
+        {
+            return !dateRange.AnyOverlapping(FutureReservations);
         }
 
         private bool IsGlobalAvailabilitySatisfied(CalendarItem dateRange)
         {
+            if (dateRange.StartDateTime == DateTime.MinValue && dateRange.EndDateTime == DateTime.MinValue)
+                return true;
+
             DateTime globalAvailabilityFrom = Service.AvailableFrom ?? DateTime.MinValue;
             DateTime globalAvailabilityTo = Service.AvailableTo ?? DateTime.MaxValue;
             CalendarItem globalAvailability = new CalendarItem() { StartDateTime = globalAvailabilityFrom, EndDateTime = globalAvailabilityTo };

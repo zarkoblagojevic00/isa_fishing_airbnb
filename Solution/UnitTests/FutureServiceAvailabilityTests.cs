@@ -153,6 +153,31 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void ServiceCapacityWhenZeroSearched()
+        {
+            FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
+                DateTime.Now,
+                DateTime.Now.AddDays(100)
+            );
+
+            ServiceSearchParameters @params = new ServiceSearchParameters()
+            {
+                ServiceName = "TestService",
+                LocationName = "Test Location",
+                Capacity = 0,
+                GivenMark = 4,
+                PriceRange = new PriceRange(10, 30),
+                DateRange = new CalendarItem() { StartDateTime = DateTime.Now.AddDays(31), EndDateTime = DateTime.Now.AddDays(41) }
+            };
+
+            bool isAvailable = serviceAvailability.IsAvailable(@params);
+
+            isAvailable.Should().Be(true);
+        }
+
+
+
+        [TestMethod]
         public void ServiceAverageMarkTopBorderOfGivenRange()
         {
             FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
@@ -247,6 +272,29 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void ServiceAverageMarkZeroSearched()
+        {
+            FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
+                DateTime.Now,
+                DateTime.Now.AddDays(100)
+            );
+
+            ServiceSearchParameters @params = new ServiceSearchParameters()
+            {
+                ServiceName = "TestService",
+                LocationName = "Test Location",
+                Capacity = 8,
+                GivenMark = 0,
+                PriceRange = new PriceRange(10, 30),
+                DateRange = new CalendarItem() { StartDateTime = DateTime.Now.AddDays(31), EndDateTime = DateTime.Now.AddDays(41) }
+            };
+
+            bool isAvailable = serviceAvailability.IsAvailable(@params);
+
+            isAvailable.Should().Be(true);
+        }
+
+        [TestMethod]
         public void ServicePriceNotInRange()
         {
             FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
@@ -267,6 +315,29 @@ namespace UnitTests
             bool isAvailable = serviceAvailability.IsAvailable(@params);
 
             isAvailable.Should().Be(false);
+        }
+
+        [TestMethod]
+        public void ServicePriceZeroSearched()
+        {
+            FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
+                DateTime.Now,
+                DateTime.Now.AddDays(100)
+            );
+
+            ServiceSearchParameters @params = new ServiceSearchParameters()
+            {
+                ServiceName = "TestService",
+                LocationName = "Test Location",
+                Capacity = 8,
+                GivenMark = 4,
+                PriceRange = new PriceRange(0, 0),
+                DateRange = new CalendarItem() { StartDateTime = DateTime.Now.AddDays(31), EndDateTime = DateTime.Now.AddDays(41) }
+            };
+
+            bool isAvailable = serviceAvailability.IsAvailable(@params);
+
+            isAvailable.Should().Be(true);
         }
 
         [TestMethod]
@@ -368,7 +439,8 @@ namespace UnitTests
             string serviceName = "TestService",
             int capacity = 10,
             int pricePerDay = 20,
-            double averageMark = 3.85) {
+            double averageMark = 3.85,
+            bool noReservations = false) {
             
             Service service = new ()
             {
@@ -383,11 +455,33 @@ namespace UnitTests
                 service, 
                 "Test Location", 
                 averageMark,
-                GetFutureReservations()
+                noReservations ? new List<Reservation>() : GetFutureReservations()
             );
         }
 
-        
+        [TestMethod]
+        public void ServiceNoFutureReservations()
+        {
+            FutureServiceAvailability serviceAvailability = GetFutureServiceAvailability(
+                DateTime.Now,
+                DateTime.Now.AddDays(100),
+                noReservations : true
+            );
+
+            ServiceSearchParameters @params = new ServiceSearchParameters()
+            {
+                ServiceName = "TestService",
+                LocationName = "Test Location",
+                Capacity = 8,
+                GivenMark = 4,
+                PriceRange = new PriceRange(10, 30),
+                DateRange = new CalendarItem() { StartDateTime = DateTime.Now.AddDays(31), EndDateTime = DateTime.Now.AddDays(41) }
+            };
+
+            bool isAvailable = serviceAvailability.IsAvailable(@params);
+
+            isAvailable.Should().Be(true);
+        }
 
         private static IEnumerable<Reservation> GetFutureReservations()
         {

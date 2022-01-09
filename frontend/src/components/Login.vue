@@ -82,6 +82,7 @@ export default {
         },
         navigate({ userType }) {
             if (userType === "VillaOwner") location.href = "/villaprofile";
+            if (userType === "BoatOwner") location.href = "/boatprofile";
             if (userType === "Instructor")
                 location.href = "/instructor/services";
             if (userType === "Admin") location.href = "/admin";

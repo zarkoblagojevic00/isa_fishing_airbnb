@@ -28,6 +28,7 @@ import InstructorProfile from "../views/InstructorProfile.vue";
 import ClientHomepage from "../views/ClientHomepage.vue";
 import AdminIssues from "../views/AdminIssues.vue";
 import InstructorAnalytics from "../views/InstructorAnalytics.vue";
+import BoatProfile from "../views/BoatProfile.vue";
 
 const routes = [
     {
@@ -175,6 +176,11 @@ const routes = [
         path: "/instructor/my-profile",
         name: "InstructorProfile",
         component: InstructorProfile,
+    },
+    {
+        path: "/boatprofile",
+        name: "BoatProfile",
+        component: BoatProfile,
     },
 ];
 

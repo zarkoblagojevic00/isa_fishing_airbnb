@@ -286,6 +286,14 @@ namespace API.Controllers
 
                 new DeleteService().DeleteAllInfoForService(boatId, UoW);
 
+                var navigationTools = UoW.GetRepository<ILinkNavigationBoatReadRepository>()
+                    .GetAll()
+                    .Where(x => x.ServiceId == boatId);
+                foreach (var navigationTool in navigationTools)
+                {
+                    UoW.GetRepository<ILinkNavigationBoatWriteRepository>().Delete(navigationTool);
+                }
+
                 UoW.Commit();
                 return Ok();
             }

@@ -91,6 +91,21 @@
                     :changeMode="ChangeMode"
                     :boatId="-1"
                 />
+                <AddNewBoat
+                    v-if="mode == 'UpdateBoat'"
+                    :changeMode="ChangeMode"
+                    :boatId="chosenBoat"
+                />
+                <ViewBoats
+                    v-if="mode == 'ViewBoats'"
+                    :changeMode="ChangeMode"
+                    :changeChosenBoat="ChangeSelectedBoat"
+                />
+                <BoatImages
+                    v-if="mode == 'BoatImages'"
+                    :changeMode="ChangeMode"
+                    :boatId="chosenBoat"
+                />
             </div>
         </div>
     </div>
@@ -98,14 +113,18 @@
 
 <script>
 import AddNewBoat from "../components/AddNewBoat.vue";
+import ViewBoats from "../components/ViewBoats.vue";
+import BoatImages from "../components/BoatImages.vue";
 export default {
     name: "BoatProfile",
     components: {
         AddNewBoat,
+        ViewBoats,
+        BoatImages,
     },
     data() {
         return {
-            mode: "AddNewBoat",
+            mode: "ViewBoats",
             chosenBoat: -1,
         };
     },
@@ -120,8 +139,8 @@ export default {
             }
             this.mode = newMode;
         },
-        ChangeSelectedVilla(newVilla) {
-            this.chosenBoat = newVilla;
+        ChangeSelectedBoat(newBoat) {
+            this.chosenBoat = newBoat;
         },
     },
 };

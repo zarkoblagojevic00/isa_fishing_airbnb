@@ -230,7 +230,7 @@
                 <button class="submit-btn" @click="changeMode('BoatImages')">
                     View images
                 </button>
-                <button class="delete-btn" @click="BoatVilla()">
+                <button class="delete-btn" @click="DeleteBoat()">
                     Delete boat
                 </button>
             </div>
@@ -362,6 +362,10 @@ export default {
             return false;
         },
         UpdateDate(evt) {
+            if (evt == null || evt == undefined) {
+                this.selectedDate = ["", ""];
+                return;
+            }
             this.selectedDate = [evt[0], evt[1]];
         },
         SendRequest() {
@@ -455,12 +459,15 @@ export default {
                         alert("Success! boat has been updated!");
                     }
                     vue.changeMode("ViewBoats");
-                    return response.json();
                 })
                 .then((data) => {
                     vue.errors = new Array();
-                    for (let error of data.errors) {
-                        vue.errors.push(data.errors[error]);
+                    if (data.errors != undefined) {
+                        for (let error of data.errors) {
+                            vue.errors.push(data.errors[error]);
+                        }
+                    } else {
+                        vue.errors.push(data);
                     }
                 });
 
@@ -471,8 +478,7 @@ export default {
 
             let vue = this;
             fetch(
-                "/api/VillaManagement/GetBoatInfo?villaId=" +
-                    this.$props.villaId,
+                "/api/BoatManagement/GetBoatInfo?boatId=" + this.$props.boatId,
                 {
                     method: "GET",
                     redirect: "follow",
@@ -502,12 +508,26 @@ export default {
                     vue.percentageTakenFromCancelation =
                         data.isPercentageTakenFromCanceledReservations;
                     vue.percentageToTake = data.percentageToTake;
-                    vue.numberOfRooms = data.numberOfRooms;
-                    vue.numberOfBeds = data.numberOfBeds;
                     vue.promoDescription = data.promoDescription;
                     vue.termsOfUse = data.termsOfUse;
                     vue.additionalEquipment = data.additionalEquipment;
                     vue.imageIds = data.imageIds;
+                    vue.numberOfEngines = data.engineNum;
+                    vue.maxSpeed = data.speed;
+                    vue.enginePower = data.enginePower;
+                    vue.length = data.length;
+                    vue.boatType = data.boatType;
+                    vue.navigationTools = data.navigationalTools;
+                    vue.city = data.cityName;
+                    if (
+                        data.availableFrom != undefined &&
+                        data.availableTo != undefined
+                    ) {
+                        vue.selectedDate = [
+                            data.availableFrom.toString(),
+                            data.availableTo.toString(),
+                        ];
+                    }
                 });
         },
         DeleteBoat() {
@@ -515,7 +535,7 @@ export default {
 
             let vue = this;
             fetch(
-                "/api/BoatManagement/DeleteBoat?villaId=" + this.$props.boatId,
+                "/api/BoatManagement/DeleteBoat?boatId=" + this.$props.boatId,
                 {
                     method: "DELETE",
                     redirect: "follow",

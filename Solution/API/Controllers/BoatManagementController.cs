@@ -77,7 +77,7 @@ namespace API.Controllers
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.BoatOwner })]
-        public IEnumerable<BoatDTO> GetOwnerBoats()
+        public IEnumerable<BoatDTO> GetOwnedBoats()
         {
             var boats = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
@@ -158,16 +158,19 @@ namespace API.Controllers
                 additionalBoatInfo.ServiceId = boat.ServiceId;
                 UoW.GetRepository<IAdditionalBoatServiceInfoWriteRepository>().Add(additionalBoatInfo);
 
-                foreach (var navigationToolId in newBoat.NavigationalTools.Distinct())
+                if (newBoat.NavigationalTools != null)
                 {
-                    var navigationTool = new LinkNavigationBoat()
+                    foreach (var navigationToolId in newBoat.NavigationalTools.Distinct())
                     {
-                        ServiceId = boat.ServiceId,
-                        BoatServiceNavigationToolId = navigationToolId
-                    };
-                    UoW.GetRepository<ILinkNavigationBoatWriteRepository>().Add(navigationTool);
+                        var navigationTool = new LinkNavigationBoat()
+                        {
+                            ServiceId = boat.ServiceId,
+                            BoatServiceNavigationToolId = navigationToolId
+                        };
+                        UoW.GetRepository<ILinkNavigationBoatWriteRepository>().Add(navigationTool);
+                    }
                 }
-
+                
                 UoW.Commit();
                 return Ok(boat.ServiceId);
             }

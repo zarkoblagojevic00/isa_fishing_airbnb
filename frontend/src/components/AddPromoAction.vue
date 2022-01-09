@@ -119,7 +119,7 @@
                 <div class="input-wrapper">
                     <span class="label">Date range:</span>
                     <Datepicker
-                        class="date-range"
+                        class="date-range width-fix"
                         :modelValue="selectedDate"
                         @update:modelValue="UpdateDate"
                         :range="true"
@@ -799,5 +799,9 @@ export default {
 
 .submit-btn:hover {
     background-color: #54cc39;
+}
+
+.width-fix {
+    width: 250px;
 }
 </style>

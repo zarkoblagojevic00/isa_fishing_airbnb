@@ -28,3 +28,12 @@ SET IDENTITY_INSERT Reservations OFF;
 SET IDENTITY_INSERT Reports ON;
 INSERT INTO Reports (ReportId, ReportText, CreatedDateTime, ShownUp, SuggestPenalty) VALUES (@ReportId, 'Created through seeding the database', GETDATE(), 1, 0)
 SET IDENTITY_INSERT Reports OFF;
+
+SET IDENTITY_INSERT Reservations ON;
+
+--Boat reservations
+INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (8, 5, 2, DATEADD(day, -30, GETDATE()), 0, 0, 0, null, null,'', 12.22, DATEADD(day, -20, GETDATE()), DATEADD(day, -17, GETDATE()))
+INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (9, 5, 2, DATEADD(day, -29, GETDATE()), 0, 0, 0, null, null,'', 12.22, DATEADD(day, -15, GETDATE()), DATEADD(day, -10, GETDATE()))
+INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (10, 5, 2, DATEADD(day, -28, GETDATE()), 0, 0, 0, null, null,'', 12.22, DATEADD(day, -3, GETDATE()), DATEADD(day, 5, GETDATE()))
+
+SET IDENTITY_INSERT Reservations OFF;

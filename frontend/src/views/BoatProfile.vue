@@ -106,6 +106,15 @@
                     :changeMode="ChangeMode"
                     :boatId="chosenBoat"
                 />
+                <AddPromoAction
+                    v-if="mode == 'AddPromoAction' || mode == 'ReserveForUser'"
+                    :currentMode="mode"
+                    :promoMode="'boat'"
+                />
+                <ServiceCalendar
+                    v-if="mode == 'CheckBoatSchedule'"
+                    :serviceMode="'boat'"
+                />
             </div>
         </div>
     </div>
@@ -115,12 +124,17 @@
 import AddNewBoat from "../components/AddNewBoat.vue";
 import ViewBoats from "../components/ViewBoats.vue";
 import BoatImages from "../components/BoatImages.vue";
+import AddPromoAction from "../components/AddPromoAction.vue";
+import ServiceCalendar from "../components/ServiceCalendar.vue";
+
 export default {
     name: "BoatProfile",
     components: {
         AddNewBoat,
         ViewBoats,
         BoatImages,
+        AddPromoAction,
+        ServiceCalendar,
     },
     data() {
         return {

@@ -2,14 +2,14 @@
     <div class="wrapperdiv">
         <div class="villa-picker">
             <h3>Pick a villa:</h3>
-            <select class="select-villa" v-model="selectedVilla">
+            <select class="select-villa" v-model="selectedService">
                 <option disabled value="">Please select one</option>
                 <option
-                    v-for="villa in allVillas"
-                    :key="villa.id"
-                    :value="villa.id"
+                    v-for="service in allServices"
+                    :key="service.id"
+                    :value="service.id"
                 >
-                    {{ villa.name }}
+                    {{ service.name }}
                 </option>
             </select>
         </div>
@@ -107,6 +107,24 @@
                     class="input-textarea"
                     v-model="reportText"
                 ></textarea>
+
+                <div class="horizontal-wrapper">
+                    <input
+                        type="checkbox"
+                        class="input-checkbox"
+                        v-model="shownUp"
+                    />
+                    <span class="label font">User show up?</span>
+                </div>
+
+                <div class="horizontal-wrapper">
+                    <input
+                        type="checkbox"
+                        class="input-checkbox"
+                        v-model="suggestPenalty"
+                    />
+                    <span class="label font">Suggest penalty?</span>
+                </div>
                 <button class="report-submit" @click="Submit">
                     Submit report
                 </button>
@@ -125,10 +143,13 @@ import {
 } from "vue-simple-calendar";
 import moment from "moment";
 export default {
-    name: "VillaCalendar",
+    name: "ServiceCalendar",
     components: {
         CalendarView,
         CalendarViewHeader,
+    },
+    props: {
+        serviceMode: String,
     },
     data() {
         return {
@@ -148,8 +169,8 @@ export default {
             useHolidayTheme: true,
             useTodayIcons: false,
 
-            selectedVilla: "",
-            allVillas: [],
+            selectedService: "",
+            allServices: [],
             items: [],
 
             user: {},
@@ -159,6 +180,9 @@ export default {
             moment: moment,
 
             reportText: "",
+            isVilla: this.$props.serviceMode == "villa",
+            shownUp: false,
+            suggestPenalty: false,
         };
     },
     computed: {
@@ -199,7 +223,7 @@ export default {
         this.newItemEndDate = CalendarMath.isoYearMonthDay(
             CalendarMath.today()
         );
-        this.getAllVillas();
+        this.getallServices();
     },
     methods: {
         thisMonth(d, h, m) {
@@ -210,9 +234,12 @@ export default {
             this.message = `Changing calendar view to ${d.toLocaleDateString()}`;
             this.showDate = d;
         },
-        getAllVillas() {
+        getallServices() {
             let vue = this;
-            fetch("/api/VillaManagement/GetOwnedVillas", {
+            let url = this.isVilla
+                ? "/api/VillaManagement/GetOwnedVillas"
+                : "/api/BoatManagement/GetOwnedBoats";
+            fetch(url, {
                 method: "GET",
                 header: {
                     "Content-type": "application-json",
@@ -232,11 +259,11 @@ export default {
                         alert("Something went wrong!\nError message: " + data);
                         return;
                     }
-                    vue.allVillas = new Array();
-                    for (let villa of data) {
-                        vue.allVillas.push({
-                            id: villa.villaId,
-                            name: villa.name,
+                    vue.allServices = new Array();
+                    for (let service of data) {
+                        vue.allServices.push({
+                            id: vue.isVilla ? service.villaId : service.boatId,
+                            name: service.name,
                         });
                     }
                 });
@@ -245,7 +272,7 @@ export default {
             let vue = this;
             fetch(
                 "/api/GeneralService/GetReservationHistory?serviceId=" +
-                    this.selectedVilla,
+                    this.selectedService,
                 {
                     method: "GET",
                     header: {
@@ -347,11 +374,14 @@ export default {
                     vue.displayUserInfo = true;
                 });
         },
-        async Submit() {
+        Submit() {
+            let vue = this;
             let dto = {
                 reservationId:
                     this.selectedReservation.reservation.reservationId,
                 reportText: this.reportText,
+                suggestPenalty: this.suggestPenalty,
+                shownUp: this.shownUp,
             };
 
             if (dto.reservationId == undefined) {
@@ -363,7 +393,7 @@ export default {
                 return;
             }
 
-            let response = await fetch("/api/GeneralService/SubmitReport", {
+            fetch("/api/GeneralService/SubmitReport", {
                 method: "POST",
                 redirect: "follow",
                 headers: {
@@ -371,51 +401,61 @@ export default {
                     "Set-Cookie": document.cookie,
                 },
                 body: JSON.stringify(dto),
-            }).then((response) => {
-                if (!response.ok) {
-                    let err = new Error("HTTP status code: " + response.status);
-                    err.response = response;
-                    err.status = response.status;
-                    return err;
-                }
-                return response;
-            });
-            if (response.status != 200) {
-                let response = await response.text();
-                let error = "";
-                let strconst = "".constructor;
-                try {
-                    error = JSON.parse(response);
-                } catch {
-                    error = response;
-                }
-
-                if (error.constructor == strconst) {
-                    alert("Something went wrong!\nError message: " + error);
-                }
-            } else {
-                this.selectedReservation.report = {
-                    reportText: this.reportText,
-                };
-                for (let history of this.receivedHistory) {
-                    if (
-                        history.reservation.reservation !=
-                        this.selectedReservation.reservation.reservationId
-                    ) {
-                        continue;
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return "";
+                    } else {
+                        return response.text();
                     }
-                    history.report = {
-                        reportText: this.reportText,
-                    };
-                    break;
-                }
+                })
+                .then((data) => {
+                    if (data == "") {
+                        vue.selectedReservation.report = {
+                            reportText: vue.reportText,
+                        };
+                        for (let history of vue.receivedHistory) {
+                            if (
+                                history.reservation.reservation !=
+                                vue.selectedReservation.reservation
+                                    .reservationId
+                            ) {
+                                continue;
+                            }
+                            history.report = {
+                                reportText: vue.reportText,
+                            };
+                            break;
+                        }
 
-                this.reportText = "";
-            }
+                        vue.reportText = "";
+                        return;
+                    }
+                    let error = "";
+                    let strconst = "".constructor;
+                    try {
+                        error = JSON.parse(data);
+                    } catch {
+                        error = data;
+                    }
+                    if (error.constructor == strconst) {
+                        alert("Something went wrong!\nError message: " + error);
+                    } else {
+                        let errors = "";
+                        let values = Object.keys(error).map(function (key) {
+                            return error[key];
+                        });
+                        for (let value of values) {
+                            for (let error of value) {
+                                errors = errors + error + "\n";
+                            }
+                        }
+                    }
+                });
         },
     },
     watch: {
-        selectedVilla: function () {
+        selectedService: function () {
             this.RefreshCalendar();
         },
     },
@@ -531,6 +571,26 @@ export default {
     margin-bottom: 5px;
 }
 
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.label {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 5px;
+    padding-left: 10px;
+}
+
+.input-checkbox {
+    width: 15px;
+    height: 15px;
+    position: relative;
+}
+
 .report-submit {
     height: 50px;
     border-radius: 15px;
@@ -552,5 +612,19 @@ export default {
 .max-width {
     max-width: 500px;
     text-align: start;
+}
+
+.horizontal-wrapper {
+    max-width: 400px;
+    min-width: 200px;
+    width: 100%;
+    display: flex;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.font {
+    font-size: 18px !important;
+    font-weight: 100 !important;
 }
 </style>

@@ -2,14 +2,14 @@
     <div class="wrapperdiv">
         <div class="villa-picker">
             <h3>Pick a villa:</h3>
-            <select class="select-villa" v-model="selectedVilla">
+            <select class="select-villa" v-model="selectedService">
                 <option disabled value="">Please select one</option>
                 <option
-                    v-for="villa in allVillas"
-                    :key="villa.id"
-                    :value="villa.id"
+                    v-for="service in allServices"
+                    :key="service.id"
+                    :value="service.id"
                 >
-                    {{ villa.name }}
+                    {{ service.name }}
                 </option>
             </select>
         </div>
@@ -207,8 +207,8 @@ export default {
         Datepicker,
     },
     props: {
-        villaHook: String,
         currentMode: String,
+        promoMode: String,
     },
     data() {
         return {
@@ -228,8 +228,8 @@ export default {
             useHolidayTheme: true,
             useTodayIcons: false,
 
-            selectedVilla: "",
-            allVillas: [],
+            selectedService: "",
+            allServices: [],
             items: [],
 
             receivedItems: [],
@@ -246,6 +246,8 @@ export default {
             emailOfUser: "",
             pricePerDayReservation: "",
             additionalEquipment: "",
+
+            isVilla: this.$props.promoMode == "villa",
         };
     },
     computed: {
@@ -286,7 +288,7 @@ export default {
         this.newItemEndDate = CalendarMath.isoYearMonthDay(
             CalendarMath.today()
         );
-        this.GetAllVillas();
+        this.GetAllServices();
     },
     methods: {
         thisMonth(d, h, m) {
@@ -297,9 +299,13 @@ export default {
             this.message = `Changing calendar view to ${d.toLocaleDateString()}`;
             this.showDate = d;
         },
-        GetAllVillas() {
+        GetAllServices() {
             let vue = this;
-            fetch("/api/VillaManagement/GetOwnedVillas", {
+            let url =
+                this.$props.promoMode == "villa"
+                    ? "/api/VillaManagement/GetOwnedVillas"
+                    : "/api/BoatManagement/GetOwnedBoats";
+            fetch(url, {
                 method: "GET",
                 header: {
                     "Content-type": "application-json",
@@ -319,11 +325,11 @@ export default {
                         alert("Something went wrong!\nError message: " + data);
                         return;
                     }
-                    vue.allVillas = new Array();
-                    for (let villa of data) {
-                        vue.allVillas.push({
-                            id: villa.villaId,
-                            name: villa.name,
+                    vue.allServices = new Array();
+                    for (let service of data) {
+                        vue.allServices.push({
+                            id: vue.isVilla ? service.villaId : service.boatId,
+                            name: service.name,
                         });
                     }
                 });
@@ -333,7 +339,7 @@ export default {
             this.items = new Array();
             await fetch(
                 "/api/QuickAction/GetQuickActions?serviceId=" +
-                    this.selectedVilla,
+                    this.selectedService,
                 {
                     method: "GET",
                     header: {
@@ -380,7 +386,7 @@ export default {
 
             fetch(
                 "/api/GeneralService/GetNonPromoReservations?serviceId=" +
-                    this.selectedVilla,
+                    this.selectedService,
                 {
                     method: "GET",
                     header: {
@@ -496,7 +502,7 @@ export default {
                 this.selectedDateReservation = [evt[0], evt[1]];
             }
         },
-        async Submit() {
+        Submit() {
             this.errors = new Array();
             if (
                 this.selectedDate.length != 2 ||
@@ -505,7 +511,7 @@ export default {
             ) {
                 this.errors.push("You need to specify the date range");
             }
-            if (this.selectedVilla == "") {
+            if (this.selectedService == "") {
                 this.errors.push("You need to select a villa first");
             }
             if (!this.ValidatePrice()) {
@@ -520,7 +526,7 @@ export default {
             }
 
             let dto = {
-                serviceId: this.selectedVilla,
+                serviceId: this.selectedService,
                 startDateTime: this.selectedDate[0],
                 endDateTime: this.selectedDate[1],
                 pricePerDay: this.pricePerDay,
@@ -538,34 +544,50 @@ export default {
 
             let vue = this;
 
-            let response = await fetch(url, {
+            fetch(url, {
                 method: vue.mode == "Adding" ? "POST" : "PUT",
                 headers: {
                     "Content-type": "application/json",
                     "Set-Cookie": document.cookie,
                 },
                 body: JSON.stringify(dto),
-            });
-            if (response.status == 200) {
-                this.RefreshCalendar();
-                this.SwitchToAddingMode();
-                return;
-            }
-
-            let error = await response.text();
-            let parsed = "";
-            try {
-                parsed = JSON.parse(error);
-            } catch (err) {
-                parsed = error;
-            }
-
-            let strconst = "test".constructor;
-            if (parsed.constructor == strconst) {
-                this.errors.push(parsed);
-            } else {
-                console.log(parsed);
-            }
+            })
+                .then((response) => {
+                    if (response.status == 200) {
+                        vue.RefreshCalendar();
+                        vue.SwitchToAddingMode();
+                        return "";
+                    } else {
+                        return response.text();
+                    }
+                })
+                .then((data) => {
+                    if (data == "") {
+                        return;
+                    }
+                    let error = data;
+                    let parsed = "";
+                    try {
+                        parsed = JSON.parse(error);
+                    } catch (err) {
+                        parsed = error;
+                    }
+                    let strconst = "test".constructor;
+                    if (parsed.constructor == strconst) {
+                        vue.errors.push(parsed);
+                    } else {
+                        console.log(parsed);
+                        parsed = parsed.errors;
+                        let values = Object.keys(parsed).map(function (key) {
+                            return parsed[key];
+                        });
+                        for (let value of values) {
+                            for (let error of value) {
+                                vue.errors.push(error);
+                            }
+                        }
+                    }
+                });
         },
         ValidateMail() {
             if (!this.ValidateString(this.emailOfUser)) return false;
@@ -579,7 +601,10 @@ export default {
         },
         async CreateReservation() {
             this.errors = new Array();
-            if (this.selectedVilla == undefined || this.selectedVilla == "") {
+            if (
+                this.selectedService == undefined ||
+                this.selectedService == ""
+            ) {
                 this.errors.push("A villa needs to be chosen first!");
             }
             if (!this.ValidateMail()) {
@@ -600,7 +625,7 @@ export default {
 
             let dto = {
                 userMail: this.emailOfUser,
-                serviceId: this.selectedVilla,
+                serviceId: this.selectedService,
                 price: this.pricePerDayReservation,
                 additionalEquipment: this.additionalEquipment,
                 startDateTime: this.selectedDateReservation[0],
@@ -645,7 +670,7 @@ export default {
         },
     },
     watch: {
-        selectedVilla: function () {
+        selectedService: function () {
             this.RefreshCalendar();
         },
     },

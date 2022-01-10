@@ -109,10 +109,14 @@
                     :changeMode="ChangeMode"
                     :villaId="chosenVilla"
                 />
-                <VillaCalendar v-if="mode == 'CheckVillaSchedule'" />
+                <ServiceCalendar
+                    v-if="mode == 'CheckVillaSchedule'"
+                    :serviceMode="'villa'"
+                />
                 <AddPromoAction
                     v-if="mode == 'AddPromoAction' || mode == 'ReserveForUser'"
                     :currentMode="mode"
+                    :promoMode="'villa'"
                 />
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
                 <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
@@ -126,7 +130,7 @@
 import AddNewVilla from "../components/AddNewVilla.vue";
 import ViewVillas from "../components/ViewVillas.vue";
 import VillaImages from "../components/VillaImages.vue";
-import VillaCalendar from "../components/VillaCalendar.vue";
+import ServiceCalendar from "../components/ServiceCalendar.vue";
 import AddPromoAction from "../components/AddPromoAction.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
@@ -138,7 +142,7 @@ export default {
         AddNewVilla,
         ViewVillas,
         VillaImages,
-        VillaCalendar,
+        ServiceCalendar,
         AddPromoAction,
         VillaOwnerProfile,
         VillaOwnerPassChange,

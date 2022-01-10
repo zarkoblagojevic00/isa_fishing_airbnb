@@ -1,7 +1,7 @@
 <template>
     <div class="wrapperdiv">
         <div class="villa-picker">
-            <h3>Pick a villa:</h3>
+            <h3>Pick a {{ isVilla ? "villa" : "boat" }}:</h3>
             <select class="select-villa" v-model="selectedService">
                 <option disabled value="">Please select one</option>
                 <option
@@ -119,7 +119,7 @@
                 <div class="input-wrapper">
                     <span class="label">Date range:</span>
                     <Datepicker
-                        class="date-range width-fix"
+                        class="date-range"
                         :modelValue="selectedDate"
                         @update:modelValue="UpdateDate"
                         :range="true"
@@ -143,12 +143,20 @@
                     <input
                         class="input-field"
                         type="email"
+                        list="emailslist"
                         min="0"
                         v-model="emailOfUser"
                         :class="[
                             ValidateMail(emailOfUser) ? '' : 'error-outline',
                         ]"
                     />
+                    <datalist id="emailslist">
+                        <option
+                            v-for="email in emails"
+                            :key="email"
+                            :value="email"
+                        />
+                    </datalist>
                 </div>
                 <button
                     v-if="mode == 'Editing'"
@@ -248,6 +256,7 @@ export default {
             additionalEquipment: "",
 
             isVilla: this.$props.promoMode == "villa",
+            emails: [],
         };
     },
     computed: {
@@ -289,6 +298,7 @@ export default {
             CalendarMath.today()
         );
         this.GetAllServices();
+        this.GetUserMails();
     },
     methods: {
         thisMonth(d, h, m) {
@@ -298,6 +308,33 @@ export default {
         setShowDate(d) {
             this.message = `Changing calendar view to ${d.toLocaleDateString()}`;
             this.showDate = d;
+        },
+        GetUserMails() {
+            let vue = this;
+            fetch("/api/GeneralService/GetRegisteredMails", {
+                method: "GET",
+                header: {
+                    "Content-type": "application-json",
+                    "Set-Cookie": document.cookie,
+                },
+            })
+                .then((response) => {
+                    return response.text();
+                })
+                .then((data) => {
+                    let message = "";
+                    let strconst = "".constructor;
+                    try {
+                        message = JSON.parse(data);
+                    } catch {
+                        message = data;
+                    }
+                    if (message.constructor == strconst) {
+                        alert("Something went wrong!\n" + message);
+                    } else {
+                        vue.emails = message;
+                    }
+                });
         },
         GetAllServices() {
             let vue = this;
@@ -599,13 +636,13 @@ export default {
             }
             return true;
         },
-        async CreateReservation() {
+        CreateReservation() {
             this.errors = new Array();
             if (
                 this.selectedService == undefined ||
                 this.selectedService == ""
             ) {
-                this.errors.push("A villa needs to be chosen first!");
+                this.errors.push("A service needs to be chosen first!");
             }
             if (!this.ValidateMail()) {
                 this.errors.push("Mail isn't in correct format!");
@@ -631,42 +668,44 @@ export default {
                 startDateTime: this.selectedDateReservation[0],
                 endDateTime: this.selectedDateReservation[1],
             };
-
-            let response = await fetch(
-                "/api/GeneralService/CreateReservationForUser",
-                {
-                    method: "POST",
-                    redirect: "follow",
-                    headers: {
-                        "Content-type": "application/json",
-                        "Set-Cookie": document.cookie,
-                    },
-                    body: JSON.stringify(dto),
-                }
-            );
-
-            if (response.ok) {
-                this.RefreshCalendar();
-                this.selectedDateReservation = ["", ""];
-                this.emailOfUser = "";
-                this.additionalEquipment = "";
-                this.pricePerDayReservation = "";
-                return;
-            }
-
-            let message = await response.text();
-            let error = "";
-            try {
-                error = JSON.parse(message);
-            } catch {
-                error = message;
-            }
-
-            let strconst = "".constructor;
-            if (strconst == error.constructor) {
-                this.errors.push(error);
-                alert("Something went wrong!\nError message: " + error);
-            }
+            let vue = this;
+            fetch("/api/GeneralService/CreateReservationForUser", {
+                method: "POST",
+                redirect: "follow",
+                headers: {
+                    "Content-type": "application/json",
+                    "Set-Cookie": document.cookie,
+                },
+                body: JSON.stringify(dto),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return "";
+                    } else {
+                        return response.text();
+                    }
+                })
+                .then((data) => {
+                    if (data == "") {
+                        vue.RefreshCalendar();
+                        vue.selectedDateReservation = ["", ""];
+                        vue.emailOfUser = "";
+                        vue.additionalEquipment = "";
+                        vue.pricePerDayReservation = "";
+                        return;
+                    }
+                    let error = "";
+                    try {
+                        error = JSON.parse(data);
+                    } catch {
+                        error = data;
+                    }
+                    let strconst = "".constructor;
+                    if (strconst == error.constructor) {
+                        vue.errors.push(error);
+                        alert("Something went wrong!\nError message: " + error);
+                    }
+                });
         },
     },
     watch: {

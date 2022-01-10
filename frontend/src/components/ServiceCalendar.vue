@@ -1,7 +1,7 @@
 <template>
     <div class="wrapperdiv">
         <div class="villa-picker">
-            <h3>Pick a villa:</h3>
+            <h3>Pick a {{ isVilla ? "villa" : "boat" }}:</h3>
             <select class="select-villa" v-model="selectedService">
                 <option disabled value="">Please select one</option>
                 <option
@@ -626,5 +626,10 @@ export default {
 .font {
     font-size: 18px !important;
     font-weight: 100 !important;
+}
+.date-range {
+    max-width: 400px;
+    min-width: 200px;
+    width: 100%;
 }
 </style>

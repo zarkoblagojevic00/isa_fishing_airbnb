@@ -17,7 +17,7 @@ SET IDENTITY_INSERT Reservations ON;
 INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (6, 4, 0, DATEADD(day, -3, GETDATE()), 1, 0, 0, null, null,'', 12.22, @StartDate, @EndDate)
 SET IDENTITY_INSERT Reservations OFF;
 SET IDENTITY_INSERT PromoActions ON;
-INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (0, 0, @StartDate, @EndDate, 12.22, 1, 10, null)
+INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (3, 0, @StartDate, @EndDate, 12.22, 1, 10, null)
 SET IDENTITY_INSERT PromoActions OFF;
 
 --Reservations with reports
@@ -37,3 +37,13 @@ INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, Is
 INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (10, 5, 2, DATEADD(day, -28, GETDATE()), 0, 0, 0, null, null,'', 12.22, DATEADD(day, -3, GETDATE()), DATEADD(day, 5, GETDATE()))
 
 SET IDENTITY_INSERT Reservations OFF;
+
+--Reservations with quickactions
+SET @StartDate = DATEADD(day, 13, GETDATE())
+SET @EndDate = DATEADD(day, 16, GETDATE())
+SET IDENTITY_INSERT Reservations ON;
+INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (11, 5, 2, DATEADD(day, -3, GETDATE()), 1, 0, 0, null, null,'', 12.22, @StartDate, @EndDate)
+SET IDENTITY_INSERT Reservations OFF;
+SET IDENTITY_INSERT PromoActions ON;
+INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (4, 2, @StartDate, @EndDate, 12.22, 1, 10, null)
+SET IDENTITY_INSERT PromoActions OFF;

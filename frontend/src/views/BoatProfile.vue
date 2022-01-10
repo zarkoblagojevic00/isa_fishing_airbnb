@@ -115,6 +115,9 @@
                     v-if="mode == 'CheckBoatSchedule'"
                     :serviceMode="'boat'"
                 />
+                <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
+                <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
+                <VillaOwnerDeletion v-if="mode == 'RequestDeletion'" />
             </div>
         </div>
     </div>
@@ -126,6 +129,9 @@ import ViewBoats from "../components/ViewBoats.vue";
 import BoatImages from "../components/BoatImages.vue";
 import AddPromoAction from "../components/AddPromoAction.vue";
 import ServiceCalendar from "../components/ServiceCalendar.vue";
+import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
+import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
+import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
 
 export default {
     name: "BoatProfile",
@@ -135,6 +141,9 @@ export default {
         BoatImages,
         AddPromoAction,
         ServiceCalendar,
+        VillaOwnerProfile,
+        VillaOwnerPassChange,
+        VillaOwnerDeletion,
     },
     data() {
         return {

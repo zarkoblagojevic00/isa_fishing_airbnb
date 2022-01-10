@@ -145,7 +145,7 @@ namespace API.Controllers
                 .FirstOrDefault(x => x.Email == reservationDto.UserMail && x.UserType == UserType.Registered && x.IsAccountVerified && x.IsAccountActive);
             if (user == null)
             {
-                return BadRequest(Responses.NotFound);
+                return BadRequest("Email: " + Responses.NotFound);
             }
 
             if (!CheckOwnerShip(reservationDto.ServiceId))
@@ -302,6 +302,18 @@ namespace API.Controllers
             }
 
             return Ok(serviceInfos);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
+        public IActionResult GetRegisteredMails()
+        {
+            var registeredUsers = UoW.GetRepository<IUserReadRepository>()
+                .GetAll()
+                .Where(x => x.IsAccountActive && x.IsAccountVerified && x.UserType == UserType.Registered)
+                .Select(x => x.Email);
+
+            return Ok(registeredUsers);
         }
 
         private Report CreateNewReport(ReportDTO report)

@@ -6,8 +6,10 @@ Scenario: Submitting a report
 	And there were no quick actions nur reservations in past for the service "Test Villa"
 	And there was a reservation for the service "Test Villa" lasting from "-6" days from now until "-3" days from now
 	And the ReportDTO was created and linked to previously created reservation as content with following properties
-	| Field      | Value                             |
-	| ReportText | testing submitting report feature |
+	| Field          | Value                             |
+	| ReportText     | testing submitting report feature |
+	| SuggestPenalty | false                             |
+	| ShownUp        | true                              |
 
 	When a request is sent to the API
 	| Field               | Value                            |

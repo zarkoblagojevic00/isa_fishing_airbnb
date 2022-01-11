@@ -117,6 +117,12 @@ this.ScenarioInitialize(scenarioInfo);
                 table8.AddRow(new string[] {
                             "ReportText",
                             "testing submitting report feature"});
+                table8.AddRow(new string[] {
+                            "SuggestPenalty",
+                            "false"});
+                table8.AddRow(new string[] {
+                            "ShownUp",
+                            "true"});
 #line 8
  testRunner.And("the ReportDTO was created and linked to previously created reservation as content" +
                         " with following properties", ((string)(null)), table8, "And ");
@@ -133,13 +139,13 @@ this.ScenarioInitialize(scenarioInfo);
                 table9.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 12
+#line 14
  testRunner.When("a request is sent to the API", ((string)(null)), table9, "When ");
 #line hidden
-#line 18
+#line 20
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 19
+#line 21
  testRunner.Then("a new report will be created for the service with name \"Test Villa\" in \"60\" secon" +
                         "ds", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -147,13 +153,13 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has an overlapping reservation", SourceLine=20)]
+        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has an overlapping reservation", SourceLine=22)]
         public virtual void CreatingAReservationForUserWhoHasAnOverlappingReservation()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating a reservation for user who has an overlapping reservation", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 21
+#line 23
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -173,14 +179,14 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 22
+#line 24
  testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 23
+#line 25
  testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
                         " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 24
+#line 26
  testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
                         "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -202,17 +208,17 @@ this.ScenarioInitialize(scenarioInfo);
                 table10.AddRow(new string[] {
                             "Address",
                             "test adr"});
-#line 25
+#line 27
  testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table10, "And ");
 #line hidden
-#line 32
+#line 34
  testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 33
+#line 35
  testRunner.And("there was a reservation for previously created user lasting from \"1\" days from no" +
                         "w until \"5\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 34
+#line 36
  testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
                         "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -228,7 +234,7 @@ this.ScenarioInitialize(scenarioInfo);
                 table11.AddRow(new string[] {
                             "PricePerDay",
                             "10"});
-#line 35
+#line 37
  testRunner.And("a NewReservationParameter was created as content for the previously created user " +
                         "and service with name \"Test Villa\" with the following properties", ((string)(null)), table11, "And ");
 #line hidden
@@ -244,23 +250,23 @@ this.ScenarioInitialize(scenarioInfo);
                 table12.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 41
+#line 43
  testRunner.When("a request is sent to the API", ((string)(null)), table12, "When ");
 #line hidden
-#line 47
+#line 49
  testRunner.Then("a \"400\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has no overlapping reservations", SourceLine=48)]
+        [TechTalk.SpecRun.ScenarioAttribute("Creating a reservation for user who has no overlapping reservations", SourceLine=50)]
         public virtual void CreatingAReservationForUserWhoHasNoOverlappingReservations()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating a reservation for user who has no overlapping reservations", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 49
+#line 51
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -280,14 +286,14 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 50
+#line 52
  testRunner.Given("there was a test villa owner with mail \"testvillaowner@gmail.com\" in database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 51
+#line 53
  testRunner.And("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
                         " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 52
+#line 54
  testRunner.And("there were no quick actions nur reservations in past for the service \"Test Villa\"" +
                         "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -309,17 +315,17 @@ this.ScenarioInitialize(scenarioInfo);
                 table13.AddRow(new string[] {
                             "Address",
                             "test adr"});
-#line 53
+#line 55
  testRunner.And("there was a normal user in the database with the following information", ((string)(null)), table13, "And ");
 #line hidden
-#line 60
+#line 62
  testRunner.And("there were no reservations for previously created user", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 61
+#line 63
  testRunner.And("there was a reservation for previously created user lasting from \"1\" days from no" +
                         "w until \"5\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 62
+#line 64
  testRunner.And("there was a reservation for previously created user lasting from \"6\" days from no" +
                         "w until \"9\" days from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -335,7 +341,7 @@ this.ScenarioInitialize(scenarioInfo);
                 table14.AddRow(new string[] {
                             "PricePerDay",
                             "10"});
-#line 63
+#line 65
  testRunner.And("a NewReservationParameter was created as content for the previously created user " +
                         "and service with name \"Test Villa\" with the following properties", ((string)(null)), table14, "And ");
 #line hidden
@@ -351,13 +357,13 @@ this.ScenarioInitialize(scenarioInfo);
                 table15.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 69
+#line 71
  testRunner.When("a request is sent to the API", ((string)(null)), table15, "When ");
 #line hidden
-#line 75
+#line 77
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 76
+#line 78
  testRunner.And("there should be a new reservation based on sent content created for the previousl" +
                         "y created user and service with name \"Test Villa\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden

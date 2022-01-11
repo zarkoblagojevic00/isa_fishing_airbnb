@@ -10,7 +10,6 @@ Scenario: Get one city
 	And the response will come with following json object
 	| Key       | Value    |
 	| name      | Novi Sad |
-	| countryId | 1        |
 
 Scenario: Get all cities
 	When a request is sent to the API

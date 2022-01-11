@@ -14,6 +14,7 @@ Scenario: Create New Villa
 	| Capacitiy        | 5                |
 	| NumberOfBeds     | 4                |
 	| NumberOfRooms    | 2                |
+	| CityName         | Novi Sad         |
 
 	When a request is sent to the API
 	| Field               | Value                            |

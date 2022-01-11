@@ -132,6 +132,9 @@ this.ScenarioInitialize(scenarioInfo);
                 table22.AddRow(new string[] {
                             "NumberOfRooms",
                             "2"});
+                table22.AddRow(new string[] {
+                            "CityName",
+                            "Novi Sad"});
 #line 5
  testRunner.And("a new villa DTO was created with the following properties", ((string)(null)), table22, "And ");
 #line hidden
@@ -150,13 +153,13 @@ this.ScenarioInitialize(scenarioInfo);
                 table23.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 18
+#line 19
  testRunner.When("a request is sent to the API", ((string)(null)), table23, "When ");
 #line hidden
-#line 25
+#line 26
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 26
+#line 27
  testRunner.And("a villa with the name \"Test Villa\" will be created and will be owned by \"testvill" +
                         "aowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -164,13 +167,13 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Delete Existing Villa", SourceLine=27)]
+        [TechTalk.SpecRun.ScenarioAttribute("Delete Existing Villa", SourceLine=28)]
         public virtual void DeleteExistingVilla()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete Existing Villa", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 28
+#line 29
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -190,15 +193,15 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 29
+#line 30
  testRunner.Given("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
                         " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 30
+#line 31
  testRunner.And("the villa with the name \"Test Villa\" that is linked with test villa owner had no " +
                         "reservations", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 31
+#line 32
  testRunner.And("an id of the villa named \"Test Villa\" which is linked to the test owner is includ" +
                         "ed as path parameter", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -214,13 +217,13 @@ this.ScenarioInitialize(scenarioInfo);
                 table24.AddRow(new string[] {
                             "CookieEmail",
                             "testvillaowner@gmail.com"});
-#line 33
+#line 34
  testRunner.When("a request is sent to the API", ((string)(null)), table24, "When ");
 #line hidden
-#line 39
+#line 40
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 40
+#line 41
  testRunner.And("the villa with the name \"Test Villa\" will be deleted for the owner \"testvillaowne" +
                         "r@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -228,13 +231,13 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Villa Update With existing Reservations", SourceLine=41)]
+        [TechTalk.SpecRun.ScenarioAttribute("Villa Update With existing Reservations", SourceLine=42)]
         public virtual void VillaUpdateWithExistingReservations()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Villa Update With existing Reservations", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 42
+#line 43
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -254,7 +257,7 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 43
+#line 44
  testRunner.Given("there was a villa in the database named \"Test Villa\" linked with villa owner with" +
                         " email \"testvillaowner@gmail.com\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
@@ -291,7 +294,7 @@ this.ScenarioInitialize(scenarioInfo);
                 table25.AddRow(new string[] {
                             "NumberOfRooms",
                             "2"});
-#line 44
+#line 45
  testRunner.And("a new villa DTO was formed based on the villa from the database that is linked wi" +
                         "th test owner", ((string)(null)), table25, "And ");
 #line hidden
@@ -304,10 +307,10 @@ this.ScenarioInitialize(scenarioInfo);
                 table26.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/VillaManagement/UpdateVilla"});
-#line 57
+#line 58
  testRunner.When("a request is sent to the API", ((string)(null)), table26, "When ");
 #line hidden
-#line 62
+#line 63
  testRunner.Then("a \"401\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

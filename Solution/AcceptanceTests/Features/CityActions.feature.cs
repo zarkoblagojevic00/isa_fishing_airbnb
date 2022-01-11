@@ -120,9 +120,6 @@ this.ScenarioInitialize(scenarioInfo);
                 table2.AddRow(new string[] {
                             "name",
                             "Novi Sad"});
-                table2.AddRow(new string[] {
-                            "countryId",
-                            "1"});
 #line 10
  testRunner.And("the response will come with following json object", ((string)(null)), table2, "And ");
 #line hidden
@@ -130,13 +127,13 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [TechTalk.SpecRun.ScenarioAttribute("Get all cities", SourceLine=14)]
+        [TechTalk.SpecRun.ScenarioAttribute("Get all cities", SourceLine=13)]
         public virtual void GetAllCities()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get all cities", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 15
+#line 14
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -165,10 +162,10 @@ this.ScenarioInitialize(scenarioInfo);
                 table3.AddRow(new string[] {
                             "RelativeResourceUrl",
                             "/api/City/GetCities"});
-#line 16
+#line 15
  testRunner.When("a request is sent to the API", ((string)(null)), table3, "When ");
 #line hidden
-#line 21
+#line 20
  testRunner.Then("a \"200\" status code should be received", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

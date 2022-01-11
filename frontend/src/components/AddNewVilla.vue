@@ -33,6 +33,23 @@
                 />
             </div>
             <div class="input-wrapper">
+                <span class="label">City:</span>
+                <input
+                    class="input-field"
+                    type="text"
+                    list="cities"
+                    v-model="city"
+                    :class="[ValidateCity(city) ? '' : 'error-outline']"
+                />
+                <datalist id="cities">
+                    <option
+                        v-for="city in cities"
+                        :key="city.id"
+                        :value="city.name"
+                    />
+                </datalist>
+            </div>
+            <div class="input-wrapper">
                 <span class="label">Longitude:</span>
                 <input
                     class="input-field"
@@ -115,6 +132,18 @@
         </div>
         <div class="content-pane">
             <div class="input-wrapper">
+                <span class="label">Available range:</span>
+                <Datepicker
+                    class="date-range"
+                    :modelValue="selectedDate"
+                    @update:modelValue="UpdateDate"
+                    :range="true"
+                    :twoCalendars="true"
+                    :placeholder="'Select a date range'"
+                    :minDate="new Date()"
+                />
+            </div>
+            <div class="input-wrapper">
                 <span class="label">Promo description:</span>
                 <textarea
                     class="input-textarea"
@@ -169,11 +198,16 @@
 </template>
 
 <script>
+import Datepicker from "vue3-date-time-picker";
+import "vue3-date-time-picker/dist/main.css";
 export default {
     name: "AndNewVilla",
     props: {
         changeMode: Function,
         villaId: Number,
+    },
+    components: {
+        Datepicker,
     },
     data() {
         return {
@@ -195,12 +229,21 @@ export default {
             errors: [],
             mode: this.$props.villaId == -1 ? "Adding" : "Editing",
             imageIds: [],
+            city: "",
+            cities: [],
+            selectedDate: ["", ""],
         };
     },
     mounted() {
         this.PullData();
+        this.GetCities();
     },
     methods: {
+        GetCities() {
+            fetch("/api/City/GetCities")
+                .then((response) => response.json())
+                .then((data) => (this.cities = data));
+        },
         isNumber(evt) {
             evt = evt ? evt : window.event;
             var charCode = evt.which ? evt.which : evt.keyCode;
@@ -213,6 +256,12 @@ export default {
             } else {
                 return true;
             }
+        },
+        ValidateCity() {
+            for (const c of this.cities)
+                if (c.name.toLowerCase() == this.city.toLowerCase())
+                    return true;
+            return false;
         },
         ValidateString(str) {
             if (str == 0) return false;
@@ -251,6 +300,13 @@ export default {
 
             return false;
         },
+        UpdateDate(evt) {
+            if (evt == null || evt == undefined) {
+                this.selectedDate = ["", ""];
+                return;
+            }
+            this.selectedDate = [evt[0], evt[1]];
+        },
         SendRequest() {
             this.errors = new Array();
 
@@ -287,7 +343,13 @@ export default {
                 PercentageToTake: this.percentageToTake,
                 NumberOfBeds: this.numberOfBeds,
                 NumberOfRooms: this.numberOfRooms,
+                CityName: this.city,
             };
+
+            if (this.selectedDate[0] != "" && this.selectedDate[1] != "") {
+                dto.availableFrom = this.selectedDate[0];
+                dto.availableTo = this.selectedDate[1];
+            }
 
             let vue = this;
             let url =
@@ -375,6 +437,16 @@ export default {
                     vue.termsOfUse = data.termsOfUse;
                     vue.additionalEquipment = data.additionalEquipment;
                     vue.imageIds = data.imageIds;
+                    vue.city = data.cityName;
+                    if (
+                        data.availableFrom != undefined &&
+                        data.availableTo != undefined
+                    ) {
+                        vue.selectedDate = [
+                            data.availableFrom.toString(),
+                            data.availableTo.toString(),
+                        ];
+                    }
                 });
         },
         DeleteVilla() {
@@ -551,5 +623,11 @@ h3 {
     text-align: left;
     margin-bottom: 15px;
     padding: 0px 15px;
+}
+
+.date-range {
+    max-width: 400px;
+    min-width: 200px;
+    width: 100%;
 }
 </style>

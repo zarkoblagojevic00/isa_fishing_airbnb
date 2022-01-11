@@ -191,7 +191,7 @@ namespace API.Controllers
             try
             {
                 var currentUser = GetUserIdFromCookie();
-                var villa = CreateNewVilla(currentUser, newVilla);
+                var villa = CreateNewVilla(currentUser, newVilla, existingCity.CityId);
                 var villaWriteRepo = UoW.GetRepository<IServiceWriteRepository>();
 
                 var additionalVillaInfoWriteRepo = UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>();
@@ -277,7 +277,7 @@ namespace API.Controllers
             var additionalVillaInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll().First(x => x.ServiceId == villa.VillaId.Value);
 
-            MapNewInformation(villa, villaService, additionalVillaInfo);
+            MapNewInformation(villa, villaService, additionalVillaInfo, existingCity.CityId);
 
             UoW.BeginTransaction();
 
@@ -328,7 +328,7 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
         
-        private Service CreateNewVilla(int currentUser, VillaDTO newVilla)
+        private Service CreateNewVilla(int currentUser, VillaDTO newVilla, int cityId)
         {
             return new Service()
             {
@@ -346,7 +346,8 @@ namespace API.Controllers
                 AvailableTo = newVilla.AvailableTo,
                 Capacity = newVilla.Capacity,
                 IsPercentageTakenFromCanceledReservations = newVilla.IsPercentageTakenFromCanceledReservations,
-                PercentageToTake = newVilla.PercentageToTake
+                PercentageToTake = newVilla.PercentageToTake,
+                CityId = cityId
             };
         }
 
@@ -360,7 +361,7 @@ namespace API.Controllers
             };
         }
 
-        private void MapNewInformation(VillaDTO villa, Service villaService, AdditionalVillaServiceInfo additionalVillaServiceInfo)
+        private void MapNewInformation(VillaDTO villa, Service villaService, AdditionalVillaServiceInfo additionalVillaServiceInfo, int cityId)
         {
             villaService.Name = villa.Name;
             villaService.PricePerDay = villa.PricePerDay;
@@ -376,6 +377,7 @@ namespace API.Controllers
             villaService.Capacity = villa.Capacity;
             villaService.IsPercentageTakenFromCanceledReservations = villa.IsPercentageTakenFromCanceledReservations;
             villaService.PercentageToTake = villa.PercentageToTake;
+            villaService.CityId = cityId;
 
             additionalVillaServiceInfo.NumberOfBeds = villa.NumberOfBeds;
             additionalVillaServiceInfo.NumberOfRooms = villa.NumberOfRooms;

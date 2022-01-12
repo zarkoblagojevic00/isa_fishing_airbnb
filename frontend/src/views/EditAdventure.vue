@@ -211,10 +211,6 @@
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
         </form>
-        <div>
-            <h3>Set initial availability period</h3>
-            <v-date-picker v-model="range" mode="dateTime" is-range />
-        </div>
     </div>
     <div class="flexbox">
         <button
@@ -265,13 +261,6 @@ export default {
                 additionalOffers: "",
                 isPercentageTakenFromCanceledReservations: false,
                 percentageToTake: 0,
-                availableFrom: new Date(),
-                availableTo: new Date(),
-            },
-
-            range: {
-                start: new Date(),
-                end: new Date(),
             },
         };
     },
@@ -297,8 +286,6 @@ export default {
         onSubmit() {
             console.log(this.newAdventure);
             const adventure = Object.assign({}, this.newAdventure);
-            adventure.availableFrom = this.range.start;
-            adventure.availableTo = this.range.end;
             console.log(adventure);
 
             axios
@@ -311,7 +298,19 @@ export default {
                     );
                     this.$router.push(this.baseUrlInstructor);
                 })
-                .catch((err) => console.log(err));
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        console.log(error.response.data);
+                        this.$swal.fire(error.response.data);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log("Error", error.message);
+                    }
+                });
         },
         loadAdventure() {
             axios
@@ -322,8 +321,6 @@ export default {
                 .then((res) => {
                     this.newAdventure = res.data;
                     console.log(res.data);
-                    this.range.start = res.data.availableFrom;
-                    this.range.end = res.data.availableTo;
                 })
                 .catch((err) => console.log(err));
         },

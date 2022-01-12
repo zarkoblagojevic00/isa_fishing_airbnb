@@ -393,8 +393,6 @@ namespace API.Controllers
             adventure.PromoDescription = adventureDTO.PromoDescription;
             adventure.TermsOfUse = adventureDTO.TermsOfUse;
             adventure.AdditionalEquipment = adventureDTO.AdditionalEquipment;
-            adventure.AvailableFrom = adventureDTO.AvailableFrom;
-            adventure.AvailableTo = adventureDTO.AvailableTo;
             adventure.AdditionalEquipment = adventureDTO.AdditionalEquipment;
             adventure.Capacity = adventureDTO.Capacity;
             adventure.IsPercentageTakenFromCanceledReservations = adventureDTO.IsPercentageTakenFromCanceledReservations;

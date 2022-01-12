@@ -44,7 +44,10 @@
                     </td>
                     <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
-                    <td class="left">
+                    <td
+                        class="left"
+                        v-if="new Date(res.serviceTo) < new Date()"
+                    >
                         <font-awesome-icon
                             icon="plus-circle"
                             style="cursor: pointer"

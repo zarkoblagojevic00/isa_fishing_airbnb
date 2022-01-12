@@ -10,6 +10,16 @@
                 v-model="v$.quickAction.startDateTime.$model"
                 mode="dateTime"
                 is24hr
+                :min-date="
+                    v$.quickAction.endDateTime.$model
+                        ? v$.quickAction.endDateTime.$model
+                        : new Date()
+                "
+                :max-date="
+                    v$.quickAction.endDateTime.$model
+                        ? v$.quickAction.endDateTime.$model
+                        : new Date() + 365
+                "
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -40,6 +50,16 @@
                 v-model="v$.quickAction.endDateTime.$model"
                 mode="dateTime"
                 is24hr
+                :min-date="
+                    v$.quickAction.startDateTime.$model
+                        ? v$.quickAction.startDateTime.$model
+                        : new Date()
+                "
+                :max-date="
+                    v$.quickAction.startDateTime.$model
+                        ? v$.quickAction.startDateTime.$model
+                        : new Date() + 365
+                "
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -107,7 +127,15 @@
                 type="text"
                 class="item"
                 v-model="v$.quickAction.place.$model"
+                list="cities"
             />
+            <datalist id="cities">
+                <option
+                    v-for="city in cities"
+                    :key="city.id"
+                    :value="city.name"
+                />
+            </datalist>
             <div
                 class="input-errors"
                 v-for="(error, index) of v$.quickAction.place.$errors"
@@ -134,14 +162,16 @@ import Navbar from "@/components/Navbar.vue";
 import axios from "../api/api.js";
 
 import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import { required, minValue } from "@vuelidate/validators";
 
 export default {
     name: "AdventureNewQuickAction",
     components: {
         Navbar,
     },
-    mounted() {},
+    mounted() {
+        this.getCities();
+    },
     methods: {
         onCancelEdit() {
             this.quickAction = {};
@@ -149,33 +179,43 @@ export default {
         onSaveEdit() {
             this.quickAction.serviceId = this.$route.params.id;
             const quickAction_obj = Object.assign({}, this.quickAction);
-            console.log(quickAction_obj);
-            axios
-                .post("/api/QuickAction/CreateNewQuickAction", quickAction_obj)
-                .then(({ data }) => {
-                    console.log(data);
-                    this.$swal.fire("Quick action created");
-                    this.$router.push(
-                        "/adventure/" +
-                            this.$route.params.id +
-                            "/" +
-                            "quick-reservation"
-                    );
-                })
-                .catch(function (error) {
-                    if (error.response) {
-                        // Request made and server responded
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log("Error", error.message);
-                    }
-                });
+            if (
+                new Date(this.quickAction.startDateTime) >
+                new Date(this.quickAction.endDateTime)
+            ) {
+                this.$swal.fire("Start time must be before end time.");
+            } else {
+                axios
+                    .post(
+                        "/api/QuickAction/CreateNewQuickAction",
+                        quickAction_obj
+                    )
+                    .then(({ data }) => {
+                        console.log(data);
+                        this.$swal.fire("Quick action created");
+                        this.$router.push(
+                            "/adventure/" +
+                                this.$route.params.id +
+                                "/" +
+                                "quick-reservation"
+                        );
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                            // Request made and server responded
+                            if (error.response.data == "Dates overlap") {
+                                this.$swal(
+                                    "Dates overlap with existing dates."
+                                );
+                            }
+                        }
+                    });
+            }
+        },
+        getCities() {
+            axios.get("/api/City/GetCities").then((res) => {
+                this.cities = res.data;
+            });
         },
     },
     setup() {
@@ -194,15 +234,18 @@ export default {
                 place: "",
             },
             navbarItems: ["Home", "Quick reservation", "Gallery"],
+            cities: [],
         };
     },
     validations() {
         return {
             quickAction: {
-                startDateTime: { required },
+                startDateTime: {
+                    required,
+                },
                 endDateTime: { required },
-                pricePerDay: { required },
-                capacity: { required },
+                pricePerDay: { required, minValue: minValue(0) },
+                capacity: { required, minValue: minValue(0) },
                 place: { required },
             },
         };

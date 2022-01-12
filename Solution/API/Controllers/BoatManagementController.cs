@@ -240,13 +240,13 @@ namespace API.Controllers
                 return BadRequest(Responses.CannotChangeService);
             }
 
-            var boatService = UoW.GetRepository<IServiceReadRepository>().GetById(boat.BoatId.Value);
+            UoW.BeginTransaction();
+
+            var boatService = new ServiceLocker(UoW).ObtainLockedService(boat.BoatId.Value);
             var additionalInfo = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>()
                 .GetAll()
                 .First(x => x.ServiceId == boat.BoatId);
             
-            UoW.BeginTransaction();
-
             MapNewInformation(boat, boatService, additionalInfo);
 
             UoW.GetRepository<IServiceWriteRepository>().Update(boatService);
@@ -279,11 +279,14 @@ namespace API.Controllers
             try
             {
                 UoW.BeginTransaction();
+
+                var lockedService = new ServiceLocker(UoW).ObtainLockedService(boatId);
+                
                 var additionalInfo = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>()
                     .GetAll()
                     .First(x => x.ServiceId == boatId);
                 UoW.GetRepository<IAdditionalBoatServiceInfoWriteRepository>().Delete(additionalInfo);
-
+                
                 new DeleteService().DeleteAllInfoForService(boatId, UoW);
 
                 var navigationTools = UoW.GetRepository<ILinkNavigationBoatReadRepository>()

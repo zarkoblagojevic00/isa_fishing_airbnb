@@ -451,7 +451,7 @@ export default {
                             "Something went wrong!\nStatus code: " +
                                 response.status
                         );
-                        return response.json();
+                        return response.text();
                     }
                     if (vue.mode == "Adding") {
                         alert("Success! New boat has been created!");
@@ -459,15 +459,28 @@ export default {
                         alert("Success! boat has been updated!");
                     }
                     vue.changeMode("ViewBoats");
+                    return "";
                 })
                 .then((data) => {
+                    if (data == "") {
+                        return;
+                    }
+                    let error = "";
+                    let strconst = "".constructor;
+                    try {
+                        error = JSON.parse(data);
+                    } catch {
+                        error = data;
+                    }
                     vue.errors = new Array();
-                    if (data.errors != undefined) {
-                        for (let error of data.errors) {
-                            vue.errors.push(data.errors[error]);
-                        }
+                    if (error.constructor == strconst) {
+                        vue.errors.push(error);
                     } else {
-                        vue.errors.push(data);
+                        if (data.errors != undefined) {
+                            for (let error of data.errors) {
+                                vue.errors.push(data.errors[error]);
+                            }
+                        }
                     }
                 });
 

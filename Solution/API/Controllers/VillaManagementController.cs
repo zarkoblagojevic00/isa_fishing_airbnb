@@ -273,14 +273,14 @@ namespace API.Controllers
                 return BadRequest(Responses.CannotChangeService);
             }
 
-            var villaService = UoW.GetRepository<IServiceReadRepository>().GetById(villa.VillaId.Value);
+            UoW.BeginTransaction();
+            
+            var villaService = new ServiceLocker(UoW).ObtainLockedService(villa.VillaId.Value);
             var additionalVillaInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll().First(x => x.ServiceId == villa.VillaId.Value);
 
             MapNewInformation(villa, villaService, additionalVillaInfo, existingCity.CityId);
-
-            UoW.BeginTransaction();
-
+            
             UoW.GetRepository<IServiceWriteRepository>().Update(villaService);
             UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Update(additionalVillaInfo);
 
@@ -310,6 +310,8 @@ namespace API.Controllers
             try
             {
                 UoW.BeginTransaction();
+
+                var lockedService = new ServiceLocker(UoW).ObtainLockedService(villaId);
 
                 var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll()
                     .First(x => x.ServiceId == villaId);

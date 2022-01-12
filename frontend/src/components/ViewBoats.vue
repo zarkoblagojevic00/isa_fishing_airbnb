@@ -62,13 +62,17 @@
                             boat.capacity
                         }}</span>
                     </div>
-                    <div class="lonlat">
-                        <span class="normal-content-text"
-                            >Longitude: {{ boat.longitude }};</span
-                        >
-                        <span class="normal-content-text">
-                            Lattitude: {{ boat.latitude }}</span
-                        >
+                    <div class="normal-text">
+                        Latitude:
+                        <span class="normal-content-text">{{
+                            boat.latitude
+                        }}</span>
+                    </div>
+                    <div class="normal-text">
+                        Longitude:
+                        <span class="normal-content-text">{{
+                            boat.longitude
+                        }}</span>
                     </div>
                 </div>
             </div>

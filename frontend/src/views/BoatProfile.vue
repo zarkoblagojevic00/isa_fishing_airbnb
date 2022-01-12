@@ -87,9 +87,9 @@
 
             <div class="content">
                 <AddNewBoat
-                    v-if="mode == 'AddNewBoat'"
                     :changeMode="ChangeMode"
                     :boatId="-1"
+                    v-if="mode == 'AddNewBoat'"
                 />
                 <AddNewBoat
                     v-if="mode == 'UpdateBoat'"
@@ -147,9 +147,15 @@ export default {
     },
     data() {
         return {
-            mode: "ViewBoats",
+            mode: "AddNewBoat",
             chosenBoat: -1,
         };
+    },
+    mounted() {
+        let cookie = document.cookie;
+        if (cookie.userId == undefined || cookie.email == undefined) {
+            this.$router.push("/");
+        }
     },
     methods: {
         ToggleSubmenu(name) {

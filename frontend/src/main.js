@@ -20,6 +20,8 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import OpenLayersMap from "vue3-openlayers";
+import "vue3-openlayers/dist/vue3-openlayers.css";
 
 library.add(faTrash);
 library.add(faEdit);
@@ -34,6 +36,8 @@ window.$ = $;
 
 const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon);
 app.use(VueViewer);
+
+app.use(OpenLayersMap);
 
 app.use(VCalendar, {});
 app.use(VueAxios, axios);

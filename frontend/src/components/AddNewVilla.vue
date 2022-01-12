@@ -70,6 +70,16 @@
                     v-model="latitude"
                     :class="[ValidateLatitude() ? '' : 'error-outline']"
                 />
+                <span class="label link" @click="showMap = true">View map</span>
+                <div v-if="showMap">
+                    <teleport to="#mapTeleport">
+                        <ServiceMap
+                            :coordinates="[longitude, latitude]"
+                            :updateShowMap="TurnOfMap"
+                            :updateCoords="UpdateCoords"
+                        />
+                    </teleport>
+                </div>
             </div>
             <div class="input-wrapper">
                 <span class="label">Capacity:</span>
@@ -200,6 +210,7 @@
 <script>
 import Datepicker from "vue3-date-time-picker";
 import "vue3-date-time-picker/dist/main.css";
+import ServiceMap from "../components/ServiceMapComponent.vue";
 export default {
     name: "AndNewVilla",
     props: {
@@ -208,14 +219,15 @@ export default {
     },
     components: {
         Datepicker,
+        ServiceMap,
     },
     data() {
         return {
             name: "",
             pricePerDay: "",
             address: "",
-            longitude: 0,
-            latitude: 0,
+            longitude: 20,
+            latitude: 45,
             promoDescription: "",
             termsOfUse: "",
             additionalEquipment: "",
@@ -232,6 +244,7 @@ export default {
             city: "",
             cities: [],
             selectedDate: ["", ""],
+            showMap: false,
         };
     },
     mounted() {
@@ -374,7 +387,7 @@ export default {
                             "Something went wrong!\nStatus code: " +
                                 response.status
                         );
-                        return;
+                        return response.text();
                     }
                     if (vue.mode == "Adding") {
                         alert("Success! New villa has been created!");
@@ -382,13 +395,27 @@ export default {
                         alert("Success! Villa has been updated!");
                     }
                     vue.changeMode("ViewVillas");
-                    return response.json();
+                    return "";
                 })
-                .catch((data) => {
+                .then((data) => {
                     vue.errors = new Array();
-                    if (data.errors.length > 0) {
-                        for (let error of data.errors) {
-                            vue.errors.push(data.errors[error]);
+                    if (data == "") {
+                        return;
+                    }
+                    let error = "";
+                    let strconst = "".constructor;
+                    try {
+                        error = JSON.parse(data);
+                    } catch {
+                        error = data;
+                    }
+                    if (error.constructor == strconst) {
+                        vue.errors.push(error);
+                    } else {
+                        if (error.errors != undefined) {
+                            for (let er of error.errors) {
+                                vue.errors.push(er);
+                            }
                         }
                     }
                 });
@@ -484,11 +511,24 @@ export default {
                     vue.errors.push(data);
                 });
         },
+        UpdateCoords(lon, lat) {
+            this.longitude = lon;
+            this.latitude = lat;
+        },
+        TurnOfMap() {
+            this.showMap = false;
+        },
     },
 };
 </script>
 
 <style scoped>
+.link {
+    text-decoration: underline;
+    color: #345fed !important;
+    margin-top: 10px;
+    cursor: pointer;
+}
 .content {
     min-height: calc(100% - 75px);
     display: flex;

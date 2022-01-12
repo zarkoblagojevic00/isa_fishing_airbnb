@@ -48,7 +48,8 @@ namespace API.Controllers
                 PromoDescription = x.PromoDescription,
                 TermsOfUse = x.PromoDescription,
                 VillaId = x.ServiceId,
-                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId)
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
             });
             return Ok(result);
         }
@@ -89,7 +90,8 @@ namespace API.Controllers
                 PromoDescription = x.PromoDescription,
                 TermsOfUse = x.PromoDescription,
                 VillaId = x.ServiceId,
-                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId)
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
             });
             return Ok(result);
         }
@@ -130,6 +132,7 @@ namespace API.Controllers
                 PercentageToTake = service.PercentageToTake,
                 NumberOfBeds = additionalServiceInfo.NumberOfBeds,
                 NumberOfRooms = additionalServiceInfo.NumberOfRooms,
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(service.ServiceId),
                 ImageIds = images
             });
         }
@@ -167,9 +170,9 @@ namespace API.Controllers
                 PromoDescription = x.PromoDescription,
                 TermsOfUse = x.PromoDescription,
                 VillaId = x.ServiceId,
-                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId)
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
             });
-
             return result;
         }
 

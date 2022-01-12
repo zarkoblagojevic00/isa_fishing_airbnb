@@ -1,5 +1,5 @@
-<template v-if="adventures.length">
-    <div class="container">
+<template>
+    <div v-if="adventures.length" class="container">
         <h1>Adventures</h1>
         <AdventureExpoItem
             v-for="idx in 5"

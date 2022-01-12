@@ -55,6 +55,8 @@ namespace API.DTOs
         [Required(ErrorMessage = "Villa has to have the number of rooms specified!")]
         public int NumberOfRooms { get; set; }
 
+        public double AverageMark { get; set; }
+
         public IEnumerable<int> ImageIds { get; set; }
     }
 }

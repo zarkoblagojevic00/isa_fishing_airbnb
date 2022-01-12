@@ -28,7 +28,7 @@ namespace Services
             var futureServiceAvailabilities = services.Select(service => new FutureServiceAvailability(
                 service,
                 UoW.GetRepository<ICityReadRepository>().GetById(service.CityId).Name,
-                CalculateAverageMark(service.ServiceId),
+                new AverageMarkCalculator(UoW).CalculateAverageMark(service.ServiceId),
                 futureReservations.Where(res => res.ServiceId == service.ServiceId)
                 )
             );
@@ -36,14 +36,6 @@ namespace Services
             return futureServiceAvailabilities.Where(ser => ser.IsAvailable(@params));
         }
 
-        private double CalculateAverageMark(int serviceId)
-        {
-            return (double)UoW.GetRepository<IMarkReadRepository>()
-                                .GetAll()
-                                .Where(mark => mark.ServiceId == serviceId)
-                                .Select(mark => mark.GivenMark)
-                                .DefaultIfEmpty(0.0)
-                                .Average();
-        }
+        
     }
 }

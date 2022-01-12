@@ -1,5 +1,5 @@
 <template>
-    <div class="container" @click="showDetails()">
+    <div v-if="adventure" class="container" @click="showDetails()">
         <div class="img-container">
             <div
                 class="img"
@@ -55,7 +55,7 @@ export default {
             // localStorage.setItem("adventure", JSON.stringify(this.adventure));
             // this.$router.push({ name: "AdventureExpoDetails" });
             const id = this.adventure.adventureId;
-            this.$router.push(`/adventure/${id}`);
+            this.$router.push(`/adventure/${id}/home`);
         },
     },
 };

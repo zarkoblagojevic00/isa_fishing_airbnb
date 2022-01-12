@@ -35,12 +35,12 @@ namespace Domain.Entities.Helpers
 
         private bool IsServiceNameSatisfied(string serviceName)
         {
-            return Service.Name.Contains(serviceName);
+            return Service.Name.IndexOf(serviceName, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
         private bool IsLocationNameSatisfied(string locationName)
         {
-            return LocationName.Contains(locationName);
+            return LocationName.IndexOf(locationName, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
         private bool IsMarkSatisfied(double givenMark)

@@ -344,14 +344,8 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
         public IActionResult GetAddressInfoByAdventureId(int adventureId)
         {
-            if (!CheckOwnerShip(adventureId))
-            {
-                return Unauthorized(Responses.ServiceOwnerNotLinked);
-            }
-
             var serviceRepo = UoW.GetRepository<IServiceReadRepository>();
             var adventure = serviceRepo.GetById(adventureId);
 
@@ -367,16 +361,10 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
         public IActionResult GetBasicInfo(int adventureId)
         {
-            var userId = GetUserIdFromCookie();
-            if (!CheckOwnerShip(adventureId))
-            {
-                return Unauthorized(Responses.ServiceOwnerNotLinked);
-            }
-
-            var userInfo = UoW.GetRepository<IUserReadRepository>().GetById(userId);
+            var adventure = UoW.GetRepository<IServiceReadRepository>().GetById(adventureId);
+            var userInfo = UoW.GetRepository<IUserReadRepository>().GetById(adventure.OwnerId);
             var city = UoW.GetRepository<ICityReadRepository>().GetById(userInfo.CityId);
             var country = UoW.GetRepository<ICountryReadRepository>().GetById(city.CountryId);
 

@@ -5,6 +5,7 @@
     />
     <router-view />
     <GeneralFooter v-if="ShouldNotTurnOffHeaderAndFooter()" />
+    <div id="mapTeleport"></div>
 </template>
 
 <script>
@@ -95,5 +96,6 @@ export default {
 body {
     margin: 0px;
     max-width: 100vw;
+    position: relative;
 }
 </style>

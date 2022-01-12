@@ -154,6 +154,12 @@ export default {
             chosenVilla: 0,
         };
     },
+    mounted() {
+        let cookie = document.cookie;
+        if (cookie.userId == undefined || cookie.email == undefined) {
+            this.$router.push("/");
+        }
+    },
     methods: {
         ToggleSubmenu(name) {
             let newname = "sub-" + name;

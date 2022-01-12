@@ -62,13 +62,17 @@
                             villa.capacity
                         }}</span>
                     </div>
-                    <div class="lonlat">
-                        <span class="normal-content-text"
-                            >Longitude: {{ villa.longitude }};</span
-                        >
-                        <span class="normal-content-text">
-                            Lattitude: {{ villa.latitude }}</span
-                        >
+                    <div class="normal-text">
+                        Longitude:
+                        <span class="normal-content-text">{{
+                            villa.longitude
+                        }}</span>
+                    </div>
+                    <div class="normal-text">
+                        Latitude:
+                        <span class="normal-content-text">{{
+                            villa.latitude
+                        }}</span>
                     </div>
                 </div>
             </div>

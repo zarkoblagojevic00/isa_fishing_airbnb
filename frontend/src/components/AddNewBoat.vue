@@ -70,6 +70,16 @@
                     v-model="latitude"
                     :class="[ValidateLatitude() ? '' : 'error-outline']"
                 />
+                <span class="label link" @click="showMap = true">View map</span>
+                <div v-if="showMap">
+                    <teleport to="#mapTeleport">
+                        <ServiceMap
+                            :coordinates="[longitude, latitude]"
+                            :updateShowMap="TurnOfMap"
+                            :updateCoords="UpdateCoords"
+                        />
+                    </teleport>
+                </div>
             </div>
             <div class="input-wrapper">
                 <span class="label">Capacity:</span>
@@ -254,6 +264,7 @@
 <script>
 import Datepicker from "vue3-date-time-picker";
 import "vue3-date-time-picker/dist/main.css";
+import ServiceMap from "../components/ServiceMapComponent.vue";
 export default {
     name: "AddNewBoat",
     props: {
@@ -262,14 +273,15 @@ export default {
     },
     components: {
         Datepicker,
+        ServiceMap,
     },
     data() {
         return {
             name: "",
             pricePerDay: "",
             address: "",
-            longitude: 0,
-            latitude: 0,
+            longitude: 20,
+            latitude: 45,
             promoDescription: "",
             termsOfUse: "",
             additionalEquipment: "",
@@ -290,6 +302,8 @@ export default {
             city: "",
             cities: [],
             selectedDate: ["", ""],
+
+            showMap: false,
         };
     },
     mounted() {
@@ -577,6 +591,13 @@ export default {
                     vue.errors.push(data);
                 });
         },
+        UpdateCoords(lon, lat) {
+            this.longitude = lon;
+            this.latitude = lat;
+        },
+        TurnOfMap() {
+            this.showMap = false;
+        },
     },
 };
 </script>
@@ -739,5 +760,12 @@ h3 {
 
 .multiple-select {
     height: auto !important;
+}
+
+.link {
+    text-decoration: underline;
+    color: #345fed;
+    margin-top: 10px;
+    cursor: pointer;
 }
 </style>

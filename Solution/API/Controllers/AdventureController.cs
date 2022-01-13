@@ -65,9 +65,13 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult GetAdventureInfoById(int adventureId)
         {
-            var adventure = UoW.GetRepository<IServiceReadRepository>()
-                .GetAll()
-                .Where(x => x.ServiceId == adventureId).FirstOrDefault();
+            var adventure = SafeGetAdventureById(adventureId);
+
+            if (adventure == null)
+            {
+                return NotFound();
+            }
+
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
                 .GetAll()
                 .Where(x => x.AdventureId == adventureId).FirstOrDefault();
@@ -346,8 +350,7 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult GetAddressInfoByAdventureId(int adventureId)
         {
-            var serviceRepo = UoW.GetRepository<IServiceReadRepository>();
-            var adventure = serviceRepo.GetById(adventureId);
+            var adventure = SafeGetAdventureById(adventureId);
 
             if(adventure == null)
             {
@@ -363,7 +366,13 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult GetBasicInfo(int adventureId)
         {
-            var adventure = UoW.GetRepository<IServiceReadRepository>().GetById(adventureId);
+            var adventure = SafeGetAdventureById(adventureId);
+
+            if (adventure == null)
+            {
+                return NotFound();
+            }
+
             var userInfo = UoW.GetRepository<IUserReadRepository>().GetById(adventure.OwnerId);
             var city = UoW.GetRepository<ICityReadRepository>().GetById(userInfo.CityId);
             var country = UoW.GetRepository<ICountryReadRepository>().GetById(city.CountryId);
@@ -399,6 +408,14 @@ namespace API.Controllers
             adventure.PercentageToTake = adventureDTO.PercentageToTake;
 
             additionalAdventureInfo.AdditionalOffers = adventureDTO.AdditionalOffers;
+        }
+
+        private Service SafeGetAdventureById(int adventureId)
+        {
+            return UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .Where(s => s.ServiceType == ServiceType.Adventure)
+                .FirstOrDefault(a => a.ServiceId == adventureId);
         }
     }
 }

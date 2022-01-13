@@ -30,7 +30,7 @@
                         <div>{{ villa.pricePerDay }} $/day</div>
                         <div>
                             <font-awesome-icon icon="map-marker-alt" />
-                            {{ villa.cityName }}
+                            {{ villa.address }}, {{ villa.cityName }}
                         </div>
                     </div>
                 </div>

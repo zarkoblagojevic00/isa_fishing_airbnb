@@ -50,7 +50,8 @@ export default {
 }
 
 hr {
-    margin-bottom: 1rem;
+    margin-top: 0.05em;
+    margin-bottom: 1em;
     height: 1px;
     background-color: #aca;
     outline: none;
@@ -59,7 +60,7 @@ hr {
 }
 
 .hm {
-    font-size: 2rem;
+    font-size: 1.9rem;
 }
 
 .explanation {
@@ -78,7 +79,7 @@ hr {
 }
 
 .point {
-    margin-left: 2em;
+    margin-left: 1.5em;
     color: #aca;
 }
 </style>

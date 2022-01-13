@@ -1,14 +1,12 @@
 <template>
-    <div id="num-input-range">
-        <input
-            class="control transition-ease"
-            type="number"
-            v-model.number.lazy="realNumber"
-            :min="min"
-            :max="max"
-            :placeholder="placeholder"
-        />
-    </div>
+    <input
+        class="control transition-ease"
+        type="number"
+        v-model.number.lazy="realNumber"
+        :min="min"
+        :max="max"
+        :placeholder="placeholder"
+    />
 </template>
 
 <script>

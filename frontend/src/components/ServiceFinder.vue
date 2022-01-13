@@ -3,7 +3,7 @@
         <div class="title">{{ title }}</div>
         <form class="form-wrapper">
             <div class="input-wrapper">
-                <span class="label">Date range</span>
+                <span class="input-label">Date range</span>
                 <Datepicker
                     class="date-range"
                     v-model="fromToDate"
@@ -15,18 +15,17 @@
                 />
             </div>
             <div class="input-wrapper">
-                <span class="label">Price range (per day)</span>
+                <span class="input-label">Price range (per day)</span>
                 <div class="slider">
                     <Slider
                         v-model="fromToPrice"
                         :max="300"
                         :format="{ prefix: '$', decimals: 0 }"
-                        tooltipPosition="bottom"
                     />
                 </div>
             </div>
             <div class="input-wrapper">
-                <span class="label mark">Mark</span>
+                <span class="input-label">Mark</span>
                 <select
                     class="control transition-ease"
                     v-model="searchParams.givenMark"
@@ -38,7 +37,7 @@
                 </select>
             </div>
             <div class="input-wrapper">
-                <span class="label">Name</span>
+                <span class="input-label">Name</span>
                 <input
                     class="control transition-ease"
                     v-model="searchParams.name"
@@ -47,7 +46,7 @@
                 />
             </div>
             <div class="input-wrapper">
-                <span class="label">Location</span>
+                <span class="input-label">Location</span>
                 <input
                     class="control transition-ease"
                     v-model="searchParams.location"
@@ -56,7 +55,7 @@
                 />
             </div>
             <div class="input-wrapper capacity">
-                <span class="label">Capacity</span>
+                <span class="input-label">Capacity</span>
                 <NumInputRange
                     v-model="searchParams.capacity"
                     :min="0"
@@ -157,7 +156,7 @@ export default {
 .title {
     font-size: 1.2rem;
     text-align: left;
-    margin-bottom: 0.2em;
+    margin-bottom: 1.5em;
     padding-bottom: 0.2em;
     border-bottom: 1px solid var(--control-border-color);
 }
@@ -169,19 +168,14 @@ export default {
     align-items: space-between;
 }
 
-.mark {
-    margin-top: 0.2em;
-}
-
 .slider {
-    margin-top: 0.8em;
-    min-height: 50px;
-    min-width: 200px;
+    margin-top: 2.5em;
+    min-width: 100%;
     --slider-connect-bg: var(--primary);
     --slider-tooltip-bg: var(--primary);
 }
 
 .search {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 </style>

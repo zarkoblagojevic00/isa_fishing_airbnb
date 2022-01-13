@@ -26,5 +26,6 @@ namespace API.DTOs
         public string UsersName { get; set; }
         public string UsersSurname { get; set; }
         public string UsersPhoneNumber { get; set; }
+        public string UsersEmail { get; set; }
     }
 }

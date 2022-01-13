@@ -15,6 +15,7 @@
                     <th>Number of guests</th>
                     <th>Price</th>
                     <th>Report</th>
+                    <th>Additional</th>
                 </tr>
             </thead>
             <tbody v-for="res in reservations" :key="res.serviceId">
@@ -44,14 +45,25 @@
                     </td>
                     <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
-                    <td
-                        class="left"
-                        v-if="new Date(res.serviceTo) < new Date()"
-                    >
+                    <td class="left">
                         <font-awesome-icon
+                            v-if="new Date(res.serviceTo) < new Date()"
                             icon="plus-circle"
                             style="cursor: pointer"
                             @click="addReport(res.reservationId)"
+                        />
+                    </td>
+                    <td
+                        v-if="
+                            new Date(res.serviceTo) > new Date() &&
+                            new Date(res.serviceFrom) < new Date()
+                        "
+                    >
+                        New reservation
+                        <font-awesome-icon
+                            icon="plus-circle"
+                            style="cursor: pointer"
+                            @click="createNewReservation(res)"
                         />
                     </td>
                 </tr>
@@ -148,6 +160,14 @@ export default {
                         }
                     });
             }
+        },
+        createNewReservation(reservation) {
+            this.$router.push({
+                path:
+                    this.baseUrlInstructor +
+                    "new-reservation/" +
+                    reservation.reservationId,
+            });
         },
     },
 };

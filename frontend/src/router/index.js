@@ -29,6 +29,7 @@ import ClientHomepage from "../views/ClientHomepage.vue";
 import AdminIssues from "../views/AdminIssues.vue";
 import InstructorAnalytics from "../views/InstructorAnalytics.vue";
 import BoatProfile from "../views/BoatProfile.vue";
+import NewAdventureReservation from "../views/NewAdventureReservation.vue";
 
 const routes = [
     {
@@ -86,6 +87,11 @@ const routes = [
         path: "/instructor/services",
         name: "InstructorServices",
         component: InstructorServices,
+    },
+    {
+        path: "/instructor/new-reservation/:id",
+        name: "NewAdventureReservation",
+        component: NewAdventureReservation,
     },
     {
         path: "/instructor/analytics",

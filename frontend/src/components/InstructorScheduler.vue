@@ -10,11 +10,12 @@
             delete: true,
             create: true,
         }"
-        :timeFrom="480"
-        :timeTo="960"
+        :timeFrom="0"
+        :timeTo="60 * 24"
         :timeStep="30"
         :timeCellHeight="80"
         :events="events"
+        :min-date="new Date()"
         events-on-month-view="short"
         today-button
         @event-drag-create="onEventDragCreated"
@@ -104,6 +105,20 @@ export default {
                 .post("/api/Instructor/AddInstructorAvailabilityPeriod", period)
                 .then(() => {
                     this.loadAvailabilityPeriods();
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        if (
+                            error.response.data.title ==
+                            "One or more validation errors occurred."
+                        ) {
+                            this.$swal.fire(
+                                "Actions must be performed upon future dates."
+                            );
+                            this.loadAvailabilityPeriods();
+                        }
+                    }
                 });
         },
         deleteAvailabilityPeriod(event) {

@@ -160,6 +160,7 @@ namespace API.Controllers
                     ServiceFrom = reservation.ra.r.StartDateTime,
                     ServiceTo = reservation.ra.r.EndDateTime,
                     Capacity = reservation.ra.a.Capacity,
+                    UsersEmail = reservation.u.Email,
                 });
 
             var distinctReservations = userReservations
@@ -217,6 +218,32 @@ namespace API.Controllers
             return Ok(distinctReservations);
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetReservationForUser(int reservationId)
+        {
+            var reservation = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(res => res.ReservationId == reservationId)
+                .FirstOrDefault();
+
+            var service = UoW.GetRepository<IServiceReadRepository>().GetAll()
+                .Where(ser => ser.ServiceId == reservation.ServiceId)
+                .FirstOrDefault();
+
+            var user = UoW.GetRepository<IUserReadRepository>().GetAll()
+                .Where(u => u.UserId == reservation.UserId)
+                .FirstOrDefault();
+
+            var reservationForUser = new ReservationForUserDTO
+            {
+                ServiceId = reservation.ServiceId,
+                ServiceName = service.Name,
+                UserEmail = user.Email,
+            };
+
+            return Ok(reservationForUser);
+        }
 
         [HttpPut]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
@@ -378,6 +405,19 @@ namespace API.Controllers
             {
                 UoW.Rollback();
             }
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult GetInstructorServices()
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
+            return Ok(adventures);
         }
 
         [HttpGet]

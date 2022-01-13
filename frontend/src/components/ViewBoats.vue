@@ -80,7 +80,7 @@
     </div>
 </template>
 
-<script>
+<script scoped>
 export default {
     name: "ViewBoats",
     props: {
@@ -88,6 +88,11 @@ export default {
         changeChosenBoat: Function,
     },
     mounted() {
+        let role = window.localStorage.getItem("role");
+        if (role != "BoatOwner") {
+            this.$router.push("/");
+            return;
+        }
         this.GetVillas();
     },
     data() {

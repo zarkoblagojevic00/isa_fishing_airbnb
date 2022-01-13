@@ -79,12 +79,6 @@
                             Report for villa
                         </span>
                     </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('GeneralReport')"
-                    >
-                        <span class="menu-text"> Report for all villas </span>
-                    </div>
                 </div>
             </div>
 
@@ -121,6 +115,10 @@
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
                 <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
                 <VillaOwnerDeletion v-if="mode == 'RequestDeletion'" />
+                <ServiceCharts
+                    v-if="mode == 'VillaReport'"
+                    :serviceType="'villa'"
+                />
             </div>
         </div>
     </div>
@@ -135,6 +133,7 @@ import AddPromoAction from "../components/AddPromoAction.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
+import ServiceCharts from "../components/ServiceCharts.vue";
 
 export default {
     name: "VillaProfile",
@@ -147,6 +146,7 @@ export default {
         VillaOwnerProfile,
         VillaOwnerPassChange,
         VillaOwnerDeletion,
+        ServiceCharts,
     },
     data() {
         return {
@@ -155,8 +155,8 @@ export default {
         };
     },
     mounted() {
-        let cookie = document.cookie;
-        if (cookie.userId == undefined || cookie.email == undefined) {
+        let role = window.localStorage.getItem("role");
+        if (role != "VillaOwner") {
             this.$router.push("/");
         }
     },

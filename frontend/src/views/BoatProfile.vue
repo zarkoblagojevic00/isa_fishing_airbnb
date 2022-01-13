@@ -76,12 +76,6 @@
                             Report for boat
                         </span>
                     </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('GeneralReport')"
-                    >
-                        <span class="menu-text"> Report for all boats </span>
-                    </div>
                 </div>
             </div>
 
@@ -118,6 +112,10 @@
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
                 <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
                 <VillaOwnerDeletion v-if="mode == 'RequestDeletion'" />
+                <ServiceCharts
+                    v-if="mode == 'BoatReport'"
+                    :serviceType="'boat'"
+                />
             </div>
         </div>
     </div>
@@ -132,6 +130,7 @@ import ServiceCalendar from "../components/ServiceCalendar.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
+import ServiceCharts from "../components/ServiceCharts.vue";
 
 export default {
     name: "BoatProfile",
@@ -144,16 +143,17 @@ export default {
         VillaOwnerProfile,
         VillaOwnerPassChange,
         VillaOwnerDeletion,
+        ServiceCharts,
     },
     data() {
         return {
-            mode: "AddNewBoat",
+            mode: "ViewBoats",
             chosenBoat: -1,
         };
     },
     mounted() {
-        let cookie = document.cookie;
-        if (cookie.userId == undefined || cookie.email == undefined) {
+        let role = window.localStorage.getItem("role");
+        if (role != "BoatOwner") {
             this.$router.push("/");
         }
     },

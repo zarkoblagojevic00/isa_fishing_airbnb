@@ -88,6 +88,11 @@ export default {
         changeChosenVilla: Function,
     },
     mounted() {
+        let role = window.localStorage.getItem("role");
+        if (role != "VillaOwner") {
+            this.$router.push("/");
+            return;
+        }
         this.GetVillas();
     },
     data() {

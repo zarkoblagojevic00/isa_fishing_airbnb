@@ -171,6 +171,7 @@ export default {
     padding-left: 10px;
     margin-left: auto;
     margin-right: auto;
+    width: auto !important;
 }
 
 .input-field {

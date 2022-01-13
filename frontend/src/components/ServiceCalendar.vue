@@ -462,7 +462,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .wrapperdiv {
     display: flex;
     flex-direction: column;

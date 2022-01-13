@@ -26,6 +26,7 @@
                 type="text"
                 class="item"
                 v-model="reservationForUser.userEmail"
+                readonly="true"
             />
         </div>
         <div class="flexbox-row">
@@ -34,7 +35,16 @@
                 v-model="v$.newReservation.startDateTime.$model"
                 mode="dateTime"
                 is24hr
-                :min-date="new Date()"
+                :min-date="
+                    v$.newReservation.endDateTime.$model
+                        ? v$.newReservation.endDateTime.$model
+                        : new Date()
+                "
+                :max-date="
+                    v$.newReservation.endDateTime.$model
+                        ? v$.newReservation.endDateTime.$model
+                        : new Date() + 365
+                "
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -66,7 +76,16 @@
                 v-model="v$.newReservation.endDateTime.$model"
                 mode="dateTime"
                 is24hr
-                :min-date="new Date()"
+                :min-date="
+                    v$.newReservation.startDateTime.$model
+                        ? v$.newReservation.startDateTime.$model
+                        : new Date()
+                "
+                :max-date="
+                    v$.newReservation.startDateTime.$model
+                        ? v$.newReservation.startDateTime.$model
+                        : new Date() + 365
+                "
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -164,25 +183,26 @@ export default {
                     this.newReservation
                 )
                 .then(() => {
-                    console.log("Success");
+                    this.$swal.fire("Reservation created.");
+                    this.$router.push({
+                        path: this.baseUrlInstructor + "reservations",
+                    });
                 })
-                .catch(function (error) {
+                .catch((error) => {
                     if (error.response) {
-                        // Request made and server responded
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log("Error", error.message);
+                        this.$swal(error.response.data);
                     }
                 });
         },
         onCreateReservation() {
-            this.createReservationForUser();
+            if (
+                new Date(this.newReservation.startDateTime) >
+                new Date(this.newReservation.endDateTime)
+            ) {
+                this.$swal.fire("Start time must be before end time.");
+            } else {
+                this.createReservationForUser();
+            }
         },
         getInstructorServices() {
             axios

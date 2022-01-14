@@ -27,7 +27,6 @@
                 :display-period-count="displayPeriodCount"
                 :starting-day-of-week="startingDayOfWeek"
                 :class="themeClasses"
-                :period-changed-callback="periodChanged"
                 :current-period-label="useTodayIcons ? 'icons' : ''"
                 :displayWeekNumbers="displayWeekNumbers"
                 :enable-date-selection="false"
@@ -114,7 +113,7 @@
                         class="input-checkbox"
                         v-model="shownUp"
                     />
-                    <span class="label font">User show up?</span>
+                    <span class="label font">User shown up?</span>
                 </div>
 
                 <div class="horizontal-wrapper">
@@ -427,7 +426,8 @@ export default {
                             };
                             break;
                         }
-
+                        vue.suggestPenalty = false;
+                        vue.shownUp = false;
                         vue.reportText = "";
                         return;
                     }
@@ -583,6 +583,7 @@ export default {
     color: black;
     margin-bottom: 5px;
     padding-left: 10px;
+    margin-top: 0px;
 }
 
 .input-checkbox {

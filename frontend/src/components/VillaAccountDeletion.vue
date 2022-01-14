@@ -162,6 +162,7 @@ export default {
     font-size: 18px;
     transition: background-color 300ms linear;
     align-self: center;
+    margin-top: 10px;
 }
 
 .submit-btn:hover {

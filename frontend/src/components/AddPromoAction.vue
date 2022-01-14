@@ -3,7 +3,7 @@
         <div class="villa-picker">
             <h3>Pick a {{ isVilla ? "villa" : "boat" }}:</h3>
             <select class="select-villa" v-model="selectedService">
-                <option disabled value="">Please select one</option>
+                <option disabled value="-1">Please select one</option>
                 <option
                     v-for="service in allServices"
                     :key="service.id"
@@ -27,7 +27,6 @@
                 :display-period-count="displayPeriodCount"
                 :starting-day-of-week="startingDayOfWeek"
                 :class="themeClasses"
-                :period-changed-callback="periodChanged"
                 :current-period-label="useTodayIcons ? 'icons' : ''"
                 :displayWeekNumbers="displayWeekNumbers"
                 :enable-date-selection="false"
@@ -236,7 +235,7 @@ export default {
             useHolidayTheme: true,
             useTodayIcons: false,
 
-            selectedService: "",
+            selectedService: -1,
             allServices: [],
             items: [],
 
@@ -548,7 +547,7 @@ export default {
             ) {
                 this.errors.push("You need to specify the date range");
             }
-            if (this.selectedService == "") {
+            if (this.selectedService == -1) {
                 this.errors.push("You need to select a villa first");
             }
             if (!this.ValidatePrice()) {
@@ -593,6 +592,7 @@ export default {
                     if (response.status == 200) {
                         vue.RefreshCalendar();
                         vue.SwitchToAddingMode();
+                        alert("Successfully created a new promo action!");
                         return "";
                     } else {
                         return response.text();
@@ -613,7 +613,6 @@ export default {
                     if (parsed.constructor == strconst) {
                         vue.errors.push(parsed);
                     } else {
-                        console.log(parsed);
                         parsed = parsed.errors;
                         let values = Object.keys(parsed).map(function (key) {
                             return parsed[key];
@@ -638,10 +637,7 @@ export default {
         },
         CreateReservation() {
             this.errors = new Array();
-            if (
-                this.selectedService == undefined ||
-                this.selectedService == ""
-            ) {
+            if (this.selectedService == -1) {
                 this.errors.push("A service needs to be chosen first!");
             }
             if (!this.ValidateMail()) {
@@ -680,6 +676,7 @@ export default {
             })
                 .then((response) => {
                     if (response.ok) {
+                        alert("Successfully created the reservation!");
                         return "";
                     } else {
                         return response.text();
@@ -711,6 +708,9 @@ export default {
     watch: {
         selectedService: function () {
             this.RefreshCalendar();
+        },
+        currentMode: function () {
+            this.errors = new Array();
         },
     },
 };

@@ -416,6 +416,13 @@ export default {
                             for (let er of error.errors) {
                                 vue.errors.push(er);
                             }
+                        } else {
+                            for (let key in error) {
+                                // eslint-disable-next-line no-prototype-builtins
+                                if (error.hasOwnProperty(key)) {
+                                    vue.errors.push(key + ": " + error[key]);
+                                }
+                            }
                         }
                     }
                 });
@@ -559,6 +566,7 @@ export default {
     color: black;
     margin-bottom: 5px;
     padding-left: 10px;
+    margin-top: 0px;
 }
 
 .input-field {

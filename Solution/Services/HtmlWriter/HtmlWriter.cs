@@ -76,7 +76,7 @@ namespace Services.HtmlWriter
                 .Append("<li><strong> Creation date </strong>:").Append(reservation.ReservedDateTime).Append("</li>")
                 .Append("<li><strong> Price per day</strong>:").Append(reservation.Price).Append("</li>")
                 .Append("<li><strong> Start date</strong>:").Append(reservation.StartDateTime).Append("</li>")
-                .Append("<li>< strong > End date </strong>:").Append(reservation.EndDateTime).Append("</li>")
+                .Append("<li><strong> End date </strong>:").Append(reservation.EndDateTime).Append("</li>")
                 .Append("</ul>")
                 .Append("<p> Some additional equipment:&nbsp;").Append(reservation.AdditionalEquipment).Append("</p>")
                 .Append("<p> &nbsp;</p>")

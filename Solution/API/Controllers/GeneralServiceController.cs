@@ -206,6 +206,46 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
+        public IActionResult MarkServiceUnavailable(ServiceUnavailableDTO marker)
+        {
+            if (!CheckOwnerShip(marker.ServiceId))
+            {
+                return BadRequest(Responses.ServiceOwnerNotLinked);
+            }
+
+            UoW.BeginTransaction();
+
+            var service = new ServiceLocker(UoW).ObtainLockedService(marker.ServiceId);
+
+            var relevantDates = GetServiceRelevantDates(marker.ServiceId);
+            var calendarItemToCheck = new CalendarItem()
+            {
+                StartDateTime = marker.StartDateTime,
+                EndDateTime = marker.EndDateTime
+            };
+            var response = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(calendarItemToCheck, relevantDates);
+            if (response)
+            {
+                return BadRequest(Responses.DatesOverlap);
+            }
+
+            var newReservation = new Reservation()
+            {
+                IsServiceUnavailableMarker = true,
+                ServiceId = marker.ServiceId,
+                UserId = GetUserIdFromCookie(),
+                StartDateTime = marker.StartDateTime,
+                EndDateTime = marker.EndDateTime
+            };
+            
+            UoW.GetRepository<IReservationWriteRepository>().Add(newReservation);
+            UoW.Commit();
+
+            return Ok();
+        }
+
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult GetCurrentReservations(int serviceId)
@@ -385,6 +425,24 @@ namespace API.Controllers
                 });
 
             return userReservations.Union(serviceReservations).Union(serviceQuickActions);
+        }
+
+        private IEnumerable<CalendarItem> GetServiceRelevantDates(int serviceId)
+        {
+            var relevantReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => !x.IsCanceled && x.ServiceId == serviceId && x.EndDateTime >= DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var relevantActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime >= DateTime.Now);
+
+            return relevantReservations.Union(relevantActions);
         }
     }
 }

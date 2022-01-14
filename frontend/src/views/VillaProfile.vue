@@ -36,6 +36,14 @@
                     >
                         <span class="menu-text"> Create a reservation </span>
                     </div>
+                    <div
+                        class="submenu-item"
+                        @click="ChangeMode('MarkUnavailable')"
+                    >
+                        <span class="menu-text">
+                            Create unavailable marker
+                        </span>
+                    </div>
                 </div>
 
                 <div
@@ -108,7 +116,11 @@
                     :serviceMode="'villa'"
                 />
                 <AddPromoAction
-                    v-if="mode == 'AddPromoAction' || mode == 'ReserveForUser'"
+                    v-if="
+                        mode == 'AddPromoAction' ||
+                        mode == 'ReserveForUser' ||
+                        mode == 'MarkUnavailable'
+                    "
                     :currentMode="mode"
                     :promoMode="'villa'"
                 />

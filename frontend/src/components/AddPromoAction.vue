@@ -190,6 +190,37 @@
                 Create reservation!
             </button>
         </div>
+        <div class="form-wrapper" v-if="currentMode == 'MarkUnavailable'">
+            <div class="action-form">
+                <div class="input-wrapper">
+                    <span class="label">Date range:</span>
+                    <Datepicker
+                        class="date-range"
+                        :modelValue="selectedDate"
+                        @update:modelValue="UpdateDate"
+                        :range="true"
+                        :twoCalendars="true"
+                        :placeholder="'Select a date range'"
+                        :minDate="new Date()"
+                    />
+                </div>
+            </div>
+            <div class="action-form">
+                <div class="input-wrapper" v-if="errors.length != 0">
+                    <span
+                        class="error-text"
+                        v-for="error in errors"
+                        :key="error"
+                        >*{{ error }}</span
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="submit-div" v-if="currentMode == 'MarkUnavailable'">
+            <button class="submit-btn" @click="MarkUnavailable">
+                Create marker!
+            </button>
+        </div>
     </div>
 </template>
 
@@ -256,6 +287,7 @@ export default {
 
             isVilla: this.$props.promoMode == "villa",
             emails: [],
+            serviceUnavailableMarker: false,
         };
     },
     computed: {
@@ -533,9 +565,20 @@ export default {
         },
         UpdateDate(evt) {
             if (this.currentMode == "AddPromoAction") {
-                this.selectedDate = [evt[0], evt[1]];
+                this.selectedDate =
+                    evt == null || evt == undefined
+                        ? ["", ""]
+                        : [evt[0], evt[1]];
+            } else if (this.currentMode == "MarkUnavailable") {
+                this.selectedDate =
+                    evt == null || evt == undefined
+                        ? ["", ""]
+                        : [evt[0], evt[1]];
             } else {
-                this.selectedDateReservation = [evt[0], evt[1]];
+                this.selectedDateReservation =
+                    evt == null || evt == undefined
+                        ? ["", ""]
+                        : [evt[0], evt[1]];
             }
         },
         Submit() {
@@ -701,6 +744,64 @@ export default {
                     if (strconst == error.constructor) {
                         vue.errors.push(error);
                         alert("Something went wrong!\nError message: " + error);
+                    }
+                });
+        },
+        MarkUnavailable() {
+            this.errors = new Array();
+            if (this.selectedDate[0] == "" || this.selectedDate[1] == "") {
+                this.errors.push("Dates need to be added!");
+            }
+            if (this.errors.length > 0) {
+                return;
+            }
+
+            let dto = {
+                serviceId: this.selectedService,
+                startDateTime: this.selectedDate[0],
+                endDateTime: this.selectedDate[1],
+            };
+            let vue = this;
+            fetch("/api/GeneralService/MarkServiceUnavailable", {
+                method: "POST",
+                redirect: "follow",
+                headers: {
+                    "Content-type": "application/json",
+                    "Set-Cookie": document.cookie,
+                },
+                body: JSON.stringify(dto),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        vue.RefreshCalendar();
+                        vue.selectedDate = ["", ""];
+                        alert("Successfully added the mark!");
+                        return "";
+                    } else return response.text();
+                })
+                .then((data) => {
+                    if (data == "") {
+                        return;
+                    }
+                    let error = "";
+                    let strconst = "".constructor;
+                    try {
+                        error = JSON.parse(data);
+                    } catch {
+                        error = data;
+                    }
+                    if (error.constructor == strconst) {
+                        vue.errors.push(error);
+                    } else {
+                        if (error.errors != undefined) {
+                            for (let err of error.errors) {
+                                vue.push(error.errors[err]);
+                            }
+                        } else {
+                            for (let err of error) {
+                                vue.push(err + ": " + error[err]);
+                            }
+                        }
                     }
                 });
         },

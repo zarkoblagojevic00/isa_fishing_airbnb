@@ -310,7 +310,7 @@ namespace API.Controllers
 
             var reservationDates = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && x.ServiceId == villa.VillaId && !x.IsCanceled);
+                .Where(x => x.EndDateTime >= DateTime.Now && x.ServiceId == villa.VillaId && !x.IsCanceled && !x.IsServiceUnavailableMarker);
 
             if (reservationDates.Any())
             {

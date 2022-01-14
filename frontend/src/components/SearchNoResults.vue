@@ -47,10 +47,11 @@ export default {
 <style scoped>
 .no-results-container {
     text-align: left;
+    margin-top: 1.5em;
 }
 
 hr {
-    margin-top: 0.05em;
+    margin-top: 0.25em;
     margin-bottom: 1em;
     height: 1px;
     background-color: #aca;

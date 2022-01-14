@@ -44,6 +44,12 @@
                 <div class="ammenity">Rooms: {{ villa.numberOfRooms }}</div>
                 <div class="ammenity">Wi-Fi</div>
                 <div class="ammenity">Pet friendly</div>
+                <button
+                    class="clickable primary transition-ease book-service"
+                    @click.stop="openBookServiceDialog"
+                >
+                    Book
+                </button>
             </div>
         </div>
     </div>
@@ -68,6 +74,9 @@ export default {
         showDetails() {
             localStorage.setItem("villa", JSON.stringify(this.villa));
             this.$router.push({ name: "VillaExpoDetails" });
+        },
+        openBookServiceDialog() {
+            console.log("Opened Service Dialog");
         },
     },
 };

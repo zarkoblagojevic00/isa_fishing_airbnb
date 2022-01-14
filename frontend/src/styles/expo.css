@@ -99,3 +99,8 @@
     color: #fff;
     border: none;
 }
+
+.book-service {
+    margin-left: auto;
+    min-width: 100px;
+}

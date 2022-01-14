@@ -2,8 +2,12 @@
     <div class="wrapper shadow-item">
         <div class="title">{{ title }}</div>
         <form class="form-wrapper">
+            <div v-if="reservation" class="step step-container">
+                1. Enter reservation details
+                <span class="step-explanation">required</span>
+            </div>
             <div class="input-wrapper">
-                <span class="input-label">Date range</span>
+                <span class="input-label">Reservation time</span>
                 <Datepicker
                     class="date-range"
                     v-model="fromToDate"
@@ -12,10 +16,31 @@
                     placeholder="Select a date range"
                     :enableTimePicker="false"
                     :minDate="minDate"
+                    :inputClassName="isValidDatePicker ? '' : 'control-invalid'"
+                />
+                <small v-if="!isValidDatePicker" class="control-invalid-hint"
+                    >both dates must be picked</small
+                >
+            </div>
+
+            <div class="input-wrapper capacity">
+                <span class="input-label">Number of people</span>
+                <NumInputRange
+                    v-model="searchParams.capacity"
+                    :min="1"
+                    :max="100"
+                    placeholder="Enter capacity"
+                    required
                 />
             </div>
+
+            <div v-if="reservation" class="step">2. Narrow your search</div>
+
             <div class="input-wrapper">
-                <span class="input-label">Price range (per day)</span>
+                <span class="input-label step-container"
+                    >Price range
+                    <span class="step-explanation">$/day</span>
+                </span>
                 <div class="slider">
                     <Slider
                         v-model="fromToPrice"
@@ -24,6 +49,7 @@
                     />
                 </div>
             </div>
+
             <div class="input-wrapper">
                 <span class="input-label">Mark</span>
                 <select
@@ -36,8 +62,15 @@
                     <option v-for="i in 5" :value="i" :key="i">{{ i }}</option>
                 </select>
             </div>
+
             <div class="input-wrapper">
-                <span class="input-label">Name</span>
+                <span class="input-label step-container"
+                    >Name
+                    <span class="step-explanation">
+                        you can leave this unspecified
+                    </span>
+                </span>
+
                 <input
                     class="control transition-ease"
                     v-model="searchParams.name"
@@ -45,8 +78,15 @@
                     placeholder="Enter a service name"
                 />
             </div>
+
             <div class="input-wrapper">
-                <span class="input-label">Location</span>
+                <span class="input-label step-container"
+                    >Location
+                    <span class="step-explanation">
+                        you can leave this unspecified
+                    </span>
+                </span>
+
                 <input
                     class="control transition-ease"
                     v-model="searchParams.location"
@@ -54,17 +94,14 @@
                     placeholder="Enter a location"
                 />
             </div>
-            <div class="input-wrapper capacity">
-                <span class="input-label">Capacity</span>
-                <NumInputRange
-                    v-model="searchParams.capacity"
-                    :min="0"
-                    :max="100"
-                    placeholder="Enter capacity"
-                />
+
+            <div v-if="reservation" class="step step-container">
+                3. Let's find you a deal
+                <span class="step-explanation">press search</span>
             </div>
+
             <button
-                class="search clickable primary-outline transition-ease"
+                class="search clickable primary transition-ease"
                 type="submit"
                 @click.prevent="onSearch"
             >
@@ -103,20 +140,30 @@ export default {
             type: Function,
             required: true,
         },
+        fromDate: {
+            type: Date,
+            default: moment().add(1, "days").toDate(),
+        },
+        toDate: {
+            type: Date,
+            default: moment().add(8, "days").toDate(),
+        },
+        reservation: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
             searchParams: {
                 name: "",
                 location: "",
-                fromDate: null,
-                toDate: null,
                 fromPrice: null,
                 toPrice: null,
                 givenMark: 0,
-                capacity: null,
+                capacity: 4,
             },
-            fromToPrice: [10, 30],
+            fromToPrice: [10, 60],
             minDate: moment().add(1, "days").toDate(),
             fromToDate: [
                 moment().add(1, "days").toDate(),
@@ -124,8 +171,17 @@ export default {
             ],
         };
     },
+
+    mounted() {
+        this.onSearch();
+    },
+
     methods: {
         async onSearch() {
+            if (!this.isValidDatePicker) {
+                alert("Please insert all the required data in valid format!");
+                return;
+            }
             this.searchParams = {
                 ...this.searchParams,
                 ...{
@@ -138,6 +194,28 @@ export default {
             };
             const result = await this.search(this.searchParams);
             this.$emit("filtered", result);
+        },
+    },
+
+    computed: {
+        isValidDatePicker() {
+            return this.fromToDate && this.fromToDate[1];
+        },
+    },
+
+    watch: {
+        fromToDate: {
+            handler(newValue, oldValue) {
+                console.log(oldValue);
+                if (!newValue) {
+                    this.$emit("update:fromDate", null);
+                    this.$emit("update:toDate", null);
+                } else {
+                    this.$emit("update:fromDate", newValue[0]);
+                    this.$emit("update:toDate", newValue[1]);
+                }
+            },
+            immediate: true,
         },
     },
 };
@@ -154,9 +232,9 @@ export default {
 }
 
 .title {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     text-align: left;
-    margin-bottom: 1.5em;
+    margin-bottom: 1.3em;
     padding-bottom: 0.2em;
     border-bottom: 1px solid var(--control-border-color);
 }
@@ -166,6 +244,33 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     align-items: space-between;
+}
+
+.step-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    box-sizing: border-box;
+}
+
+.step {
+    font-size: 0.9rem;
+    font-weight: 550;
+    text-align: left;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: 0.8em;
+    margin-top: 0.5em;
+}
+
+.step-explanation {
+    font-size: 0.75rem;
+    color: #b1b1b1;
+    margin-bottom: 1px;
+}
+
+.date-range {
+    width: 100%;
 }
 
 .slider {

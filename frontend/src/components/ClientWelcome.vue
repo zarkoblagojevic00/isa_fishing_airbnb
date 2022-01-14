@@ -46,6 +46,11 @@ export default {
             name: getName(),
         };
     },
+    methods: {
+        navigate(location) {
+            this.$router.push(location);
+        },
+    },
 };
 </script>
 

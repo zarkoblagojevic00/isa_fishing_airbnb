@@ -6,7 +6,8 @@
     --primary-comp: #b655a0;
     --primary-comp-dark: #9b3f86;
     --control-border-color: #ddd;
-    --control-border-color-focused: #aaa;
+    --control-border-color-focused: #a8a8a8;
+    --control-invalid-color: #e96161;
 }
 
 .clearfix::after {
@@ -37,9 +38,9 @@
     margin: 0;
     box-sizing: border-box;
     width: 100%;
-    font-size: 1.0rem;
+    font-size: 1rem;
     padding: 0.5em;
-    border-radius: 5px;
+    border-radius: 0.28em;
     border: 1px solid var(--control-border-color);
 }
 
@@ -57,6 +58,16 @@
 
 .control::-ms-input-placeholder {
     color: var(--control-border-color-focused);
+}
+
+.control-invalid {
+    border: 1px solid var(--control-invalid-color);
+    box-shadow: 0 0 4px var(--control-invalid-color);
+}
+
+.control-invalid-hint {
+    color: var(--control-invalid-color);
+    padding: 0.3em;
 }
 
 .clickable {

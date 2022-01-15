@@ -50,12 +50,6 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            if (Environment.GetEnvironmentVariable("ShouldUpdateDB") != null &&
-                Environment.GetEnvironmentVariable("ShouldUpdateDB") == "true")
-            {
-                ExecutePublishOfDb();
-            }
-
             services.AddControllers();
             services.AddCors(c =>
             {

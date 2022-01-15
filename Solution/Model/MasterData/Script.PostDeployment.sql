@@ -23,11 +23,11 @@ SET @Environment = 'LOCAL'
 IF @Environment = 'LOCAL'
 	BEGIN
 		-- Scripts run for local configurations 
-		:r LOCAL\SystemConfiguration.Table.sql
-		:r LOCAL\Services.Table.sql
-		:r LOCAL\Reservations.Table.sql
-		:r LOCAL\PromoActions.Table.sql
-		:r LOCAL\AdditionalInstructorInfos.Table.sql
-		:r LOCAL\NavigationTools.Table.sql
-		:r LOCAL\Images.Table.sql
+		:r LOCAL/SystemConfiguration.Table.sql
+		:r LOCAL/Services.Table.sql
+		:r LOCAL/Reservations.Table.sql
+		:r LOCAL/PromoActions.Table.sql
+		:r LOCAL/AdditionalInstructorInfos.Table.sql
+		:r LOCAL/NavigationTools.Table.sql
+		:r LOCAL/Images.Table.sql
 	END

@@ -5,6 +5,8 @@
     --primary-dark: #77b577;
     --primary-comp: #b655a0;
     --primary-comp-dark: #9b3f86;
+    --danger: #e96161;
+    --danger-dark: #c43434;
     --control-border-color: #ddd;
     --control-border-color-focused: #a8a8a8;
     --control-invalid-color: #e96161;
@@ -74,13 +76,14 @@
     outline: none;
     font-size: 1.025rem;
     font-weight: 550;
-    border: 1px solid var(--default);
+    border: 2px solid var(--default);
     border-radius: 0.3em;
     background-color: transparent;
     color: var(--default);
     padding: 0.5em 0.7em;
     width: auto;
     height: auto;
+    cursor: pointer;
 }
 
 .primary {
@@ -91,7 +94,6 @@
 
 .primary:hover, .primary:focus-visible {
     background: var(--primary-dark);
-    cursor: pointer;
 }
 
 .primary-comp {
@@ -102,30 +104,36 @@
 
 .primary-comp:hover, .primary-comp:focus-visible {
     background: var(--primary-comp-dark);
-    cursor: pointer;
 }
 
+.danger {
+    border: none;
+    color: var(--white);
+    background: var(--danger);
+}
+
+.danger:hover, .danger:focus-visible {
+    background: var(--danger-dark);
+}
 
 .primary-outline {
-    border: 1px solid var(--primary);
+    border-color: var(--primary);
     color: var(--primary);
 }
 
 .primary-outline:hover, .primary-outline:focus-visible{
     color: var(--white);
     background: var(--primary);
-    cursor: pointer;
 }
 
 .primary-comp-outline {
-    border: 1px solid var(--primary-comp);
+    border-color: var(--primary-comp);
     color: var(--primary-comp);
 }
 
 .primary-comp-outline:hover, .primary-comp-outline:focus-visible{
     color: var(--white);
     background: var(--primary-comp);
-    cursor: pointer;
 }
 
 .flex-container {

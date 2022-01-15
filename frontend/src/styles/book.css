@@ -1,0 +1,56 @@
+div.modal-popup {
+    width: 35%;
+    font-family: Verdana;
+}
+
+div.modal-popup:last-child {
+    height: auto;
+}
+
+div.modal-content {
+    min-height: 75vh;
+    margin: 0;
+}
+
+div.modal-actions {
+    width: 100%;
+    height: 40%;
+}
+
+button.modal-button  {
+    margin: 0.5em 0.5em 0 0.5em;
+    width: 100px;
+    box-sizing: border-box;
+}
+
+div.book-container {
+    width:100%;
+    height: 65vh;
+}
+
+div.book-container .img-container {
+    width:100%;
+}
+
+.book-container .img-container .img {
+    min-height: 30vh;
+}
+
+.img-title-container {
+    display: flex;
+    align-items: flex-end;
+    border-radius: 5px;
+}
+
+.img-title {
+    margin: 0;
+    font-size: 1.4rem;
+    padding: 2.5em 0 1.1em 0;
+    width: 100%;
+    color: #eee;
+    background: -webkit-linear-gradient(to top, black, transparent); 
+    background:    -moz-linear-gradient(to top, black, transparent); 
+    background:     -ms-linear-gradient(to top, black, transparent); 
+    background:      -o-linear-gradient(to top, black, transparent); 
+    background:         linear-gradient(to top, black, transparent);
+}

@@ -166,8 +166,8 @@ export default {
             fromToPrice: [10, 60],
             minDate: moment().add(1, "days").toDate(),
             fromToDate: [
-                moment().add(1, "days").toDate(),
-                moment().add(8, "days").toDate(),
+                moment().add(20, "days").toDate(),
+                moment().add(30, "days").toDate(),
             ],
         };
     },

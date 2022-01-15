@@ -58,12 +58,15 @@
 <script>
 import fetchImageBackground from "../mixins/fetch-image-bg.js";
 import StarRating from "vue-star-rating";
+import vnodeInSwal from "../mixins/vnode-in-swal.js";
+import BookVilla from "./BookVilla.ce.vue";
+
 export default {
     name: "VillaExpoItem",
     components: {
         StarRating,
     },
-    mixins: [fetchImageBackground],
+    mixins: [fetchImageBackground, vnodeInSwal],
     props: {
         villa: {
             type: Object,
@@ -76,7 +79,36 @@ export default {
             this.$router.push({ name: "VillaExpoDetails" });
         },
         openBookServiceDialog() {
-            console.log("Opened Service Dialog");
+            this.showComponent(
+                BookVilla,
+                { villa: this.villa },
+                {
+                    showCancelButton: true,
+                    confirmButtonText: "Book",
+                    cancelButtonText: "Cancel",
+                    showCloseButton: true,
+                    showLoaderOnConfirm: true,
+                    buttonsStyling: false,
+                    showClass: {
+                        popup: "animated fadeInDown",
+                    },
+                    hideClass: {
+                        popup: "animated fadeOut faster",
+                    },
+                    customClass: {
+                        popup: "modal-popup",
+                        htmlContainer: "modal-content",
+                        actions: "modal-actions",
+                        confirmButton:
+                            "clickable primary transition-ease modal-button",
+                        cancelButton:
+                            "clickable danger transition-ease modal-button",
+                    },
+                },
+                (sawlRes, componentRes) => {
+                    console.log(sawlRes, componentRes);
+                }
+            );
         },
     },
 };
@@ -84,3 +116,4 @@ export default {
 
 <style src="../styles/form.css"></style>
 <style src="../styles/expo.css"></style>
+<style src="../styles/book.css"></style>

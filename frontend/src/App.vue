@@ -1,4 +1,8 @@
 <template>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/animate.css@3/animate.min.css"
+    />
     <GeneralHeader
         :menuitems="menuItems"
         v-if="ShouldNotTurnOffHeaderAndFooter()"

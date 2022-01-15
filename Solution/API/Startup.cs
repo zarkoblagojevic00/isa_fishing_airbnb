@@ -158,7 +158,7 @@ namespace API
 
                     if (env.IsDevelopment())
                     {
-                        spa.UseVueCli(npmScript: "serve");
+                        spa.UseVueCli(npmScript: "serve", port: 8081);
                     }
                 });
             });

@@ -98,7 +98,7 @@ namespace API
             builder.RegisterModule(new NHibernateModule()
             {
                 DbType = "SqlServer",
-                ConnectionString = Environment.GetEnvironmentVariable("IsOnServer") == null ? Configuration.GetConnectionString("LOCAL") : Configuration.GetConnectionString("SRV"),
+                ConnectionString = Environment.GetEnvironmentVariable("IsOnServer") == "true" ? Configuration.GetConnectionString("LOCAL") : Configuration.GetConnectionString("SRV"),
                 MappingAssemblies = new List<Assembly>()
                 {
                     typeof(AccountDeletionRequestMap).Assembly

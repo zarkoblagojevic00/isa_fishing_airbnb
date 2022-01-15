@@ -14,8 +14,8 @@ const sessionService = {
         });
         const { email: mail, ...claims } = responseSubset;
         const realClaims = saveClaimsToLocalStorage(claims);
-        document.cookie = `userId=${claims.userId}; domain=localhost`;
-        document.cookie = `email=${mail}; domain=localhost`;
+        document.cookie = `userId=${claims.userId}`;
+        document.cookie = `email=${mail}`;
         return realClaims;
     },
     logout: () => {

@@ -138,7 +138,7 @@ namespace API
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

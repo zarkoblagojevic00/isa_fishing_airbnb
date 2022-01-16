@@ -18,7 +18,7 @@ jobs:
           git add . 
           git reset --hard 
           git pull 
-          git checkout feature/upload-to-server 
+          git checkout master
           dotnet build Solution/Model.Build/ 
           sqlpackage /Action:Publish /SourceFile:Solution/Model.Build/bin/Debug/net5.0/Model.Build.dacpac /TargetConnectionString:"Server=localhost;Database=ISA;User Id=SA;Password=isaTEAM123@" 
           cd frontend 

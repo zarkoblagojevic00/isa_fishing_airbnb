@@ -2,9 +2,13 @@ name: Automated deploy to server
 
 on:
   workflow_dispatch:
- # push:
- #   branches: 
- #     - 'master'
+    inputs:
+      msg:
+        description: 'Message to show'
+        default: 'This job will run on workflow dispatch'
+  push:
+    branches: 
+      - 'master'
  #     - 'feature/upload-to-server'
 
 jobs:

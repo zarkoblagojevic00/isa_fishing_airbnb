@@ -16,7 +16,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@35.180.11.147
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@35.180.11.147 '
           cd ~/gitrepo 
           git add . 
           git reset --hard 
@@ -28,5 +28,5 @@ jobs:
           npm install 
           cd ..
           cd Solution 
-          nohup dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 & 
+          nohup dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 & '
 

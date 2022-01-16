@@ -1,0 +1,1 @@
+﻿INSERT INTO Countries VALUES ('Serbia')

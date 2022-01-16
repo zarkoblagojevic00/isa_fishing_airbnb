@@ -1,0 +1,17 @@
+name: Automated stop off api on server
+
+on: workflow_dispatch
+
+jobs:
+  stop_api:
+    runs-on : ubuntu-latest
+    steps:
+      - name: multiple command
+        env: 
+          PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@35.180.11.147 '
+          cd ~/gitrepo  
+          kill $(cat ~/lastpid.txt) '
+

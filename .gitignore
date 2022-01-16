@@ -45,6 +45,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+Solution/TestResults
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -190,17 +191,6 @@ DocProject/Help/*.hhp
 DocProject/Help/Html2
 DocProject/Help/html
 
-# Click-Once directory
-publish/
-
-# Publish Web Output
-*.[Pp]ublish.xml
-*.azurePubxml
-# Note: Comment the next line if you want to checkin your web deploy settings,
-# but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
-*.publishproj
-
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
 # in these scripts will be unencrypted
@@ -281,7 +271,6 @@ ServiceFabricBackup/
 # SQL Server files
 *.mdf
 *.ldf
-*.ndf
 
 # Business Intelligence projects
 *.rdl.data
@@ -402,6 +391,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 ### VisualStudio Patch ###
+
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,visualstudio

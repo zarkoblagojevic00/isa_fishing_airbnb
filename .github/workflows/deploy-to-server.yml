@@ -1,11 +1,6 @@
 name: Automated deploy to server
 
-on:
-  workflow_dispatch:
-    inputs:
-      msg:
-        description: 'Message to show'
-        default: 'This job will run the api on the server'
+on: workflow_dispatch
 
 jobs:
   deploy:

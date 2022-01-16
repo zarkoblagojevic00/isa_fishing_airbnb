@@ -1,11 +1,6 @@
 name: Automated stop off api on server
 
-on:
-  workflow_dispatch:
-    inputs:
-      msg:
-        description: 'Message to show'
-        default: 'This job will stop the api on the server'
+on: workflow_dispatch
 
 jobs:
   stop_api:

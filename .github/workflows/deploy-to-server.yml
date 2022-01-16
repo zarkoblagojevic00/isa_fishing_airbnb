@@ -2,10 +2,10 @@ name: Automated deploy to server
 
 on:
   workflow_dispatch:
-  push:
-    branches: 
-      - 'master'
-      - 'feature/upload-to-server'
+ # push:
+ #   branches: 
+ #     - 'master'
+ #     - 'feature/upload-to-server'
 
 jobs:
   deploy:

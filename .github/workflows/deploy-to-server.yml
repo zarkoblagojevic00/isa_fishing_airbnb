@@ -5,11 +5,7 @@ on:
     inputs:
       msg:
         description: 'Message to show'
-        default: 'This job will run on workflow dispatch'
-  push:
-    branches: 
-      - 'master'
- #     - 'feature/upload-to-server'
+        default: 'This job will run the api on the server'
 
 jobs:
   deploy:

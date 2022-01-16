@@ -17,8 +17,8 @@ jobs:
           cd ~/gitrepo 
           git add . 
           git reset --hard 
+          git checkout master 
           git pull 
-          git checkout master
           dotnet build Solution/Model.Build/ 
           sqlpackage /Action:Publish /SourceFile:Solution/Model.Build/bin/Debug/net5.0/Model.Build.dacpac /TargetConnectionString:"Server=localhost;Database=ISA;User Id=SA;Password=isaTEAM123@" 
           cd frontend 

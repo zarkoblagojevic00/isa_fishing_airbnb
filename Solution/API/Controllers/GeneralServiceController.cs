@@ -125,6 +125,19 @@ namespace API.Controllers
                     new PenalizationService(UoW).PenalizeUser(reservation.ReservationId);
                 }
 
+                if (report.ShownUp && report.SuggestPenalty)
+                {
+                    var issue = new Issue()
+                    {
+                        CreatedDateTime = DateTime.Now,
+                        IsReviewed = false,
+                        IssuedEntityId = reservation.UserId,
+                        UserId = GetUserIdFromCookie(),
+                        Reason = report.ReportText
+                    };
+                    UoW.GetRepository<IIssueWriteRepository>().Add(issue);
+                }
+
                 UoW.Commit();
             }
             catch (Exception e)

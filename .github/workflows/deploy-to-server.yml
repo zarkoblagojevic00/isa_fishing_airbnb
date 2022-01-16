@@ -33,5 +33,5 @@ jobs:
           nohup dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 & 
           echo test 
           echo $! > ~/lastpid.txt 
-          '
+          logout '
 

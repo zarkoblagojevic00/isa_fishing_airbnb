@@ -30,8 +30,6 @@ jobs:
           sudo npm install 
           cd .. 
           cd Solution 
-          nohup dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 & 
-          echo test 
-          echo $! > ~/lastpid.txt 
-          logout '
+          dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 </dev/null &>/dev/null & 
+          echo $! > ~/lastpid.txt '
 

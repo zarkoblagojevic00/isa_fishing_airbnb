@@ -1,0 +1,30 @@
+name: Automated deploy to server
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on : ubuntu-latest
+    steps:
+      - name: multiple command
+        env: 
+          PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@35.180.11.147 '
+          cat ~/.bash_profile 
+          source ~/.bash_profile 
+          cd ~/gitrepo 
+          git add . 
+          git reset --hard 
+          git pull 
+          git checkout feature/upload-to-server 
+          dotnet build Solution/Model.Build/ 
+          sqlpackage /Action:Publish /SourceFile:Solution/Model.Build/bin/Debug/net5.0/Model.Build.dacpac /TargetConnectionString:"Server=localhost;Database=ISA;User Id=SA;Password=isaTEAM123@" 
+          cd frontend 
+          sudo npm install 
+          cd .. 
+          cd Solution 
+          dotnet run --project API/API.csproj --urls http://0.0.0.0:8080 </dev/null &>/dev/null & 
+          echo $! > ~/lastpid.txt '
+

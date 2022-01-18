@@ -8,8 +8,10 @@ namespace Domain.Entities
 {
     public class BoatReservationDetail
     {
-        public virtual int BoatReservationId { get; set; }
+        public virtual int Id { get; set; }
         public virtual BoatOwnerResponsibilityType BoatOwnerResponsibilityType { get; set; }
+        public virtual int RelevantId { get; set; }
+        public virtual bool IsPromo { get; set; }
     }
 
     public enum BoatOwnerResponsibilityType

@@ -11,5 +11,6 @@ namespace API.DTOs
         public Reservation Reservation { get; set; }
         public Mark Mark { get; set; }
         public Report Report { get; set; }
+        public string Role { get; set; }
     }
 }

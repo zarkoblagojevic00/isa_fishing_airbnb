@@ -64,6 +64,14 @@
                         :class="[ValidatePrice() ? '' : 'error-outline']"
                     />
                 </div>
+                <select
+                    class="select-villa put-left"
+                    v-model="isCaptain"
+                    v-if="!isVilla"
+                >
+                    <option value="true">Captain</option>
+                    <option value="false">First assistant</option>
+                </select>
                 <div class="input-wrapper">
                     <span class="label">Capacity:</span>
                     <input
@@ -137,6 +145,14 @@
                         :class="[ValidatePrice() ? '' : 'error-outline']"
                     />
                 </div>
+                <select
+                    class="select-villa put-left"
+                    v-model="isCaptain"
+                    v-if="!isVilla"
+                >
+                    <option value="true">Captain</option>
+                    <option value="false">First assistant</option>
+                </select>
                 <div class="input-wrapper">
                     <span class="label">Email of user:</span>
                     <input
@@ -288,6 +304,8 @@ export default {
             isVilla: this.$props.promoMode == "villa",
             emails: [],
             serviceUnavailableMarker: false,
+
+            isCaptain: "true",
         };
     },
     computed: {
@@ -548,6 +566,8 @@ export default {
             this.pricePerDay = relevantAction.pricePerDay;
             this.capacity = relevantAction.capacity;
             this.additionalBenefits = relevantAction.addedBenefits;
+            this.isCaptain =
+                relevantAction.role == "Captain" ? "true" : "false";
 
             this.selectedDate = [
                 relevantAction.startDateTime,
@@ -558,9 +578,10 @@ export default {
         SwitchToAddingMode() {
             this.mode = "Adding";
 
-            (this.pricePerDay = 0),
-                (this.capacity = 0),
-                (this.additionalBenefits = "");
+            this.pricePerDay = 0;
+            this.capacity = 0;
+            this.additionalBenefits = "";
+            this.isCaptain = "true";
             this.selectedDate = ["", ""];
         },
         UpdateDate(evt) {
@@ -612,7 +633,9 @@ export default {
                 addedBenefits: this.additionalBenefits,
                 capacity: this.capacity,
             };
-
+            if (!this.isVilla) {
+                dto.isCaptain = this.isCaptain == "true" ? true : false;
+            }
             let url = "/api/QuickAction/";
             if (this.mode == "Adding") {
                 url += "CreateNewQuickAction";
@@ -635,7 +658,7 @@ export default {
                     if (response.status == 200) {
                         vue.RefreshCalendar();
                         vue.SwitchToAddingMode();
-                        alert("Successfully created a new promo action!");
+                        alert("Successfully configured promo actions!");
                         return "";
                     } else {
                         return response.text();
@@ -707,6 +730,11 @@ export default {
                 startDateTime: this.selectedDateReservation[0],
                 endDateTime: this.selectedDateReservation[1],
             };
+
+            if (!this.isVilla) {
+                dto.isCaptain = this.isCaptain == "true" ? true : false;
+            }
+
             let vue = this;
             fetch("/api/GeneralService/CreateReservationForUser", {
                 method: "POST",
@@ -818,6 +846,10 @@ export default {
 </script>
 
 <style scoped>
+.put-left {
+    display: flex;
+}
+
 .wrapperdiv {
     display: flex;
     flex-direction: column;
@@ -968,5 +1000,12 @@ export default {
 
 .width-fix {
     width: 250px;
+}
+
+.input-checkbox {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top: -2px;
 }
 </style>

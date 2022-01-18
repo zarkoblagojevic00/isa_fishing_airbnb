@@ -87,6 +87,10 @@
                 <span>City: </span>
                 <span class="emphasise">{{ user.city }}</span>
             </div>
+            <div class="info-wrapper" v-if="selectedReservation.role != ''">
+                <span>Your role: </span>
+                <span class="emphasise">{{ selectedReservation.role }}</span>
+            </div>
             <div class="info-wrapper" v-if="selectedReservation.report != null">
                 <span>Report: </span>
                 <span class="emphasise max-width">{{

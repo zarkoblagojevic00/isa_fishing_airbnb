@@ -5,6 +5,11 @@
     </div>
 
     <div class="flexbox-container">
+        <UsersReportSearch
+            placeholderName="Name..."
+            placeholderSurname="Surname..."
+            @filtered="onFiltered"
+        />
         <table class="reservations-table">
             <thead>
                 <tr>
@@ -47,11 +52,22 @@
                     <td class="left">{{ res.price }}</td>
                     <td class="left">
                         <font-awesome-icon
-                            v-if="new Date(res.serviceTo) < new Date()"
+                            v-if="
+                                new Date(res.serviceTo) < new Date() &&
+                                res.reportId == null
+                            "
                             icon="plus-circle"
                             style="cursor: pointer"
                             @click="addReport(res.reservationId)"
                         />
+                        <div
+                            v-if="
+                                new Date(res.serviceTo) < new Date() &&
+                                res.reportId != null
+                            "
+                        >
+                            Report submitted.
+                        </div>
                     </td>
                     <td
                         v-if="
@@ -74,21 +90,18 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
+import UsersReportSearch from "@/components/UsersReportSearch.vue";
 import axios from "../api/api.js";
 import moment from "moment";
 export default {
     name: "InstructorServices",
     components: {
         Navbar,
+        UsersReportSearch,
     },
     computed: {},
     mounted() {
-        axios
-            .get("/api/Instructor/GetReservationsWithBasicUserInfo")
-            .then((res) => {
-                this.reservations = res.data;
-                console.log(res.data);
-            });
+        this.loadReservations();
     },
     data() {
         return {
@@ -104,6 +117,14 @@ export default {
         };
     },
     methods: {
+        loadReservations() {
+            axios
+                .get("/api/Instructor/GetReservationsWithBasicUserInfo")
+                .then((res) => {
+                    this.reservations = res.data;
+                    console.log(res.data);
+                });
+        },
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");
         },
@@ -125,39 +146,32 @@ export default {
             });
         },
         async addReport(reservationId) {
-            const { value: text } = await this.$swal.fire({
-                input: "textarea",
-                inputLabel: "Add report",
-                inputPlaceholder: "Type your report here...",
-                inputAttributes: {
-                    "aria-label": "Type your report here",
+            const { value: formValues } = await this.$swal.fire({
+                title: "Report",
+                html:
+                    '<div><input id="swal-input1" class="swal2-input" style="height:80px"></div>' +
+                    '<div> Did client show up? <input id="swal-input2" class="swal2-input" type="checkbox" style="width:26px;height:26px"></div>',
+                focusConfirm: false,
+                preConfirm: () => {
+                    return [
+                        document.getElementById("swal-input1").value,
+                        this.$swal.getPopup().querySelector("#swal-input2")
+                            .checked,
+                    ];
                 },
-                showCancelButton: true,
             });
 
-            if (text) {
-                console.log(reservationId, text);
+            if (formValues) {
+                console.log(formValues[1]);
                 axios
                     .post("/api/Instructor/SubmitReport", {
                         reservationId: reservationId,
-                        reportText: text,
+                        reportText: formValues[0],
+                        shownUp: formValues[1],
                     })
                     .then(() => {
+                        this.loadReservations();
                         this.$swal.fire("Report added successfully!");
-                    })
-                    .catch(function (error) {
-                        if (error.response) {
-                            // Request made and server responded
-                            console.log(error.response.data);
-                            console.log(error.response.status);
-                            console.log(error.response.headers);
-                        } else if (error.request) {
-                            // The request was made but no response was received
-                            console.log(error.request);
-                        } else {
-                            // Something happened in setting up the request that triggered an Error
-                            console.log("Error", error.message);
-                        }
                     });
             }
         },
@@ -168,6 +182,9 @@ export default {
                     "new-reservation/" +
                     reservation.reservationId,
             });
+        },
+        onFiltered(value) {
+            this.reservations = value;
         },
     },
 };
@@ -193,6 +210,7 @@ export default {
     border-collapse: collapse;
     border-spacing: 0;
     font: normal 13px Arial, sans-serif;
+    margin-top: 10px;
 }
 .reservations-table thead th {
     background-color: #ddefef;

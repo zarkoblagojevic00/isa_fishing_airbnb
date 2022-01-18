@@ -478,13 +478,64 @@ namespace API.Controllers
             return Ok(averageMarks);
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult FilterReservationsByUser(string name, string surname)
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll();
+
+            var users = UoW.GetRepository<IUserReadRepository>().GetAll();
+
+            var userReservations = reservations
+                .Join(adventures, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(users, ra => ra.r.UserId, u => u.UserId, (ra, u) => new { ra, u })
+                .Select(reservation => new ReservationUserDTO
+                {
+                    AdditionalEquipment = reservation.ra.r.AdditionalEquipment,
+                    IsCanceled = reservation.ra.r.IsCanceled,
+                    IsPromo = reservation.ra.r.IsPromo,
+                    IsServiceUnavailableMarker = reservation.ra.r.IsServiceUnavailableMarker,
+                    MarkId = reservation.ra.r.MarkId,
+                    Price = reservation.ra.r.Price,
+                    ReportId = reservation.ra.r.ReportId,
+                    ReservationId = reservation.ra.r.ReservationId,
+                    ReservedDateTime = reservation.ra.r.ReservedDateTime,
+                    ServiceId = reservation.ra.r.ServiceId,
+                    ServiceName = reservation.ra.a.Name,
+                    UserId = reservation.ra.r.UserId,
+                    UsersName = reservation.u.Name,
+                    UsersSurname = reservation.u.Surname,
+                    UsersPhoneNumber = reservation.u.PhoneNumber,
+                    ServiceFrom = reservation.ra.r.StartDateTime,
+                    ServiceTo = reservation.ra.r.EndDateTime,
+                    Capacity = reservation.ra.a.Capacity,
+                });
+
+            var distinctReservations = userReservations
+                .GroupBy(res => res.ReservationId)
+                .Select(res => res.First());
+
+            var filtered = distinctReservations.Where(reservation => String.IsNullOrEmpty(name) || reservation.UsersName.ToLower().Contains(name.ToLower()))
+                                                .Where(reservation => String.IsNullOrEmpty(surname) || reservation.UsersSurname.ToLower().Contains(surname.ToLower()));
+
+            return Ok(filtered);
+        }
+
 
         private Report CreateNewReport(ReportDTO report)
         {
             return new Report()
             {
                 CreatedDateTime = DateTime.Now,
-                ReportText = report.ReportText
+                ReportText = report.ReportText,
+                ShownUp = report.ShownUp,
             };
         }
 

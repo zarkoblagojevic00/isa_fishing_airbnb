@@ -9,6 +9,7 @@ using FluentNHibernate.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Constants;
+using Services.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -351,6 +352,8 @@ namespace API.Controllers
                 .Where(x => x.UserId == userId)
                 .Where(x => x.PeriodEnd > DateTime.Now);
 
+            
+
             return Ok(instructorAvailabilityPeriods);
         }
 
@@ -359,16 +362,24 @@ namespace API.Controllers
         public IActionResult AddInstructorAvailabilityPeriod(UserAvailabilityPeriodDTO availabilityPeriod)
         {
             var userId = GetUserIdFromCookie();
+
             availabilityPeriod.UserId = userId;
             availabilityPeriod.PeriodStart = availabilityPeriod.PeriodStart.ToLocalTime();
             availabilityPeriod.PeriodEnd = availabilityPeriod.PeriodEnd.ToLocalTime();
+
+            var unavailabilityService = new UserUnavailabilityValidationService(UoW);
+            bool canPeriodBeAdded = unavailabilityService.CanUnavailabilityPeriodBeAdded(userId, availabilityPeriod.PeriodStart, availabilityPeriod.PeriodEnd);
+
+            if (!canPeriodBeAdded)
+            {
+                return BadRequest("Service owner has scheduled timetable in selected period.");
+            }
 
             UserAvailability availability = availabilityPeriod.ToModel();
 
             try
             {
                 UoW.BeginTransaction();
-
                 UoW.GetRepository<IUserAvailabilityWriteRepository>().Add(availability);
 
                 UoW.Commit();

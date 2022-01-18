@@ -203,11 +203,7 @@ export default {
                     .catch((error) => {
                         if (error.response) {
                             // Request made and server responded
-                            if (error.response.data == "Dates overlap") {
-                                this.$swal(
-                                    "Dates overlap with existing dates."
-                                );
-                            }
+                            this.$swal(error.response.data);
                         }
                     });
             }

@@ -96,6 +96,14 @@ namespace API.Controllers
                 return BadRequest(Responses.MissingResponsibility);
             }
 
+            if (service.ServiceType == ServiceType.Adventure)
+            {
+                var unavailabilityService = new UserUnavailabilityValidationService(UoW);
+                bool isAvailable = unavailabilityService.IsInstructorAvailable(service.OwnerId, newAction.StartDateTime, newAction.EndDateTime);
+                if (!isAvailable)
+                    return BadRequest(Responses.InstructorUnavailable);
+            }
+
             var dateToCheck = new CalendarItem()
             {
                 StartDateTime = newAction.StartDateTime,

@@ -45,5 +45,7 @@ namespace Services.Constants
         public static string UnavailableRightNow = "Service you are trying to reach is unavailable right now.";
 
         public static string MissingResponsibility = "Missing boat responsibility";
+
+        public static string InstructorUnavailable = "Instructor unavailable at given time.";
     }
 }

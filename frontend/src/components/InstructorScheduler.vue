@@ -1,26 +1,86 @@
 <template>
-    <VueCal
-        :disable-views="['years', 'year']"
-        :snap-to-time="30"
-        :dblclickToNavigate="false"
-        :editableEvents="{
-            title: true,
-            drag: true,
-            resize: true,
-            delete: true,
-            create: true,
-        }"
-        :timeFrom="0"
-        :timeTo="60 * 24"
-        :timeStep="30"
-        :timeCellHeight="80"
-        :events="events"
-        :min-date="new Date()"
-        events-on-month-view="short"
-        today-button
-        @event-drag-create="onEventDragCreated"
-        @event-delete="onEventDeleted"
-    />
+    <div class="flexbox">
+        <h3>Set periods when you are unavailable to teach!</h3>
+        <div class="row">
+            <div class="from">From</div>
+            <v-date-picker
+                v-model="unavailabilityStart"
+                mode="dateTime"
+                is24hr
+                :min-date="
+                    unavailabilityStart ? unavailabilityStart : new Date()
+                "
+                :max-date="
+                    unavailabilityEnd ? unavailabilityEnd : new Date() + 365
+                "
+            >
+                <template v-slot="{ inputValue, inputEvents }">
+                    <input
+                        class="
+                            px-2
+                            py-1
+                            border
+                            rounded
+                            focus:outline-none focus:border-blue-300
+                        "
+                        :value="inputValue"
+                        v-on="inputEvents"
+                    />
+                </template>
+            </v-date-picker>
+            <div class="to">To</div>
+            <v-date-picker
+                v-model="unavailabilityEnd"
+                mode="dateTime"
+                is24hr
+                :min-date="
+                    unavailabilityStart ? unavailabilityStart : new Date()
+                "
+                :max-date="new Date() + 365"
+            >
+                <template v-slot="{ inputValue, inputEvents }">
+                    <input
+                        class="
+                            px-2
+                            py-1
+                            border
+                            rounded
+                            focus:outline-none focus:border-blue-300
+                        "
+                        :value="inputValue"
+                        v-on="inputEvents"
+                    />
+                </template>
+            </v-date-picker>
+            <div class="button-submit" @click="submitUnavailability">
+                Submit
+            </div>
+        </div>
+
+        <VueCal
+            class="instructor-calendar"
+            :disable-views="['years', 'year']"
+            :snap-to-time="30"
+            :dblclickToNavigate="false"
+            :editableEvents="{
+                title: false,
+                drag: false,
+                resize: false,
+                delete: true,
+                create: false,
+            }"
+            :timeFrom="0"
+            :timeTo="60 * 24"
+            :timeStep="30"
+            :timeCellHeight="80"
+            :events="events"
+            :min-date="new Date()"
+            events-on-month-view="short"
+            today-button
+            @event-delete="onEventDeleted"
+            style="height: 100%; width: 100%"
+        />
+    </div>
 </template>
 <script>
 import VueCal from "vue-cal";
@@ -36,49 +96,49 @@ export default {
         this.loadAvailabilityPeriods();
     },
     methods: {
-        async onEventDragCreated(event) {
-            if (this.isEventOverlappingWithAny(event)) {
-                this.loadAvailabilityPeriods();
-                //alert overlapping period
-            } else {
-                const eventType = await this.chooseEventType();
-                console.log(eventType);
-                this.addAvailabilityPeriod(event, eventType);
-            }
-        },
-        async chooseEventType() {
-            const { value: eventType } = await this.$swal.fire({
-                title: "Select event type",
-                input: "select",
-                inputOptions: {
-                    available: "Available",
-                    unavailable: "Unavailable",
-                },
-                inputPlaceholder: "Select type",
-                showCancelButton: true,
-            });
-            return eventType;
-        },
+        // async onEventDragCreated(event) {
+        //     if (this.isEventOverlappingWithAny(event)) {
+        //         this.loadAvailabilityPeriods();
+        //         //alert overlapping period
+        //     } else {
+        //         const eventType = await this.chooseEventType();
+        //         console.log(eventType);
+        //         this.addAvailabilityPeriod(event, eventType);
+        //     }
+        // },
+        // async chooseEventType() {
+        //     const { value: eventType } = await this.$swal.fire({
+        //         title: "Select event type",
+        //         input: "select",
+        //         inputOptions: {
+        //             available: "Available",
+        //             unavailable: "Unavailable",
+        //         },
+        //         inputPlaceholder: "Select type",
+        //         showCancelButton: true,
+        //     });
+        //     return eventType;
+        // },
         onEventDeleted(event) {
             this.deleteAvailabilityPeriod(event);
         },
-        datesOverlap(first, second) {
-            if (first.start < second.end && first.end > second.start) {
-                return true;
-            }
-            return false;
-        },
-        isEventOverlappingWithAny(event) {
-            for (const period of this.events) {
-                if (this.datesOverlap(event, period)) {
-                    console.log("true");
-                    return true;
-                } else {
-                    console.log("false");
-                }
-            }
-            return false;
-        },
+        // datesOverlap(first, second) {
+        //     if (first.start < second.end && first.end > second.start) {
+        //         return true;
+        //     }
+        //     return false;
+        // },
+        // isEventOverlappingWithAny(event) {
+        //     for (const period of this.events) {
+        //         if (this.datesOverlap(event, period)) {
+        //             console.log("true");
+        //             return true;
+        //         } else {
+        //             console.log("false");
+        //         }
+        //     }
+        //     return false;
+        // },
         loadAvailabilityPeriods() {
             axios
                 .get("/api/Instructor/GetAvailabilityPeriods")
@@ -95,11 +155,11 @@ export default {
                     this.mapQuickActionsToEvents();
                 });
         },
-        addAvailabilityPeriod(event, eventType) {
+        addAvailabilityPeriod() {
             const period = {
-                periodStart: new Date(event.start).toISOString(),
-                periodEnd: new Date(event.end).toISOString(),
-                status: eventType == "available" ? true : false,
+                periodStart: new Date(this.unavailabilityStart).toISOString(),
+                periodEnd: new Date(this.unavailabilityEnd).toISOString(),
+                status: false,
             };
             axios
                 .post("/api/Instructor/AddInstructorAvailabilityPeriod", period)
@@ -108,16 +168,9 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response) {
+                        this.$swal.fire(error.response.data);
                         // Request made and server responded
-                        if (
-                            error.response.data.title ==
-                            "One or more validation errors occurred."
-                        ) {
-                            this.$swal.fire(
-                                "Actions must be performed upon future dates."
-                            );
-                            this.loadAvailabilityPeriods();
-                        }
+                        this.loadAvailabilityPeriods();
                     }
                 });
         },
@@ -158,12 +211,21 @@ export default {
                 };
             });
         },
+        submitUnavailability() {
+            if (this.unavailabilityStart && this.unavailabilityEnd)
+                this.addAvailabilityPeriod();
+            else {
+                this.$swal.fire("Please fill in the required fields.");
+            }
+        },
     },
     data() {
         return {
             periods: [],
             events: [],
             quickActions: [],
+            unavailabilityStart: "",
+            unavailabilityEnd: "",
         };
     },
 };
@@ -183,5 +245,44 @@ export default {
 
 .quick-action {
     background-color: rgba(68, 58, 207, 0.35);
+}
+
+.flexbox {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.from {
+    padding-right: 30px;
+}
+
+.to {
+    padding-right: 30px;
+    padding-left: 50px;
+}
+
+.instructor-calendar {
+    margin-top: 10px;
+}
+
+.button-submit {
+    background-color: #95e1ff;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    font-weight: bold;
+    border: 0;
+    font-size: 12px;
+    width: 70px;
+    margin-left: 50px;
+    padding: 5px;
 }
 </style>

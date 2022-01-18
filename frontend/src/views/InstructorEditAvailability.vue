@@ -1,3 +1,4 @@
+// Redundant
 <template>
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="flexbox-container">

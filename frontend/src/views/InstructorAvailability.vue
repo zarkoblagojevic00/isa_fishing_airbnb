@@ -2,9 +2,9 @@
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
     <div class="flexbox-container">
         <h1>Availability overview</h1>
-        <button @click="$router.push('/instructor/availability/edit')">
+        <!-- <button @click="$router.push('/instructor/availability/edit')">
             Edit availability
-        </button>
+        </button> -->
     </div>
     <!-- use custom calendar with template  -->
     <div class="flexbox-container">

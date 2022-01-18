@@ -48,6 +48,12 @@ SET IDENTITY_INSERT PromoActions ON;
 INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (4, 2, @StartDate, @EndDate, 12.22, 1, 10, null)
 SET IDENTITY_INSERT PromoActions OFF;
 
+SET IDENTITY_INSERT BoatReservationDetails ON;
+
+INSERT INTO BoatReservationDetails (Id, BoatOwnerResponsibilityType, RelevantId, IsPromo) values (0, 0, 11, 0)
+
+SET IDENTITY_INSERT BoatReservationDetails OFF;
+
 SET IDENTITY_INSERT Reservations ON; 
 
 INSERT INTO Reservations (ReservationId, UserId, ServiceId, ReservedDateTime, IsPromo, IsCanceled, IsServiceUnavailableMarker, ReportId, MarkId, AdditionalEquipment, Price, StartDateTime, EndDateTime) VALUES (12, 5, 2, DATEADD(day, -100, GETDATE()), 0, 0, 0, null, null,'', 12.22, DATEADD(day, -27, GETDATE()), DATEADD(day, -22, GETDATE()))

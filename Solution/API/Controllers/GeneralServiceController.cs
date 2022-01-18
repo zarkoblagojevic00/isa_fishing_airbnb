@@ -37,6 +37,8 @@ namespace API.Controllers
                 return BadRequest(Responses.ServiceOwnerNotLinked);
             }
 
+            var service = UoW.GetRepository<IServiceReadRepository>()
+                .GetById(serviceId);
             var reservationHistory = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId == serviceId)
@@ -44,7 +46,10 @@ namespace API.Controllers
                 {
                     Reservation = x,
                     Report = x.ReportId == null ? null : UoW.GetRepository<IReportReadRepository>().GetAll().First(y => y.ReportId == x.ReportId),
-                    Mark = x.MarkId == null ? null : UoW.GetRepository<IMarkReadRepository>().GetAll().First(y => y.MarkId == x.MarkId)
+                    Mark = x.MarkId == null ? null : UoW.GetRepository<IMarkReadRepository>().GetAll().First(y => y.MarkId == x.MarkId),
+                    Role = service.ServiceType == ServiceType.Boat 
+                        ? GetRole(x.ReservationId, false)
+                        : string.Empty
                 });
 
             return Ok(reservationHistory);
@@ -186,7 +191,12 @@ namespace API.Controllers
                     return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
                 }
             }
-            
+
+            if (service.ServiceType == ServiceType.Boat && reservationDto.IsCaptain == null)
+            {
+                return BadRequest(Responses.MissingResponsibility);
+            }
+
             var union = GetRelevantDateIntervals(service.ServiceId, user.UserId);
             var intervalToCheck = new CalendarItem()
             {
@@ -202,10 +212,22 @@ namespace API.Controllers
 
             try
             {
-
                 var newReservation = CreateNewReservation(reservationDto, user.UserId);
-
+                
                 UoW.GetRepository<IReservationWriteRepository>().Add(newReservation);
+
+                if (service.ServiceType == ServiceType.Boat)
+                {
+                    var boatResDetails = new BoatReservationDetail()
+                    {
+                        BoatOwnerResponsibilityType = reservationDto.IsCaptain.Value
+                            ? BoatOwnerResponsibilityType.Captain
+                            : BoatOwnerResponsibilityType.FirstAssistant,
+                        RelevantId = newReservation.ReservationId,
+                        IsPromo = false,
+                    };
+                    UoW.GetRepository<IBoatReservationDetailWriteRepository>().Add(boatResDetails);
+                }
 
                 UoW.Commit();
 
@@ -456,6 +478,19 @@ namespace API.Controllers
                 .Where(x => x.ServiceId == serviceId && x.EndDateTime >= DateTime.Now);
 
             return relevantReservations.Union(relevantActions);
+        }
+
+        private string GetRole(int relevantId, bool isPromo)
+        {
+            var relevantBoatRes = UoW.GetRepository<IBoatReservationDetailReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.IsPromo == isPromo && x.RelevantId == relevantId);
+            if (relevantBoatRes == null)
+                return string.Empty;
+
+            return relevantBoatRes.BoatOwnerResponsibilityType == BoatOwnerResponsibilityType.Captain
+                ? "Captain"
+                : "First Assistant";
         }
     }
 }

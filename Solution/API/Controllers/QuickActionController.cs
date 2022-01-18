@@ -27,12 +27,25 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<PromoAction> GetQuickActions(int serviceId)
+        public IEnumerable<PromoActionWrapperDTO> GetQuickActions(int serviceId)
         {
             var promoActionReadRepository = UoW.GetRepository<IPromoActionReadRepository>();
 
             return promoActionReadRepository.GetAll()
-                .Where(x => x.ServiceId == serviceId);
+                .Where(x => x.ServiceId == serviceId)
+                .Select(x => new PromoActionWrapperDTO()
+                {
+                    PromoActionId = x.PromoActionId,
+                    ServiceId = x.ServiceId,
+                    PricePerDay = x.PricePerDay,
+                    IsTaken = x.IsTaken,
+                    Capacity = x.Capacity,
+                    AddedBenefits = x.AddedBenefits,
+                    Place = x.Place,
+                    Role = GetRole(x.PromoActionId, true),
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
         }
 
         [HttpGet]
@@ -78,6 +91,11 @@ namespace API.Controllers
                 }
             }
 
+            if (service.ServiceType == ServiceType.Boat && newAction.IsCaptain == null)
+            {
+                return BadRequest(Responses.MissingResponsibility);
+            }
+
             var dateToCheck = new CalendarItem()
             {
                 StartDateTime = newAction.StartDateTime,
@@ -97,6 +115,19 @@ namespace API.Controllers
             try
             {
                 UoW.GetRepository<IPromoActionWriteRepository>().Add(action);
+
+                if (service.ServiceType == ServiceType.Boat)
+                {
+                    var boatOwnerResp = new BoatReservationDetail()
+                    {
+                        BoatOwnerResponsibilityType = newAction.IsCaptain.Value
+                            ? BoatOwnerResponsibilityType.Captain
+                            : BoatOwnerResponsibilityType.FirstAssistant,
+                        IsPromo = true,
+                        RelevantId = action.PromoActionId
+                    };
+                    UoW.GetRepository<IBoatReservationDetailWriteRepository>().Add(boatOwnerResp);
+                }
 
                 UoW.Commit();
             }
@@ -148,6 +179,11 @@ namespace API.Controllers
                 return BadRequest(Responses.UnavailableRightNow);
             }
 
+            if (service.ServiceType == ServiceType.Boat && action.IsCaptain == null)
+            {
+                return BadRequest(Responses.MissingResponsibility);
+            }
+
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= action.StartDateTime &&
@@ -181,6 +217,18 @@ namespace API.Controllers
             try
             {
                 UoW.GetRepository<IPromoActionWriteRepository>().Update(relevantAction);
+
+                if (service.ServiceType == ServiceType.Boat)
+                {
+                    var foundResp = UoW.GetRepository<IBoatReservationDetailReadRepository>()
+                        .GetAll()
+                        .FirstOrDefault(x => x.IsPromo && x.RelevantId == action.PromoActionId);
+                    foundResp.BoatOwnerResponsibilityType = action.IsCaptain.Value
+                        ? BoatOwnerResponsibilityType.Captain
+                        : BoatOwnerResponsibilityType.FirstAssistant;
+                    UoW.GetRepository<IBoatReservationDetailWriteRepository>()
+                        .Update(foundResp);
+                } 
 
                 UoW.Commit();
             }
@@ -269,6 +317,18 @@ namespace API.Controllers
                     mailingService.Send();
                 }
             }
+        }
+        private string GetRole(int relevantId, bool isPromo)
+        {
+            var relevantBoatRes = UoW.GetRepository<IBoatReservationDetailReadRepository>()
+                .GetAll()
+                .FirstOrDefault(x => x.IsPromo == isPromo && x.RelevantId == relevantId);
+            if (relevantBoatRes == null)
+                return string.Empty;
+
+            return relevantBoatRes.BoatOwnerResponsibilityType == BoatOwnerResponsibilityType.Captain
+                ? "Captain"
+                : "First Assistant";
         }
     }
 }

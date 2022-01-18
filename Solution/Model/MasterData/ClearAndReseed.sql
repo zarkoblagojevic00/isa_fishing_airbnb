@@ -22,6 +22,7 @@ DELETE Subscriptions
 DELETE SystemConfigurations
 DELETE Users
 DELETE UserVerificationKeys
+DELETE BoatReservationDetails
 
 DELETE ServiceTypes
 DELETE BoatTypes
@@ -40,3 +41,4 @@ DBCC CHECKIDENT ('[dbo].[Reports]', RESEED, 100)
 DBCC CHECKIDENT ('[dbo].[Reservations]', RESEED, 100)
 DBCC CHECKIDENT ('[dbo].[Services]', RESEED, 100)
 DBCC CHECKIDENT ('[dbo].[SystemConfigurations]', RESEED, 100)
+DBCC CHECKIDENT ('[dbo].[BoatReservationDetails]', RESEED, 100)

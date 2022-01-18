@@ -238,4 +238,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="UserId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="19beafe9-f1ce-4007-ad83-555e2bd52f18" ChangeDateTime="01/18/2022 12:27:35">
+    <Property Name="ElementName" Value="[dbo].[BoatReservationDetails].[BoatReservationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BoatReservationDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Id" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2bcbe3f7-a053-45c2-9d87-0e67c603a0de" ChangeDateTime="01/18/2022 13:02:55">
+    <Property Name="ElementName" Value="[dbo].[BoatReservationDetails].[isPromo]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BoatReservationDetails]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsPromo" />
+  </Operation>
 </Operations>

@@ -7,12 +7,7 @@
                 v-model="unavailabilityStart"
                 mode="dateTime"
                 is24hr
-                :min-date="
-                    unavailabilityStart ? unavailabilityStart : new Date()
-                "
-                :max-date="
-                    unavailabilityEnd ? unavailabilityEnd : new Date() + 365
-                "
+                :min-date="new Date()"
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -36,7 +31,6 @@
                 :min-date="
                     unavailabilityStart ? unavailabilityStart : new Date()
                 "
-                :max-date="new Date() + 365"
             >
                 <template v-slot="{ inputValue, inputEvents }">
                     <input
@@ -59,7 +53,7 @@
 
         <VueCal
             class="instructor-calendar"
-            :disable-views="['years', 'year']"
+            :disable-views="['days', 'day', 'years']"
             :snap-to-time="30"
             :dblclickToNavigate="false"
             :editableEvents="{
@@ -93,67 +87,37 @@ export default {
     },
     async mounted() {
         await this.loadQuickActions();
-        this.loadAvailabilityPeriods();
+        await this.loadAvailabilityPeriods();
+        await this.loadReservations();
     },
     methods: {
-        // async onEventDragCreated(event) {
-        //     if (this.isEventOverlappingWithAny(event)) {
-        //         this.loadAvailabilityPeriods();
-        //         //alert overlapping period
-        //     } else {
-        //         const eventType = await this.chooseEventType();
-        //         console.log(eventType);
-        //         this.addAvailabilityPeriod(event, eventType);
-        //     }
-        // },
-        // async chooseEventType() {
-        //     const { value: eventType } = await this.$swal.fire({
-        //         title: "Select event type",
-        //         input: "select",
-        //         inputOptions: {
-        //             available: "Available",
-        //             unavailable: "Unavailable",
-        //         },
-        //         inputPlaceholder: "Select type",
-        //         showCancelButton: true,
-        //     });
-        //     return eventType;
-        // },
         onEventDeleted(event) {
             this.deleteAvailabilityPeriod(event);
         },
-        // datesOverlap(first, second) {
-        //     if (first.start < second.end && first.end > second.start) {
-        //         return true;
-        //     }
-        //     return false;
-        // },
-        // isEventOverlappingWithAny(event) {
-        //     for (const period of this.events) {
-        //         if (this.datesOverlap(event, period)) {
-        //             console.log("true");
-        //             return true;
-        //         } else {
-        //             console.log("false");
-        //         }
-        //     }
-        //     return false;
-        // },
-        loadAvailabilityPeriods() {
-            axios
-                .get("/api/Instructor/GetAvailabilityPeriods")
-                .then(({ data }) => {
-                    this.periods = data;
-                    this.mapPeriodsToEvents();
-                });
+        async loadAvailabilityPeriods() {
+            let response = await axios.get(
+                "/api/Instructor/GetAvailabilityPeriods"
+            );
+            this.periods = response.data;
+            this.mapPeriodsToEvents();
+        },
+        async loadReservations() {
+            let response = await axios.get(
+                "/api/Instructor/GetReservationsWithBasicUserInfo"
+            );
+            this.reservations = response.data;
+            this.mapReservationsToEvents();
         },
         async loadQuickActions() {
-            await axios
-                .get("/api/QuickAction/GetUsersQuickActions")
-                .then(({ data }) => {
-                    this.quickActions = data;
-                    this.mapQuickActionsToEvents();
-                });
+            let response = await axios.get(
+                "/api/QuickAction/GetUsersQuickActions"
+            );
+            this.quickActions = response.data;
+            this.mapQuickActionsToEvents();
+            // .then(({ data }) => {
+            //     this.quickActions = data;
+            //     this.mapQuickActionsToEvents();
+            // });
         },
         addAvailabilityPeriod() {
             const period = {
@@ -174,7 +138,15 @@ export default {
                     }
                 });
         },
-        deleteAvailabilityPeriod(event) {
+        async deleteAvailabilityPeriod(event) {
+            if (event.class != "unavailable-slot") {
+                this.$swal.fire("Cannot delete reservation or quick action.");
+                this.events = [];
+                await this.loadQuickActions();
+                await this.loadAvailabilityPeriods();
+                await this.loadReservations();
+                return;
+            }
             const period = {
                 periodStart: new Date(event.start),
                 periodEnd: new Date(event.end),
@@ -199,7 +171,6 @@ export default {
                 };
             });
             this.events = this.events.concat(this.quickActions);
-            console.log(this.quickActions);
         },
         mapQuickActionsToEvents() {
             this.quickActions = this.quickActions.map(function (action) {
@@ -210,6 +181,23 @@ export default {
                     class: "quick-action",
                 };
             });
+        },
+        mapReservationsToEvents() {
+            this.reservations = this.reservations.map(function (reservation) {
+                return {
+                    start: new Date(reservation.serviceFrom),
+                    end: new Date(reservation.serviceTo),
+                    title: "Reservation",
+                    class: "reservation",
+                    content:
+                        reservation.usersName +
+                        " " +
+                        reservation.usersSurname +
+                        "\n" +
+                        reservation.usersEmail,
+                };
+            });
+            this.events = this.events.concat(this.reservations);
         },
         submitUnavailability() {
             if (this.unavailabilityStart && this.unavailabilityEnd)
@@ -226,6 +214,7 @@ export default {
             quickActions: [],
             unavailabilityStart: "",
             unavailabilityEnd: "",
+            reservations: "",
         };
     },
 };
@@ -245,6 +234,10 @@ export default {
 
 .quick-action {
     background-color: rgba(68, 58, 207, 0.35);
+}
+
+.reservation {
+    background-color: rgba(255, 243, 139, 0.35);
 }
 
 .flexbox {

@@ -26,6 +26,12 @@
                     </div>
                     <div
                         class="submenu-item"
+                        @click="ChangeMode('CheckScheduler')"
+                    >
+                        <span class="menu-text"> Complete schedule </span>
+                    </div>
+                    <div
+                        class="submenu-item"
                         @click="ChangeMode('AddPromoAction')"
                     >
                         <span class="menu-text"> Add promo action </span>
@@ -115,6 +121,7 @@
                     v-if="mode == 'CheckVillaSchedule'"
                     :serviceMode="'villa'"
                 />
+                <ServiceOwnerScheduler v-if="mode == 'CheckScheduler'" />
                 <AddPromoAction
                     v-if="
                         mode == 'AddPromoAction' ||
@@ -146,6 +153,7 @@ import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
 import ServiceCharts from "../components/ServiceCharts.vue";
+import ServiceOwnerScheduler from "../components/ServiceOwnerScheduler.vue";
 
 export default {
     name: "VillaProfile",
@@ -159,6 +167,7 @@ export default {
         VillaOwnerPassChange,
         VillaOwnerDeletion,
         ServiceCharts,
+        ServiceOwnerScheduler,
     },
     data() {
         return {

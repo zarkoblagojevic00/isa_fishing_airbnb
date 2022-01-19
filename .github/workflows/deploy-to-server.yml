@@ -22,7 +22,7 @@ jobs:
           dotnet build Solution/Model.Build/ 
           sqlpackage /Action:Publish /SourceFile:Solution/Model.Build/bin/Debug/net5.0/Model.Build.dacpac /TargetConnectionString:"Server=localhost;Database=ISA;User Id=SA;Password=isaTEAM123@" 
           cd frontend 
-          echo "VUE_APP_ENV" > .env 
+          echo "VUE_APP_ENV=production" > .env 
           sudo npm install 
           cd .. 
           cd Solution 

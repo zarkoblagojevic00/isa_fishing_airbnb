@@ -9,7 +9,7 @@
                 title: false,
                 drag: false,
                 resize: false,
-                delete: true,
+                delete: false,
                 create: false,
             }"
             :timeFrom="0"
@@ -71,10 +71,6 @@ export default {
 };
 </script>
 <style>
-.vuecal__event {
-    background-color: rgba(58, 207, 78, 0.35);
-}
-
 .reservation {
     background-color: rgba(255, 243, 139, 0.35);
 }

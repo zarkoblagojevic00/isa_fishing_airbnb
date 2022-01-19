@@ -368,7 +368,20 @@ namespace API.Controllers
             availabilityPeriod.PeriodEnd = availabilityPeriod.PeriodEnd.ToLocalTime();
 
             var unavailabilityService = new UserUnavailabilityValidationService(UoW);
-            bool canPeriodBeAdded = unavailabilityService.CanUnavailabilityPeriodBeAdded(userId, availabilityPeriod.PeriodStart, availabilityPeriod.PeriodEnd);
+
+
+            var allReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll();
+
+            var ownerServices = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == userId);
+
+            var reservations = unavailabilityService.FindReservationsForOwnerInPeriod(allReservations, ownerServices, availabilityPeriod.PeriodStart, availabilityPeriod.PeriodEnd);
+            var promoActions = unavailabilityService.GetAllPromoActionsForOwnerInPeriod(userId, availabilityPeriod.PeriodStart, availabilityPeriod.PeriodEnd);
+            var userAvailabilities = unavailabilityService.GetAllUnavailabilityPeriods(userId, availabilityPeriod.PeriodStart, availabilityPeriod.PeriodEnd);
+
+            bool canPeriodBeAdded = unavailabilityService.CanUnavailabilityPeriodBeAdded(reservations, promoActions, userAvailabilities);
 
             if (!canPeriodBeAdded)
             {

@@ -89,6 +89,7 @@ export default {
         await this.loadQuickActions();
         await this.loadAvailabilityPeriods();
         await this.loadReservations();
+        console.log(this.events);
     },
     methods: {
         onEventDeleted(event) {
@@ -127,19 +128,23 @@ export default {
             };
             axios
                 .post("/api/Instructor/AddInstructorAvailabilityPeriod", period)
-                .then(() => {
-                    this.loadAvailabilityPeriods();
+                .then(async () => {
+                    await this.loadQuickActions();
+                    await this.loadAvailabilityPeriods();
+                    await this.loadReservations();
                 })
-                .catch((error) => {
+                .catch(async (error) => {
                     if (error.response) {
                         this.$swal.fire(error.response.data);
                         // Request made and server responded
-                        this.loadAvailabilityPeriods();
+                        await this.loadQuickActions();
+                        await this.loadAvailabilityPeriods();
+                        await this.loadReservations();
                     }
                 });
         },
         async deleteAvailabilityPeriod(event) {
-            if (event.class != "unavailable-slot") {
+            if (event.class != "unavailable-slots") {
                 this.$swal.fire("Cannot delete reservation or quick action.");
                 this.events = [];
                 await this.loadQuickActions();
@@ -166,8 +171,8 @@ export default {
                 return {
                     start: new Date(period.periodStart),
                     end: new Date(period.periodEnd),
-                    title: period.status ? "Available" : "Unavailable",
-                    class: period.status ? "free-slot" : "unavailable-slot",
+                    title: "Unavailable",
+                    class: "unavailable-slots",
                 };
             });
             this.events = this.events.concat(this.quickActions);
@@ -221,14 +226,10 @@ export default {
 </script>
 <style>
 .vuecal__event {
-    background-color: rgba(58, 207, 78, 0.35);
+    background-color: rgba(207, 58, 58, 0.35);
 }
 
-.free-slot {
-    background-color: rgba(58, 207, 78, 0.35);
-}
-
-.unavailable-slot {
+.unavailable-slots {
     background-color: rgba(207, 58, 58, 0.35);
 }
 

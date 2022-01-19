@@ -44,29 +44,29 @@ namespace IntegrationTests
             systemConfig.Value.ShouldBe("13");
         }
 
-        [Fact]
-        public void Should_Be_Able_To_Accept_Mark_Request()
-        {
-            var admin = InsertUserInfo("integrationTestAdmin", UserType.Admin);
-            var mark = InsertMarkInfo();
-            var markRequest = new UserMarkInformationDTO
-            {
-                Mark = 5.0,
-                Email = "maraipera1@gmail.com",
-                MarkId = mark.MarkId
-            };
-            AddCookie("userId", admin.UserId.ToString(), "localhost");
-            AddCookie("email", admin.Email, "localhost");
+        //[Fact]
+        //public void Should_Be_Able_To_Accept_Mark_Request()
+        //{
+        //    var admin = InsertUserInfo("integrationTestAdmin", UserType.Admin);
+        //    var mark = InsertMarkInfo();
+        //    var markRequest = new UserMarkInformationDTO
+        //    {
+        //        Mark = 5.0,
+        //        Email = "maraipera1@gmail.com",
+        //        MarkId = mark.MarkId
+        //    };
+        //    AddCookie("userId", admin.UserId.ToString(), "localhost");
+        //    AddCookie("email", admin.Email, "localhost");
 
-            var response = Client.PutAsync(BaseUrl + "Admin/ApproveMarkRequest", GetContent(markRequest))
-                .GetAwaiter()
-                .GetResult();
+        //    var response = Client.PutAsync(BaseUrl + "Admin/ApproveMarkRequest", GetContent(markRequest))
+        //        .GetAwaiter()
+        //        .GetResult();
 
-            response.IsSuccessStatusCode.ShouldBe(true);
-            var updatedMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
+        //    response.IsSuccessStatusCode.ShouldBe(true);
+        //    var updatedMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
 
-            updatedMark.IsApproved.ShouldBe(true);
-        }
+        //    updatedMark.IsApproved.ShouldBe(true);
+        //}
 
         [Fact]
         public void Should_Be_Able_To_Delete_Service()
@@ -86,7 +86,7 @@ namespace IntegrationTests
             response.IsSuccessStatusCode.ShouldBe(true);
 
             var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
-                .Where(ser => ser.Name == "testService");
+                .Where(ser => ser.Name == "testService" && ser.OwnerId == instructor.UserId);
 
             services.Count().ShouldBe(0);
 

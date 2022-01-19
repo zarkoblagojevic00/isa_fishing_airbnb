@@ -131,5 +131,36 @@ namespace IntegrationTests.Base
             UoW.Commit();
             return mark;
         }
+
+        public void ClearUserUnavailabilities(int userId)
+        {
+            var userAvailabilities = UoW.GetRepository<IUserAvailabilityReadRepository>()
+                .GetAll()
+                .Where(av => av.UserId == userId);
+
+            if (!userAvailabilities.Any())
+                return;
+
+            UoW.BeginTransaction();
+            foreach(var period in userAvailabilities)
+            {
+                UoW.GetRepository<IUserAvailabilityWriteRepository>().Delete(period);
+            }
+            UoW.Commit();
+        }
+
+        public void InsertUnavailabilityPeriod(int userId, DateTime start, DateTime end)
+        {
+            UserAvailability availability = new UserAvailability
+            {
+                UserId = userId,
+                PeriodStart = start,
+                PeriodEnd = end,
+                Status = false,
+            };
+            UoW.BeginTransaction();
+            UoW.GetRepository<IUserAvailabilityWriteRepository>().Add(availability);
+            UoW.Commit();
+        }
     }
 }

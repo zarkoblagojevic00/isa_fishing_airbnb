@@ -5,10 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Repositories;
 using Domain.UnitOfWork;
+using Mailjet.Client;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using Mailjet.Client.Resources;
+using Newtonsoft.Json.Linq;
 
 namespace Services
 {
@@ -37,11 +40,59 @@ namespace Services
 
         public void Send()
         {
+            if (Environment.GetEnvironmentVariable("IsOnServer") != "true")
+            {
+                SendDev();
+            }
+            else
+            {
+                SendProd();
+            }
+        }
+
+        private void SendDev()
+        {
             var client = ConfigureClient();
             var email = CreateMail();
 
             client.Send(email);
             client.Disconnect(true);
+        }
+
+        private void SendProd()
+        {
+            var client = new MailjetClient(Environment.GetEnvironmentVariable("ApiKey"),
+                Environment.GetEnvironmentVariable("ApiSecret"));
+            var request = new MailjetRequest()
+            {
+                Resource = Mailjet.Client.Resources.Send.Resource
+            };
+            request.Property(Mailjet.Client.Resources.Send.Messages, new JArray
+            {
+                new JObject {
+                    {
+                        "FromEmail",
+                        "zamisr.isa@gmail.com"
+                    }, {
+                        "To",
+                        Receiver
+                    }, {
+                        "Subject",
+                        Title
+                    }, {
+                        "HTMLPart",
+                        Body
+                    }, {
+                        "CustomID",
+                        "Id"
+                    }
+                }
+            });
+            var response = client.PostAsync(request).GetAwaiter().GetResult();
+            if (!response.IsSuccessStatusCode)
+            {
+                SendDev();
+            }
         }
 
         private SmtpClient ConfigureClient()

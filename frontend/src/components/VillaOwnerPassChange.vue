@@ -58,8 +58,10 @@
 </template>
 
 <script>
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "VillaOwnerPassChange",
+    mixins: [swalCommons],
     data() {
         return {
             oldPassword: "",
@@ -125,7 +127,10 @@ export default {
                         vue.oldPassword = "";
                         vue.newPassword = "";
                         vue.confirmNewPassword = "";
-                        alert("Password successfully updated!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Password successfully updated!",
+                        });
                         return "";
                     } else {
                         return resp.text();
@@ -143,7 +148,12 @@ export default {
                     }
 
                     if (error.constructor == "".constructor) {
-                        alert("Something went wrong!\nError message: " + error);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " +
+                                error,
+                        });
                     } else {
                         for (let err in error) {
                             for (let innerErr of error[err]) {

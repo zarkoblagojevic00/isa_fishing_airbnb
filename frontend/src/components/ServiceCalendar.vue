@@ -139,6 +139,7 @@
 import "../../node_modules/vue-simple-calendar/dist/style.css";
 import "../../node_modules/vue-simple-calendar/static/css/default.css";
 import "../../node_modules/vue-simple-calendar/static/css/holidays-us.css";
+import swalCommons from "../mixins/swal-commons.js";
 import {
     CalendarView,
     CalendarViewHeader,
@@ -151,6 +152,7 @@ export default {
         CalendarView,
         CalendarViewHeader,
     },
+    mixins: [swalCommons],
     props: {
         serviceMode: String,
     },
@@ -259,7 +261,11 @@ export default {
                 .then((data) => {
                     var stringConstructor = "test".constructor;
                     if (data.constructor == stringConstructor) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
                     vue.allServices = new Array();
@@ -293,7 +299,11 @@ export default {
                 .then((data) => {
                     let strconst = "test".constructor;
                     if (data.constructor == strconst) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
 
@@ -368,9 +378,12 @@ export default {
 
                     let strconstructor = "test".constructor;
                     if (strconstructor == parsed.constructor) {
-                        alert(
-                            "Something went wrong!\nError message: " + parsed
-                        );
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " +
+                                parsed,
+                        });
                         return;
                     }
                     vue.user = parsed;
@@ -388,11 +401,17 @@ export default {
             };
 
             if (dto.reservationId == undefined) {
-                alert("You need to select the reservation first!");
+                vue.toast.fire({
+                    icon: "error",
+                    title: "You need to select the reservation first!",
+                });
                 return;
             }
             if (dto.reportText == undefined || dto.reportText.length == 0) {
-                alert("Report text cannot be empty!");
+                vue.toast.fire({
+                    icon: "error",
+                    title: "Report text cannot be empty!",
+                });
                 return;
             }
 
@@ -443,7 +462,12 @@ export default {
                         error = data;
                     }
                     if (error.constructor == strconst) {
-                        alert("Something went wrong!\nError message: " + error);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " +
+                                error,
+                        });
                     } else {
                         let errors = "";
                         let values = Object.keys(error).map(function (key) {

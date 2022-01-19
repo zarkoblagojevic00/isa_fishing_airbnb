@@ -34,8 +34,10 @@
 </template>
 
 <script>
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "BoatImages",
+    mixins: [swalCommons],
     props: {
         changeMode: Function,
         boatId: Number,
@@ -78,10 +80,12 @@ export default {
             )
                 .then((response) => {
                     if (response.status != 200) {
-                        alert(
-                            "Something went wrong!\nStatus code: " +
-                                response.status
-                        );
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nStatus code: " +
+                                response.status,
+                        });
                         throw "";
                     }
                     return response.json();
@@ -103,9 +107,12 @@ export default {
                 if (response.status == 200) {
                     vue.PullData();
                 } else {
-                    alert(
-                        "Something went wrong!\nStatus code: " + response.status
-                    );
+                    vue.toast.fire({
+                        icon: "error",
+                        title:
+                            "Something went wrong!\nStatus code: " +
+                            response.status,
+                    });
                 }
             });
         },
@@ -118,7 +125,7 @@ export default {
                     imageAsBase64: temp,
                 });
             }
-
+            let vue = this;
             for (let img of newImages) {
                 await fetch("/api/Image/AddImage", {
                     method: "POST",
@@ -130,10 +137,12 @@ export default {
                     body: JSON.stringify(img),
                 }).then((response) => {
                     if (response.status != 200) {
-                        alert(
-                            "Something went wrong!\nStatus code: " +
-                                response.status
-                        );
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nStatus code: " +
+                                response.status,
+                        });
                     }
                 });
             }

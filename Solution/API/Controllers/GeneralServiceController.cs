@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Attributes;
+﻿using API.Attributes;
 using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
@@ -12,11 +6,14 @@ using Domain.Entities.Helpers;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
-using NHibernate;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Constants;
 using Services.HtmlWriter;
 using Services.Validators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace API.Controllers
 {
@@ -153,7 +150,104 @@ namespace API.Controllers
 
             return Ok(Responses.Ok);
         }
-        
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult CreateClientReservation(ClientNewReservationDTO reservationDto)
+        {
+            int userId = GetUserIdFromCookie();
+
+            if (userId != reservationDto.UserId)
+            {
+                return Unauthorized(Responses.UserReservationNotLinked);
+            }
+
+            UoW.BeginTransaction();
+
+            PromoAction promo = null;
+            Service service = null;
+            
+            // if PromoAction
+            if (reservationDto.PromoId > 0)
+            {
+                try
+                {
+                    promo = new PromoActionLocker(UoW).ObtainLockedPromoAction(reservationDto.PromoId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (promo.IsTaken)
+                {
+                    return BadRequest(Responses.PromoAlreadyTaken);
+                }
+                promo.IsTaken = true;
+                UoW.GetRepository<IPromoActionWriteRepository>().Update(promo);
+            }
+            // if Service
+            else {
+                try
+                {
+                    service = new ServiceLocker(UoW).ObtainLockedService(reservationDto.ServiceId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (service.AvailableTo != null && service.AvailableFrom != null)
+                {
+                    if (!(service.AvailableFrom <= reservationDto.StartDateTime &&
+                          service.AvailableTo >= reservationDto.EndDateTime))
+                    {
+                        return BadRequest(Responses.ServiceNotAvailableAtGivenTime);
+                    }
+                }
+
+                var union = GetRelevantDateIntervals(service.ServiceId, userId);
+                var intervalToCheck = new CalendarItem()
+                {
+                    StartDateTime = reservationDto.StartDateTime,
+                    EndDateTime = reservationDto.EndDateTime
+                };
+
+                var overlaps = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(intervalToCheck, union);
+                if (overlaps)
+                {
+                    return BadRequest(Responses.DatesOverlap);
+                }
+            }
+
+            try
+            {
+                var newReservation = new Reservation()
+                {
+                    UserId = userId,
+                    ServiceId = reservationDto.ServiceId,
+                    ReservedDateTime = DateTime.Now,
+                    AdditionalEquipment = reservationDto.AdditionalEquipment,
+                    Price = reservationDto.Price,
+                    StartDateTime = reservationDto.StartDateTime,
+                    EndDateTime = reservationDto.EndDateTime,
+                    IsPromo = promo != null,
+                }; ;
+
+                UoW.GetRepository<IReservationWriteRepository>().Add(newReservation);
+
+                UoW.Commit();
+
+                NotifyUser(newReservation, service, UoW.GetRepository<IUserReadRepository>().GetById(userId));
+            }
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeServiceOwnerAttribute))]
         public IActionResult CreateReservationForUser(NewReservationDTO reservationDto)
@@ -182,7 +276,7 @@ namespace API.Controllers
             {
                 return BadRequest(Responses.UnavailableRightNow);
             }
-            
+
             if (service.AvailableTo != null && service.AvailableFrom != null)
             {
                 if (!(service.AvailableFrom <= reservationDto.StartDateTime &&

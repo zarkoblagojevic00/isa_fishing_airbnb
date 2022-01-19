@@ -2,7 +2,7 @@
     <div class="container">
         <h1>Villas</h1>
         <ServiceFinder
-            class="sidebar"
+            class="sidebar vertical-scroll-no-bar"
             :title="isRegistered ? 'Book villa' : 'Search villas by'"
             :search="onSearch"
             @filtered="onFiltered"
@@ -16,6 +16,8 @@
                     v-for="(villa, idx) in villas"
                     :key="idx"
                     :villa="villa"
+                    :fromDate="reservationFromDate"
+                    :toDate="reservationToDate"
                 ></VillaExpoItem>
             </div>
             <SearchNoResults v-else></SearchNoResults>
@@ -55,7 +57,6 @@ export default {
 };
 </script>
 
-<style src="../styles/form.css"></style>
 <style scoped>
 .container {
     max-width: 80%;

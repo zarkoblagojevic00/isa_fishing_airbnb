@@ -45,6 +45,7 @@
                 <div class="ammenity">Wi-Fi</div>
                 <div class="ammenity">Pet friendly</div>
                 <button
+                    v-if="isRegistered"
                     class="clickable primary transition-ease book-service"
                     @click.stop="openBookServiceDialog"
                 >
@@ -57,22 +58,35 @@
 
 <script>
 import fetchImageBackground from "../mixins/fetch-image-bg.js";
-import StarRating from "vue-star-rating";
+import roleValidator from "../mixins/role-validator.js";
 import vnodeInSwal from "../mixins/vnode-in-swal.js";
+import swalCommons from "../mixins/swal-commons.js";
+import StarRating from "vue-star-rating";
 import BookVilla from "./BookVilla.ce.vue";
+import generalService from "../services/general-service.js";
+import { getId } from "../utils/local-storage-util.js";
 
 export default {
     name: "VillaExpoItem",
     components: {
         StarRating,
     },
-    mixins: [fetchImageBackground, vnodeInSwal],
+    mixins: [fetchImageBackground, roleValidator, vnodeInSwal, swalCommons],
     props: {
         villa: {
             type: Object,
             required: true,
         },
+        fromDate: {
+            type: Date,
+            required: true,
+        },
+        toDate: {
+            type: Date,
+            required: true,
+        },
     },
+
     methods: {
         showDetails() {
             localStorage.setItem("villa", JSON.stringify(this.villa));
@@ -81,39 +95,33 @@ export default {
         openBookServiceDialog() {
             this.showComponent(
                 BookVilla,
-                { villa: this.villa },
                 {
-                    showCancelButton: true,
-                    confirmButtonText: "Book",
-                    cancelButtonText: "Cancel",
-                    showCloseButton: true,
-                    showLoaderOnConfirm: true,
-                    buttonsStyling: false,
-                    showClass: {
-                        popup: "animated fadeInDown",
-                    },
-                    hideClass: {
-                        popup: "animated fadeOut faster",
-                    },
-                    customClass: {
-                        popup: "modal-popup",
-                        htmlContainer: "modal-content",
-                        actions: "modal-actions",
-                        confirmButton:
-                            "clickable primary transition-ease modal-button",
-                        cancelButton:
-                            "clickable danger transition-ease modal-button",
-                    },
+                    villa: this.villa,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                    userId: getId(),
                 },
-                (sawlRes, componentRes) => {
-                    console.log(sawlRes, componentRes);
+                this.bookSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    this.handleReservationResult(componentRes);
                 }
             );
+        },
+        async handleReservationResult(componentRes) {
+            try {
+                await generalService.makeReservation(componentRes);
+                this.toast.fire({
+                    icon: "success",
+                    title: "You reservation was successful. Check your email for reservation details!",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Service was made unavailable or was reserved before you finished reservation",
+                });
+            }
         },
     },
 };
 </script>
-
-<style src="../styles/form.css"></style>
-<style src="../styles/expo.css"></style>
-<style src="../styles/book.css"></style>

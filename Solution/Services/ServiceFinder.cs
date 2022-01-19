@@ -21,7 +21,7 @@ namespace Services
             UoW = uoW;
         }
 
-        public IEnumerable<FutureServiceAvailability> FindServices(ServiceSearchParameters @params)
+        public IEnumerable<FutureServiceAvailability> FindServices(ServiceSearchParameters @params, int userId)
         {
             var services = UoW.GetRepository<IServiceReadRepository>().GetAll().Where(service => service.ServiceType == serviceType);
             var futureReservations = UoW.GetRepository<IReservationReadRepository>().GetAll().Where(res => res.StartDateTime > DateTime.Now);
@@ -29,13 +29,45 @@ namespace Services
                 service,
                 UoW.GetRepository<ICityReadRepository>().GetById(service.CityId).Name,
                 new AverageMarkCalculator(UoW).CalculateAverageMark(service.ServiceId),
-                futureReservations.Where(res => res.ServiceId == service.ServiceId)
+                GetRelevantDateIntervals(service.ServiceId, userId)
                 )
             );
 
             return futureServiceAvailabilities.Where(ser => ser.IsAvailable(@params));
         }
 
-        
+        private IEnumerable<CalendarItem> GetRelevantDateIntervals(int serviceId, int userId)
+        {
+            var userReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.UserId == userId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            var serviceQuickActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(x => x.ServiceId == serviceId && x.EndDateTime > DateTime.Now)
+                .Select(x => new CalendarItem()
+                {
+                    StartDateTime = x.StartDateTime,
+                    EndDateTime = x.EndDateTime
+                });
+
+            return userReservations.Union(serviceReservations).Union(serviceQuickActions);
+        }
+
+
     }
 }

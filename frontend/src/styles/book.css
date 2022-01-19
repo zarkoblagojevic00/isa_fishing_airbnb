@@ -1,5 +1,5 @@
 div.modal-popup {
-    width: 35%;
+    width: 38%;
     font-family: Verdana;
 }
 
@@ -8,13 +8,15 @@ div.modal-popup:last-child {
 }
 
 div.modal-content {
-    min-height: 75vh;
+    min-height: 80vh;
     margin: 0;
+    overflow: hidden;
 }
 
 div.modal-actions {
     width: 100%;
     height: 40%;
+    margin: 0;
 }
 
 button.modal-button  {
@@ -42,15 +44,139 @@ div.book-container .img-container {
     border-radius: 5px;
 }
 
-.img-title {
+.img-primary-content {
     margin: 0;
     font-size: 1.4rem;
-    padding: 2.5em 0 1.1em 0;
+    padding: 1em;
     width: 100%;
     color: #eee;
-    background: -webkit-linear-gradient(to top, black, transparent); 
-    background:    -moz-linear-gradient(to top, black, transparent); 
-    background:     -ms-linear-gradient(to top, black, transparent); 
-    background:      -o-linear-gradient(to top, black, transparent); 
-    background:         linear-gradient(to top, black, transparent);
+    background: -webkit-linear-gradient(to top, #000, transparent); 
+    background:    -moz-linear-gradient(to top, #000, transparent); 
+    background:     -ms-linear-gradient(to top, #000, transparent); 
+    background:      -o-linear-gradient(to top, #000, transparent); 
+    background:         linear-gradient(to top, #000, transparent);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.img-title-address {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.img-service-name {
+    margin-bottom: 0.3em;
+}
+.img-service-address {
+    font-size: 1rem;
+}
+
+.book-form-container {
+    padding: 1em;
+    min-height: 45vh;
+}
+
+.equip-cost {
+    min-height: 35vh;
+    max-height: 35vh;
+
+    padding: 0 0.25em;
+}
+
+.equip-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: max-content;
+    column-gap: 1em;
+}
+
+.book-title {
+    font-size: 1.4rem;
+    margin-bottom: 0.8em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid var(--control-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.date-picker-container {
+    width: 35%;
+    color: #ada;
+}
+
+.date-picker {
+    width: 88%;
+    margin: auto;
+}
+
+.date-picker-input {
+    background: transparent;
+    border:none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    cursor: not-allowed;
+}
+
+.calendar-icon {
+    float: left;
+}
+
+.equip-item {
+    font-size: 0.9rem;
+    margin-bottom: 0.4em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em;
+    height: 2em;
+    border-radius: 0.2em;
+}
+
+.equip-item:hover {
+    margin-bottom: 0.45em;
+    width: calc(100% - 0.8em);
+}
+
+.equip-item-right-end {
+    width: 100px;
+    height: 2em;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.money {
+    font-size: 0.8rem;
+    color: #999;
+    margin-right: 0.5em;
+    margin-top: 0.1em;
+}
+
+.equip-button {
+    height: 100%;
+    width: 1.75em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.final-cost {
+    font-size: 1.4rem;
+    margin-top: auto;
+    padding: 0.2em;
+    border-top: 1px solid var(--control-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.cost {
+    font-size: 1rem;
+    margin-bottom: 2px;
 }

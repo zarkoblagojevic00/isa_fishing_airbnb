@@ -93,6 +93,7 @@ const request = async (config) => {
         params: config.params,
         headers: {
             ...contentTypeHeader(config.contentType),
+            ...cookieHeader(),
         },
         responseType: config.responseType,
         withCredentials: true,
@@ -116,6 +117,10 @@ const request = async (config) => {
 
 const contentTypeHeader = (contentType) => ({
     "Content-Type": `${contentType}`,
+});
+
+const cookieHeader = () => ({
+    "Set-Cookie": document.cookie,
 });
 
 const JSONblobify = (obj) =>

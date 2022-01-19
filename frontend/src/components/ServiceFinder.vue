@@ -222,7 +222,6 @@ export default {
 </script>
 
 <style src="@vueform/slider/themes/default.css"></style>
-<style src="../styles/form.css"></style>
 <style scoped>
 .wrapper {
     width: 100%;

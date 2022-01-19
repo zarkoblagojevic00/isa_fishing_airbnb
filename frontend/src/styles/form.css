@@ -8,7 +8,7 @@
     --danger: #e96161;
     --danger-dark: #c43434;
     --control-border-color: #ddd;
-    --control-border-color-focused: #a8a8a8;
+    --control-border-color-focused: #a6a6a6;
     --control-invalid-color: #e96161;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .control:hover, .control:focus {
-    border: 1px solid var(--control-border-color-focused);
+    border-color: var(--control-border-color-focused);
 }
 
 .control::placeholder {
@@ -63,7 +63,7 @@
 }
 
 .control-invalid {
-    border: 1px solid var(--control-invalid-color);
+    border-color: var(--control-invalid-color);
     box-shadow: 0 0 4px var(--control-invalid-color);
 }
 
@@ -71,6 +71,17 @@
     color: var(--control-invalid-color);
     padding: 0.3em;
 }
+
+.control-disabled {
+    background: var(--control-border-color);
+    border-color: var(--control-border-color-focused);
+    color: var(--control-border-color-focused);
+}
+
+.control-disabled:hover {
+    cursor: not-allowed;
+}
+
 
 .clickable {
     outline: none;
@@ -136,6 +147,16 @@
     background: var(--primary-comp);
 }
 
+.danger-outline {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.danger-outline:hover, .danger-outline:focus-visible{
+    color: var(--white);
+    background: var(--danger);
+}
+
 .flex-container {
     display: flex;
     justify-content: space-between;
@@ -154,14 +175,20 @@
     float: left;
     overflow-x: wrap;
 
-    /* Scrollable with scrollbar hidden */
     max-height: 100vh;
+    
+}
+
+/* Scrollable with scrollbar hidden */
+.vertical-scroll-no-bar {
+    max-height: inherit;
+    padding: inherit;
     overflow-y: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
 }
 
-.sidebar::-webkit-scrollbar {
+.vertical-scroll-no-bar::-webkit-scrollbar {
     display: none;
 }
 

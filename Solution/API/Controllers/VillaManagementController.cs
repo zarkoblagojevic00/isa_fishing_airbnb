@@ -58,6 +58,13 @@ namespace API.Controllers
         public IActionResult SearchVillas(
             [FromQuery]ServiceSearchParametersDTO searchParams)
         {
+            int userId = -1;
+            try
+            {
+                userId = GetUserIdFromCookie();
+            } 
+            catch (Exception ignore) { };
+            
             ServiceSearchParameters @params = new()
             {
                 ServiceName = searchParams.Name ?? "",
@@ -68,7 +75,7 @@ namespace API.Controllers
                 Capacity = searchParams.Capacity,
             };
 
-            var availableServices = new ServiceFinder(ServiceType.Villa, UoW).FindServices(@params);
+            var availableServices = new ServiceFinder(ServiceType.Villa, UoW).FindServices(@params, userId);
 
             var additionalInformation = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll();
             var result = availableServices.Select(fut => fut.Service).Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()

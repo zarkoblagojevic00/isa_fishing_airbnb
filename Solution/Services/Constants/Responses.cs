@@ -47,5 +47,9 @@ namespace Services.Constants
         public static string MissingResponsibility = "Missing boat responsibility";
 
         public static string InstructorUnavailable = "Instructor unavailable at given time.";
+
+        public static string UserReservationNotLinked = "User can only create reservation for himself.";
+
+        public static string PromoAlreadyTaken = "PromoActionIsAlreadyTaken.";
     }
 }

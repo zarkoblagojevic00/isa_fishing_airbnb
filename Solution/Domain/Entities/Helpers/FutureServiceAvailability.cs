@@ -13,9 +13,9 @@ namespace Domain.Entities.Helpers
         public string LocationName { get; }
         public double AverageMark { get; }
 
-        public IEnumerable<Reservation> FutureReservations { get; }
+        public IEnumerable<CalendarItem> FutureReservations { get; }
 
-        public FutureServiceAvailability(Service service, string locationName, double averageMark, IEnumerable<Reservation> futureReservations)
+        public FutureServiceAvailability(Service service, string locationName, double averageMark, IEnumerable<CalendarItem> futureReservations)
         {
             Service = service;
             LocationName = locationName;

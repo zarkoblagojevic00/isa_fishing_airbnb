@@ -64,5 +64,3 @@ export default {
     },
 };
 </script>
-
-<style src="../styles/form.css"></style>

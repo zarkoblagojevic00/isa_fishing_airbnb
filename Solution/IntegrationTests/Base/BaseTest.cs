@@ -114,5 +114,22 @@ namespace IntegrationTests.Base
             }
             UoW.Commit();
         }
+
+        public Mark InsertMarkInfo()
+        {
+            Mark mark = new Mark
+            {
+                IsApproved = false,
+                IsReviewed = false,
+                Description = "test",
+                ServiceId = 1,
+                GivenMark = 5,
+                UserId = 1, 
+            };
+            UoW.BeginTransaction();
+            UoW.GetRepository<IMarkWriteRepository>().Add(mark);
+            UoW.Commit();
+            return mark;
+        }
     }
 }

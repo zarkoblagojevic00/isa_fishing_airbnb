@@ -244,6 +244,7 @@
 import "../../node_modules/vue-simple-calendar/dist/style.css";
 import "../../node_modules/vue-simple-calendar/static/css/default.css";
 import "../../node_modules/vue-simple-calendar/static/css/holidays-us.css";
+import swalCommons from "../mixins/swal-commons.js";
 import {
     CalendarView,
     CalendarViewHeader,
@@ -255,6 +256,7 @@ import "vue3-date-time-picker/dist/main.css";
 
 export default {
     name: "AddPromoAction",
+    mixins: [swalCommons],
     components: {
         CalendarView,
         CalendarViewHeader,
@@ -379,7 +381,10 @@ export default {
                         message = data;
                     }
                     if (message.constructor == strconst) {
-                        alert("Something went wrong!\n" + message);
+                        vue.toast.fire({
+                            icon: "error",
+                            title: "Something went wrong!\n" + message,
+                        });
                     } else {
                         vue.emails = message;
                     }
@@ -408,7 +413,11 @@ export default {
                 .then((data) => {
                     var stringConstructor = "test".constructor;
                     if (data.constructor == stringConstructor) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
                     vue.allServices = new Array();
@@ -443,7 +452,11 @@ export default {
                 .then((data) => {
                     let strconst = "test".constructor;
                     if (data.constructor == strconst) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
 
@@ -490,7 +503,11 @@ export default {
                 .then((data) => {
                     let strconst = "test".constructor;
                     if (data.constructor == strconst) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
                     let beginingNum = vue.items.length;
@@ -658,7 +675,10 @@ export default {
                     if (response.status == 200) {
                         vue.RefreshCalendar();
                         vue.SwitchToAddingMode();
-                        alert("Successfully configured promo actions!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Successfully configured promo actions!",
+                        });
                         return "";
                     } else {
                         return response.text();
@@ -747,7 +767,10 @@ export default {
             })
                 .then((response) => {
                     if (response.ok) {
-                        alert("Successfully created the reservation!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Successfully created the reservation!",
+                        });
                         return "";
                     } else {
                         return response.text();
@@ -771,7 +794,12 @@ export default {
                     let strconst = "".constructor;
                     if (strconst == error.constructor) {
                         vue.errors.push(error);
-                        alert("Something went wrong!\nError message: " + error);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " +
+                                error,
+                        });
                     }
                 });
         },
@@ -803,7 +831,10 @@ export default {
                     if (response.ok) {
                         vue.RefreshCalendar();
                         vue.selectedDate = ["", ""];
-                        alert("Successfully added the mark!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Successfully added the mark!",
+                        });
                         return "";
                     } else return response.text();
                 })

@@ -34,11 +34,13 @@
 <script>
 import { ref } from "vue";
 import Vue3ChartJs from "@j-t-mcc/vue3-chartjs";
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "ServiceCharts",
     components: {
         Vue3ChartJs,
     },
+    mixins: [swalCommons],
     props: {
         serviceType: String,
     },
@@ -148,7 +150,11 @@ export default {
                 .then((data) => {
                     var stringConstructor = "test".constructor;
                     if (data.constructor == stringConstructor) {
-                        alert("Something went wrong!\nError message: " + data);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
                     vue.allServices = new Array();
@@ -190,7 +196,11 @@ export default {
                         message = data;
                     }
                     if (message.constructor == "".constructor) {
-                        alert("Something went wrong!\n" + message);
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nError message: " + data,
+                        });
                         return;
                     }
                     vue.receivedBussinessSummary = message;

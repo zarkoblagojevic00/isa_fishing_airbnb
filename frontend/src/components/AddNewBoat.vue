@@ -265,12 +265,14 @@
 import Datepicker from "vue3-date-time-picker";
 import "vue3-date-time-picker/dist/main.css";
 import ServiceMap from "../components/ServiceMapComponent.vue";
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "AddNewBoat",
     props: {
         changeMode: Function,
         boatId: Number,
     },
+    mixins: [swalCommons],
     components: {
         Datepicker,
         ServiceMap,
@@ -461,16 +463,24 @@ export default {
             })
                 .then((response) => {
                     if (response.status != 200) {
-                        alert(
-                            "Something went wrong!\nStatus code: " +
-                                response.status
-                        );
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nStatus code: " +
+                                response.status,
+                        });
                         return response.text();
                     }
                     if (vue.mode == "Adding") {
-                        alert("Success! New boat has been created!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Success! New boat has been created!",
+                        });
                     } else {
-                        alert("Success! boat has been updated!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Success! The boat has been updated!",
+                        });
                     }
                     vue.changeMode("ViewBoats");
                     return "";
@@ -524,10 +534,12 @@ export default {
             )
                 .then((response) => {
                     if (response.status != 200) {
-                        alert(
-                            "Something went wrong!\nStatus code: " +
-                                response.status
-                        );
+                        vue.toast.fire({
+                            icon: "success",
+                            title:
+                                "Something went wrong!\nStatus code: " +
+                                response.status,
+                        });
                         throw "";
                     }
                     return response.json();
@@ -583,7 +595,10 @@ export default {
                     if (response.status != 200) {
                         return response.text();
                     } else {
-                        alert("Success! The boat has been deleted!");
+                        vue.toast.fire({
+                            icon: "success",
+                            title: "Success! The boat has been deleted!",
+                        });
                         vue.changeMode("ViewBoats");
                     }
                     return "";
@@ -592,8 +607,10 @@ export default {
                     if (data == undefined || data == "") {
                         return;
                     }
-
-                    alert(data);
+                    vue.toast.fire({
+                        icon: "error",
+                        title: data,
+                    });
                     vue.errors = new Array();
                     vue.errors.push(data);
                 });

@@ -10,8 +10,15 @@
             v-model:toDate="reservationToDate"
             :reservation="isRegistered"
         ></ServiceFinder>
+
         <div class="service-content">
             <div v-if="villas.length">
+                <Sorters
+                    :items="villas"
+                    :sortBy="sortBy"
+                    @sorted="onSorted"
+                ></Sorters>
+
                 <VillaExpoItem
                     v-for="(villa, idx) in villas"
                     :key="idx"
@@ -30,6 +37,8 @@ import villaService from "../services/villa-service.js";
 import VillaExpoItem from "../components/VillaExpoItem.vue";
 import ServiceFinder from "../components/ServiceFinder.vue";
 import SearchNoResults from "../components/SearchNoResults.vue";
+import Sorters from "../components/Sorters.vue";
+
 import roleValidatorMixin from "../mixins/role-validator.js";
 export default {
     name: "VillasExpo",
@@ -37,6 +46,7 @@ export default {
         VillaExpoItem,
         ServiceFinder,
         SearchNoResults,
+        Sorters,
     },
     mixins: [roleValidatorMixin],
 
@@ -45,12 +55,21 @@ export default {
             villas: [],
             reservationFromDate: null,
             reservationToDate: null,
+            sortBy: {
+                cityName: "Location",
+                name: "Service name",
+                averageMark: "Mark",
+                pricePerDay: "Price",
+            },
         };
     },
 
     methods: {
         onSearch: villaService.searchVillas,
         onFiltered(value) {
+            this.villas = value;
+        },
+        onSorted(value) {
             this.villas = value;
         },
     },

@@ -1,3 +1,7 @@
+.service-content {
+    display: inline-block;
+}
+
 .item-container {
     background-color: #fcfcfc;
     min-height: 26vh;
@@ -6,7 +10,9 @@
     border-radius: 5px;
     justify-content: center;
     align-items: center;
+    margin-bottom: 2em;
 }
+
 
 .item-container hr {
     width: 100%;

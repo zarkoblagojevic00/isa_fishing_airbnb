@@ -1,12 +1,12 @@
 <template>
     <div class="wrapper shadow-item">
-        <div class="title">{{ title }}</div>
+        <div class="search-title">{{ title }}</div>
         <form class="form-wrapper">
             <div v-if="reservation" class="step step-container">
                 1. Enter reservation details
                 <span class="step-explanation">required</span>
             </div>
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label">Reservation time</span>
                 <Datepicker
                     class="date-range"
@@ -23,7 +23,7 @@
                 >
             </div>
 
-            <div class="input-wrapper capacity">
+            <div class="control-wrapper capacity">
                 <span class="input-label">Number of people</span>
                 <NumInputRange
                     v-model="searchParams.capacity"
@@ -36,7 +36,7 @@
 
             <div v-if="reservation" class="step">2. Narrow your search</div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Price range
                     <span class="step-explanation">$/day</span>
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label">Mark</span>
                 <select
                     class="control transition-ease"
@@ -63,7 +63,7 @@
                 </select>
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Name
                     <span class="step-explanation">
@@ -79,7 +79,7 @@
                 />
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Location
                     <span class="step-explanation">
@@ -167,7 +167,7 @@ export default {
             minDate: moment().add(1, "days").toDate(),
             fromToDate: [
                 moment().add(20, "days").toDate(),
-                moment().add(30, "days").toDate(),
+                moment().add(25, "days").toDate(),
             ],
         };
     },
@@ -230,7 +230,7 @@ export default {
     background: #fdfdfd;
 }
 
-.title {
+.search-title {
     font-size: 1.4rem;
     text-align: left;
     margin-bottom: 1.3em;
@@ -243,6 +243,10 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     align-items: space-between;
+}
+
+.control-wrapper {
+    margin-bottom: 0.9em;
 }
 
 .step-container {

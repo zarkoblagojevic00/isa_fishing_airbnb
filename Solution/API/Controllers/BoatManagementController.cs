@@ -11,6 +11,7 @@ using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
 using Microsoft.AspNetCore.Mvc;
+using NHibernate;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation.PredefinedTransformations;
 using Services;
 using Services.Constants;
@@ -241,8 +242,16 @@ namespace API.Controllers
             }
 
             UoW.BeginTransaction();
-
-            var boatService = new ServiceLocker(UoW).ObtainLockedService(boat.BoatId.Value);
+            
+            var boatService = new Service();
+            try
+            {
+                boatService = new ServiceLocker(UoW).ObtainLockedService(boat.BoatId.Value);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
             var additionalInfo = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>()
                 .GetAll()
                 .First(x => x.ServiceId == boat.BoatId);
@@ -281,12 +290,12 @@ namespace API.Controllers
                 UoW.BeginTransaction();
 
                 var lockedService = new ServiceLocker(UoW).ObtainLockedService(boatId);
-                
+
                 var additionalInfo = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>()
                     .GetAll()
                     .First(x => x.ServiceId == boatId);
                 UoW.GetRepository<IAdditionalBoatServiceInfoWriteRepository>().Delete(additionalInfo);
-                
+
                 new DeleteService().DeleteAllInfoForService(boatId, UoW);
 
                 var navigationTools = UoW.GetRepository<ILinkNavigationBoatReadRepository>()
@@ -299,6 +308,10 @@ namespace API.Controllers
 
                 UoW.Commit();
                 return Ok();
+            }
+            catch (ADOException e)
+            {
+                return BadRequest(Responses.UnavailableRightNow);
             }
             catch (Exception e)
             {

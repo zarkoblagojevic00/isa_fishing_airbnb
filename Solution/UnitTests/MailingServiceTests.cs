@@ -28,7 +28,9 @@ namespace UnitTests
             builder.RegisterModule(new NHibernateModule()
             {
                 DbType = "SqlServer",
-                ConnectionString = "Data Source=localhost;Initial Catalog=ISA;Integrated Security=True",
+                ConnectionString = Environment.GetEnvironmentVariable("IsOnServer") != "true" 
+                    ? "Data Source=localhost;Initial Catalog=ISA;Integrated Security=True"
+                    : "Server=localhost;Database=ISA;User Id=SA;Password=isaTEAM123@",
                 MappingAssemblies = new List<Assembly>()
                 {
                     typeof(AccountDeletionRequestMap).Assembly

@@ -11,6 +11,7 @@ using Domain.Entities.Helpers;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
+using NHibernate;
 using Services;
 using Services.Constants;
 
@@ -326,7 +327,15 @@ namespace API.Controllers
 
             UoW.BeginTransaction();
             
-            var villaService = new ServiceLocker(UoW).ObtainLockedService(villa.VillaId.Value);
+            var villaService = new Service();
+            try
+            {
+                villaService = new ServiceLocker(UoW).ObtainLockedService(villa.VillaId.Value);
+            }
+            catch
+            {
+                return BadRequest(Responses.UnavailableRightNow);
+            }
             var additionalVillaInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>()
                 .GetAll().First(x => x.ServiceId == villa.VillaId.Value);
 
@@ -367,10 +376,14 @@ namespace API.Controllers
                 var additionalServiceInfo = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll()
                     .First(x => x.ServiceId == villaId);
                 UoW.GetRepository<IAdditionalVillaServiceInfoWriteRepository>().Delete(additionalServiceInfo);
-                
+
                 new DeleteService().DeleteAllInfoForService(villaId, UoW);
 
                 UoW.Commit();
+            }
+            catch (ADOException e)
+            {
+                return BadRequest(Responses.UnavailableRightNow);
             }
             catch (Exception e)
             {

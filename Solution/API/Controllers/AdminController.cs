@@ -404,6 +404,12 @@ namespace API.Controllers
         public IActionResult RespondToIssue(IssueInformationDTO issue)
         {
             var oldIssue = UoW.GetRepository<IIssueReadRepository>().GetById(issue.IssueId);
+
+            if(oldIssue == null)
+            {
+                return BadRequest("Issue not found.");
+            }
+
             oldIssue.IsReviewed = true;
 
 
@@ -435,25 +441,40 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult RespondAccountDeletionRequest(AccountDeletionRequestViewDTO request)
         {
-            var oldRequest = UoW.GetRepository<IAccountDeletionRequestReadRepository>().GetAll()
-                .Where(req => request.UserId == request.UserId).FirstOrDefault();
-            oldRequest.IsReviewed = true;
-            oldRequest.IsApproved = request.IsApproved;
-
+            var adminService = new AdminRequestsService(UoW);
 
             try
             {
-                bool deleted = false;
+                UoW.BeginTransaction();
+                AccountDeletionRequest oldRequest = new AccountDeletionRequest();
+                try
+                {
+                    oldRequest = new AccountDeletionRequestLocker(UoW).ObtainLockedAccountDeletionRequest(request.UserId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                oldRequest.IsReviewed = true;
+                oldRequest.IsApproved = request.IsApproved;
+
                 if (request.IsApproved)
                 {
-                    deleted = DeleteRequestedUser(request.UserId);
-                    if (!deleted)
+                    bool canBeDeleted = adminService.CanUserBeDeleted(request.UserId);
+                    
+                    if (!canBeDeleted)
                     {
-                        return BadRequest(Responses.CannotRequestDeletion);
+                        return BadRequest(Responses.UserCannotBeDeleted);
                     }
+
+                    var user = UoW.GetRepository<IUserReadRepository>().GetById(request.UserId);
+                    adminService.DeleteRequestedUser(user);
+
                 }
-                UoW.BeginTransaction();
+                
                 UoW.GetRepository<IAccountDeletionRequestWriteRepository>().Update(oldRequest);
+
                 UoW.Commit();
 
                 var mailService = new MailingService(UoW)
@@ -582,56 +603,6 @@ namespace API.Controllers
 
 
             return stringBuilder.ToString();
-        }
-
-        private bool DeleteRequestedUser(int userId)
-        {
-            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
-                            .Where(service => service.OwnerId == userId);
-
-            var userReservationDates = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && x.UserId == userId && !x.IsCanceled);
-
-            var ownerReservationDates = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && services.Any(service => service.ServiceId == x.ServiceId) && !x.IsCanceled);
-
-
-            if (userReservationDates.Any() || ownerReservationDates.Any())
-            {
-                return false;
-            }
-
-            try
-            {
-
-                UoW.BeginTransaction();
-
-                var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
-                    .FirstOrDefault(x => x.UserId == userId);
-
-                var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
-
-                if (user.UserType == UserType.Admin)
-                {
-                    UoW.Rollback();
-                    return false;
-                }
-
-                if (additionalInstructorInfo != null)
-                    UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>().Delete(additionalInstructorInfo);
-
-                UoW.GetRepository<IUserWriteRepository>().Delete(user);
-
-                UoW.Commit();
-            }
-            catch (Exception e)
-            {
-                UoW.Rollback();
-                return false;
-            }
-            return true;
         }
     }
 }

@@ -42,6 +42,8 @@ namespace Services.Constants
 
         public static string CannotRequestDeletion = "You cannot request account deletion because you have reservations in the future.";
 
+        public static string UserCannotBeDeleted = "User cannot be deleted.";
+
         public static string UnavailableRightNow = "Service you are trying to reach is unavailable right now.";
 
         public static string MissingResponsibility = "Missing boat responsibility";

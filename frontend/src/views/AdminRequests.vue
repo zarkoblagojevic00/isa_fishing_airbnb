@@ -215,9 +215,23 @@ export default {
                     this.$swal.fire("Successfully saved.");
                     this.loadRequests("2");
                 })
-                .catch((error) => {
+                // .catch((error) => {
+                //     if (error.response) {
+                //         this.$swal.fire(error.response.data);
+                //     }
+                // });
+                .catch(function (error) {
                     if (error.response) {
-                        this.$swal.fire(error.response.data);
+                        // Request made and server responded
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log("Error", error.message);
                     }
                 });
         },
@@ -242,18 +256,10 @@ export default {
                             )
                             .then(() => this.loadRequests("2"))
 
-                            .catch(function (error) {
+                            .catch((error) => {
                                 if (error.response) {
                                     // Request made and server responded
-                                    console.log(error.response.data);
-                                    console.log(error.response.status);
-                                    console.log(error.response.headers);
-                                } else if (error.request) {
-                                    // The request was made but no response was received
-                                    console.log(error.request);
-                                } else {
-                                    // Something happened in setting up the request that triggered an Error
-                                    console.log("Error", error.message);
+                                    this.$swal.fire(error.response.data);
                                 }
                             });
                     },

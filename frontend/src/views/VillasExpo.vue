@@ -6,8 +6,6 @@
             :title="isRegistered ? 'Book villa' : 'Search villas by'"
             :search="onSearch"
             @filtered="onFiltered"
-            v-model:fromDate="reservationFromDate"
-            v-model:toDate="reservationToDate"
             :reservation="isRegistered"
         ></ServiceFinder>
 
@@ -23,8 +21,6 @@
                     v-for="(villa, idx) in villas"
                     :key="idx"
                     :villa="villa"
-                    :fromDate="reservationFromDate"
-                    :toDate="reservationToDate"
                 ></VillaExpoItem>
             </div>
             <SearchNoResults v-else></SearchNoResults>
@@ -53,8 +49,6 @@ export default {
     data() {
         return {
             villas: [],
-            reservationFromDate: null,
-            reservationToDate: null,
             sortBy: {
                 cityName: "Location",
                 name: "Service name",

@@ -14,6 +14,8 @@
                     range
                     twoCalendars
                     placeholder="Select a date range"
+                    :partialRange="false"
+                    :clearable="false"
                     :enableTimePicker="false"
                     :minDate="minDate"
                     :inputClassName="isValidDatePicker ? '' : 'control-invalid'"
@@ -140,20 +142,21 @@ export default {
             type: Function,
             required: true,
         },
-        fromDate: {
-            type: Date,
-            default: moment().add(1, "days").toDate(),
-        },
-        toDate: {
-            type: Date,
-            default: moment().add(8, "days").toDate(),
-        },
         reservation: {
             type: Boolean,
             default: false,
         },
     },
     data() {
+        const fromDateString = localStorage.getItem("fromDate");
+        const toDateString = localStorage.getItem("toDate");
+
+        const fDate = fromDateString
+            ? new Date(Date.parse(fromDateString))
+            : moment().add(20, "days").toDate();
+        const tDate = toDateString
+            ? new Date(Date.parse(toDateString))
+            : moment().add(25, "days").toDate();
         return {
             searchParams: {
                 name: "",
@@ -165,10 +168,7 @@ export default {
             },
             fromToPrice: [10, 60],
             minDate: moment().add(1, "days").toDate(),
-            fromToDate: [
-                moment().add(20, "days").toDate(),
-                moment().add(25, "days").toDate(),
-            ],
+            fromToDate: [fDate, tDate],
         };
     },
 
@@ -178,6 +178,8 @@ export default {
 
     methods: {
         async onSearch() {
+            localStorage.setItem("fromDate", this.fromToDate[0]);
+            localStorage.setItem("toDate", this.fromToDate[1]);
             if (!this.isValidDatePicker) {
                 alert("Please insert all the required data in valid format!");
                 return;
@@ -200,22 +202,6 @@ export default {
     computed: {
         isValidDatePicker() {
             return this.fromToDate && this.fromToDate[1];
-        },
-    },
-
-    watch: {
-        fromToDate: {
-            handler(newValue, oldValue) {
-                console.log(oldValue);
-                if (!newValue) {
-                    this.$emit("update:fromDate", null);
-                    this.$emit("update:toDate", null);
-                } else {
-                    this.$emit("update:fromDate", newValue[0]);
-                    this.$emit("update:toDate", newValue[1]);
-                }
-            },
-            immediate: true,
         },
     },
 };

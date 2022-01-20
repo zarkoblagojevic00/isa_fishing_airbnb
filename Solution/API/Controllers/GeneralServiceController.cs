@@ -206,7 +206,7 @@ namespace API.Controllers
                     }
                 }
 
-                var union = GetRelevantDateIntervals(service.ServiceId, userId);
+                var union = GetRelevantDateIntervalsService(service.ServiceId);
                 var intervalToCheck = new CalendarItem()
                 {
                     StartDateTime = reservationDto.StartDateTime,
@@ -216,7 +216,14 @@ namespace API.Controllers
                 var overlaps = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(intervalToCheck, union);
                 if (overlaps)
                 {
-                    return BadRequest(Responses.DatesOverlap);
+                    return BadRequest("Services " + Responses.DatesOverlap);
+                }
+
+                union = GetRelevantIntervalsUser(userId);
+                overlaps = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(intervalToCheck, union);
+                if (overlaps)
+                {
+                    return BadRequest("Users " + Responses.DatesOverlap);
                 }
             }
 
@@ -299,7 +306,7 @@ namespace API.Controllers
                     return BadRequest(Responses.DatesOverlap);
             }
 
-            var union = GetRelevantDateIntervals(service.ServiceId, user.UserId);
+            var union = GetRelevantDateIntervalsService(service.ServiceId);
             var intervalToCheck = new CalendarItem()
             {
                 StartDateTime = reservationDto.StartDateTime,
@@ -309,7 +316,14 @@ namespace API.Controllers
             var overlaps = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(intervalToCheck, union);
             if (overlaps)
             {
-                return BadRequest(Responses.DatesOverlap);
+                return BadRequest("Services " + Responses.DatesOverlap);
+            }
+
+            union = GetRelevantIntervalsUser(user.UserId);
+            overlaps = new ValidateReservationDatesService().CalendarItemOverlapsWithAny(intervalToCheck, union);
+            if (overlaps)
+            {
+                return BadRequest("Users " + Responses.DatesOverlap);
             }
 
             try
@@ -580,7 +594,7 @@ namespace API.Controllers
             mailingService.Send();
         }
 
-        private IEnumerable<CalendarItem> GetRelevantDateIntervals(int serviceId, int userId)
+        private IEnumerable<CalendarItem> GetRelevantIntervalsUser(int userId)
         {
             var userReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
@@ -590,7 +604,11 @@ namespace API.Controllers
                     StartDateTime = x.StartDateTime,
                     EndDateTime = x.EndDateTime
                 });
+            return userReservations;
+        }
 
+        private IEnumerable<CalendarItem> GetRelevantDateIntervalsService(int serviceId)
+        {
             var serviceReservations = UoW.GetRepository<IReservationReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId == serviceId && !x.IsCanceled && x.EndDateTime > DateTime.Now)
@@ -609,7 +627,7 @@ namespace API.Controllers
                     EndDateTime = x.EndDateTime
                 });
 
-            return userReservations.Union(serviceReservations).Union(serviceQuickActions);
+            return serviceReservations.Union(serviceQuickActions);
         }
 
         private IEnumerable<CalendarItem> GetServiceRelevantDates(int serviceId)

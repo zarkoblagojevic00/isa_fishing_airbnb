@@ -227,15 +227,6 @@
                     placeholder="Not required"
                 ></textarea>
             </div>
-            <div class="input-wrapper">
-                <span class="label">Additional equipment:</span>
-                <textarea
-                    class="input-textarea"
-                    type="text"
-                    v-model="additionalEquipment"
-                    placeholder="Not required"
-                ></textarea>
-            </div>
             <div class="horizontal-wrapper" v-if="mode == 'Editing'">
                 <button class="submit-btn" @click="changeMode('BoatImages')">
                     View images
@@ -251,6 +242,38 @@
                         *{{ error }}
                     </li>
                 </ul>
+            </div>
+            <div class="input-wrapper">
+                <span class="label">Additional equipment:</span>
+                <div class="horizontal">
+                    <div class="horizontal-part left">
+                        <input
+                            type="text"
+                            placeholder="Name:"
+                            class="equipment-input"
+                            v-model="newTagName"
+                        />
+                    </div>
+                    <div class="horizontal-part">
+                        <input
+                            type="number"
+                            placeholder="Price:"
+                            class="equipment-input"
+                            v-model="newTagPrice"
+                        />
+                    </div>
+                </div>
+                <button class="add-equipment" @click="AddTag">Add</button>
+                <div class="tag-div">
+                    <div
+                        v-for="tag in additionalEquipmentArray"
+                        :key="tag.name"
+                        class="tag"
+                        @click="ClearTag(tag.name)"
+                    >
+                        {{ tag.name + ": " + tag.price }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -306,6 +329,11 @@ export default {
             selectedDate: ["", ""],
 
             showMap: false,
+
+            additionalEquipmentArray: [],
+
+            newTagName: "",
+            newTagPrice: "",
         };
     },
     mounted() {
@@ -430,7 +458,7 @@ export default {
                 Latitude: this.latitude,
                 PromoDescription: this.promoDescription,
                 TermsOfUse: this.termsOfUse,
-                AdditionalEquipment: this.additionalEquipment,
+                AdditionalEquipment: this.MergeAdditioanlEquipment(),
                 Address: this.address,
                 Capacity: this.capacity,
                 IsPercentageTakenFromCanceledReservations:
@@ -557,6 +585,7 @@ export default {
                     vue.promoDescription = data.promoDescription;
                     vue.termsOfUse = data.termsOfUse;
                     vue.additionalEquipment = data.additionalEquipment;
+                    vue.ParseAdditionalEquipment(data.additionalEquipment);
                     vue.imageIds = data.imageIds;
                     vue.numberOfEngines = data.engineNum;
                     vue.maxSpeed = data.speed;
@@ -621,6 +650,58 @@ export default {
         },
         TurnOfMap() {
             this.showMap = false;
+        },
+        ClearTag(tagName) {
+            for (let i = 0; i < this.additionalEquipmentArray.length; i++) {
+                if (this.additionalEquipmentArray[i].name == tagName) {
+                    this.additionalEquipmentArray.splice(i, 1);
+                    return;
+                }
+            }
+        },
+        AddTag() {
+            if (this.newTagName === "" || this.newTagPrice === "") {
+                return;
+            }
+            for (let tag of this.additionalEquipmentArray) {
+                if (tag.name == this.newTagName) {
+                    return;
+                }
+            }
+            this.additionalEquipmentArray.push({
+                name: this.newTagName,
+                price: this.newTagPrice,
+            });
+            this.newTagName = "";
+            this.newTagPrice = "";
+        },
+        ParseAdditionalEquipment(additionalEquipment) {
+            this.additionalEquipmentArray = new Array();
+            if (
+                additionalEquipment == null ||
+                additionalEquipment == undefined
+            ) {
+                return;
+            }
+            let receivedEq = additionalEquipment.split(";");
+            for (let eq of receivedEq) {
+                let name = eq.split(":")[0];
+                let price = eq.split(":")[1];
+                if (name === "" || price === "") {
+                    continue;
+                }
+                this.additionalEquipmentArray.push({
+                    name: name,
+                    price: price,
+                });
+            }
+        },
+        MergeAdditioanlEquipment() {
+            let ret = "";
+            for (let eq of this.additionalEquipmentArray) {
+                ret += eq.name + ":" + eq.price + ";";
+            }
+            return ret;
         },
     },
 };
@@ -792,5 +873,69 @@ h3 {
     color: #345fed;
     margin-top: 10px;
     cursor: pointer;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.horizontal-part {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.left {
+    margin-right: 10px;
+}
+
+.equipment-input {
+    height: 50px;
+    width: 165px;
+    outline: none;
+    border-radius: 25px;
+    padding-left: 20px;
+    padding-right: 10px;
+    border: none;
+    -moz-appearance: textfield;
+}
+.equipment-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.add-equipment {
+    margin-top: 10px;
+    height: 40px;
+    outline: none;
+    border: none;
+    width: 60px;
+    border-radius: 25px;
+    background-color: #345fed;
+    color: white;
+    cursor: pointer;
+}
+
+.tag-div {
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: 10px;
+    max-width: 400px;
+}
+
+.tag {
+    margin-top: 5px;
+    margin-right: 7px;
+    font-size: 12px;
+    background-color: #345fed;
+    color: white;
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-image: url("../assets/white-x.png");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 23px 23px;
 }
 </style>

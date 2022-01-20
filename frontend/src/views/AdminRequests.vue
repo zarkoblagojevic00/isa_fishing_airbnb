@@ -272,16 +272,34 @@ export default {
                 });
         },
         onAcceptMarkRequest(markRequest) {
-            axios.put("/api/Admin/ApproveMarkRequest", markRequest).then(() => {
-                this.$swal.fire("Mark approved!");
-                this.loadMarkRequests();
-            });
+            axios
+                .put("/api/Admin/ApproveMarkRequest", markRequest)
+                .then(() => {
+                    this.$swal.fire("Mark approved!");
+                    this.loadMarkRequests();
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        this.$swal.fire(error.response.data);
+                        this.loadMarkRequests();
+                    }
+                });
         },
         onDeclineMarkRequest(markRequest) {
-            axios.put("/api/Admin/DeclineMarkRequest", markRequest).then(() => {
-                this.$swal.fire("Mark declined!");
-                this.loadMarkRequests();
-            });
+            axios
+                .put("/api/Admin/DeclineMarkRequest", markRequest)
+                .then(() => {
+                    this.$swal.fire("Mark declined!");
+                    this.loadMarkRequests();
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        this.$swal.fire(error.response.data);
+                        this.loadMarkRequests();
+                    }
+                });
         },
         onDeclineRegistrationRequest(userId) {
             this.$swal

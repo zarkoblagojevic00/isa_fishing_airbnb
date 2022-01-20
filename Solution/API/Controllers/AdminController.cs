@@ -347,15 +347,31 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult ApproveMarkRequest(UserMarkInformationDTO mark)
         {
-            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
-            oldMark.IsReviewed = true;
-            oldMark.IsApproved = true;
+            MarkLocker markLocker = new MarkLocker(UoW);
+            Mark oldMark;
 
             try
             {
                 UoW.BeginTransaction();
+
+                try
+                {
+                    oldMark = markLocker.ObtainLockedMark(mark.MarkId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (oldMark == null || oldMark.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with mark request.");
+                }
+
+                
+                oldMark.IsReviewed = true;
+                oldMark.IsApproved = true;
                 UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
-                UoW.Commit();
 
                 var mailService = new MailingService(UoW)
                 {
@@ -364,6 +380,10 @@ namespace API.Controllers
                     Title = "Mark review"
                 };
                 mailService.Send();
+
+                UoW.Commit();
+
+
             }
             catch (Exception e)
             {
@@ -378,13 +398,28 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult DeclineMarkRequest(UserMarkInformationDTO mark)
         {
-            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
-            oldMark.IsReviewed = true;
-            oldMark.IsApproved = false;
-
+            MarkLocker markLocker = new MarkLocker(UoW);
+            Mark oldMark;
             try
             {
                 UoW.BeginTransaction();
+                try
+                {
+                    oldMark = markLocker.ObtainLockedMark(mark.MarkId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if(oldMark == null || oldMark.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with mark request.");
+                }
+
+                
+                oldMark.IsReviewed = true;
+                oldMark.IsApproved = false;
                 UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
                 UoW.Commit();
 
@@ -392,7 +427,7 @@ namespace API.Controllers
             catch (Exception e)
             {
                 UoW.Rollback();
-                return BadRequest("Approval failed.");
+                return BadRequest("Review failed.");
             }
             return Ok("Mark reviewed");
 

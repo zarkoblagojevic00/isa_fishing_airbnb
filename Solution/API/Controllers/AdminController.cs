@@ -403,30 +403,41 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult RespondToIssue(IssueInformationDTO issue)
         {
-            var oldIssue = UoW.GetRepository<IIssueReadRepository>().GetById(issue.IssueId);
-
-            if(oldIssue == null)
-            {
-                return BadRequest("Issue not found.");
-            }
-
-            oldIssue.IsReviewed = true;
-
-
+            Issue oldIssue;
+            var issueLocker = new IssueLocker(UoW);
             try
             {
                 UoW.BeginTransaction();
+                try
+                {
+                    oldIssue = issueLocker.ObtainLockedIssue(issue.IssueId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (oldIssue == null || oldIssue.IsReviewed)
+                {
+                    return BadRequest("Issue not found.");
+                }
+
+                oldIssue.IsReviewed = true;
+
                 UoW.GetRepository<IIssueWriteRepository>().Update(oldIssue);
-                UoW.Commit();
+
                 var mailService = new MailingService(UoW)
                 {
                     Body = GenerateIssueReviewMailBody(issue),
-                    Receiver = issue.UserEmail,
+                    Receiver = issue.ServiceOwnerEmail,
                     Title = "Issue review"
                 };
                 mailService.Send();
-                mailService.Receiver = issue.ServiceOwnerEmail;
+                mailService.Receiver = issue.UserEmail;
                 mailService.Send();
+
+                UoW.Commit();
+                
             }
             catch (Exception e)
             {

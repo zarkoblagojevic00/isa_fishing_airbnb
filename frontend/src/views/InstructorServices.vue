@@ -34,6 +34,7 @@ export default {
         Navbar,
         SearchBar,
     },
+
     mounted() {
         axios.get("/api/Adventure/GetAllOwnedAdventures").then((res) => {
             this.services = res.data;

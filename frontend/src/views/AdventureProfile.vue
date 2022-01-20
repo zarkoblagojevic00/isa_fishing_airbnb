@@ -11,14 +11,19 @@
             />
         </div>
 
-        <div class="card-price">${{ adventure.pricePerDay }} per day</div>
+        <div class="card-price">${{ adventure.pricePerDay }} per hour</div>
     </div>
     <div class="sub-header">
         <p>{{ adventure.promoDescription }}</p>
     </div>
     <div class="flexbox-container">
         <InstructorInfo />
-        <Map />
+        <Map
+            v-if="addressLoaded"
+            :lon="addressInfo.longitude"
+            :lat="addressInfo.latitude"
+            class="map"
+        />
     </div>
     <div class="flex-column">
         <div class="subheading">Additional offers</div>
@@ -51,7 +56,7 @@
 
 <script>
 import InstructorInfo from "@/components/InstructorInfo.vue";
-import Map from "@/components/Map.vue";
+import Map from "@/components/DisplayMap.vue";
 import Navbar from "../components/Navbar.vue";
 import axios from "../api/api.js";
 
@@ -63,6 +68,7 @@ export default {
         Navbar,
     },
     mounted() {
+        this.loadAddressInfo();
         this.loadAdventure();
         this.currentRole = localStorage.getItem("role");
     },
@@ -72,6 +78,8 @@ export default {
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             adventure: {},
             currentRole: "",
+            addressInfo: { longitude: 19.8227, latitude: 45.2396 },
+            addressLoaded: false,
         };
     },
     computed: {},
@@ -84,11 +92,20 @@ export default {
                 )
                 .then((res) => {
                     this.adventure = res.data;
-                    console.log(res.data);
-                    this.range.start = res.data.availableFrom;
-                    this.range.end = res.data.availableTo;
                 })
                 .catch((err) => console.log(err));
+        },
+        loadAddressInfo() {
+            axios
+                .get(
+                    "/api/Adventure/GetAddressInfoByAdventureId?adventureId=" +
+                        this.$route.params.id
+                )
+                .then((res) => {
+                    this.addressInfo = res.data;
+                    this.addressLoaded = true;
+                    console.log(res.data);
+                });
         },
     },
 };
@@ -223,5 +240,10 @@ button {
     position: absolute;
     left: -9px;
     top: 17px;
+}
+
+.map {
+    width: 500px;
+    height: 500px;
 }
 </style>

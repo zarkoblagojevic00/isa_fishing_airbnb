@@ -95,12 +95,35 @@
             <div class="action-form">
                 <div class="input-wrapper">
                     <span class="label">Additional benefits:</span>
-                    <textarea
-                        class="input-textarea"
-                        type="text"
-                        v-model="additionalBenefits"
-                        placeholder="Not required"
-                    ></textarea>
+                    <div class="horizontal">
+                        <div class="horizontal-part left">
+                            <input
+                                type="text"
+                                placeholder="Name:"
+                                class="equipment-input"
+                                v-model="newTagName"
+                            />
+                        </div>
+                        <div class="horizontal-part">
+                            <input
+                                type="number"
+                                placeholder="Price:"
+                                class="equipment-input"
+                                v-model="newTagPrice"
+                            />
+                        </div>
+                    </div>
+                    <button class="add-equipment" @click="AddTag">Add</button>
+                    <div class="tag-div">
+                        <div
+                            v-for="tag in additionalEquipmentArray"
+                            :key="tag.name"
+                            class="tag"
+                            @click="ClearTag(tag.name)"
+                        >
+                            {{ tag.name + ": " + tag.price }}
+                        </div>
+                    </div>
                 </div>
                 <div class="input-wrapper" v-if="errors.length != 0">
                     <span
@@ -184,12 +207,35 @@
             <div class="action-form">
                 <div class="input-wrapper">
                     <span class="label">Additional equipment:</span>
-                    <textarea
-                        class="input-textarea"
-                        type="text"
-                        v-model="additionalEquipment"
-                        placeholder="Not required"
-                    ></textarea>
+                    <div class="horizontal">
+                        <div class="horizontal-part left">
+                            <input
+                                type="text"
+                                placeholder="Name:"
+                                class="equipment-input"
+                                v-model="newTagName"
+                            />
+                        </div>
+                        <div class="horizontal-part">
+                            <input
+                                type="number"
+                                placeholder="Price:"
+                                class="equipment-input"
+                                v-model="newTagPrice"
+                            />
+                        </div>
+                    </div>
+                    <button class="add-equipment" @click="AddTag">Add</button>
+                    <div class="tag-div">
+                        <div
+                            v-for="tag in additionalEquipmentArray"
+                            :key="tag.name"
+                            class="tag"
+                            @click="ClearTag(tag.name)"
+                        >
+                            {{ tag.name + ": " + tag.price }}
+                        </div>
+                    </div>
                 </div>
                 <div class="input-wrapper" v-if="errors.length != 0">
                     <span
@@ -308,6 +354,11 @@ export default {
             serviceUnavailableMarker: false,
 
             isCaptain: "true",
+
+            additionalEquipmentArray: [],
+
+            newTagName: "",
+            newTagPrice: "",
         };
     },
     computed: {
@@ -573,6 +624,9 @@ export default {
             return true;
         },
         ClickItem(evt) {
+            if (this.$props.currentMode != "AddPromoAction") {
+                return;
+            }
             let relevantAction = this.receivedItems[evt.id];
             if (relevantAction == null || relevantAction.isTaken) {
                 return;
@@ -583,6 +637,7 @@ export default {
             this.pricePerDay = relevantAction.pricePerDay;
             this.capacity = relevantAction.capacity;
             this.additionalBenefits = relevantAction.addedBenefits;
+            this.ParseAdditionalEquipment(this.additionalBenefits);
             this.isCaptain =
                 relevantAction.role == "Captain" ? "true" : "false";
 
@@ -600,6 +655,8 @@ export default {
             this.additionalBenefits = "";
             this.isCaptain = "true";
             this.selectedDate = ["", ""];
+            this.selectedDateReservation = ["", ""];
+            this.additionalEquipmentArray = new Array();
         },
         UpdateDate(evt) {
             if (this.currentMode == "AddPromoAction") {
@@ -647,7 +704,7 @@ export default {
                 startDateTime: this.selectedDate[0],
                 endDateTime: this.selectedDate[1],
                 pricePerDay: this.pricePerDay,
-                addedBenefits: this.additionalBenefits,
+                addedBenefits: this.MergeAdditioanlEquipment(),
                 capacity: this.capacity,
             };
             if (!this.isVilla) {
@@ -746,7 +803,7 @@ export default {
                 userMail: this.emailOfUser,
                 serviceId: this.selectedService,
                 price: this.pricePerDayReservation,
-                additionalEquipment: this.additionalEquipment,
+                additionalEquipment: this.MergeAdditioanlEquipment(),
                 startDateTime: this.selectedDateReservation[0],
                 endDateTime: this.selectedDateReservation[1],
             };
@@ -780,8 +837,9 @@ export default {
                     if (data == "") {
                         vue.RefreshCalendar();
                         vue.selectedDateReservation = ["", ""];
+                        vue.selectedDate = ["", ""];
                         vue.emailOfUser = "";
-                        vue.additionalEquipment = "";
+                        vue.additionalEquipmentArray = new Array();
                         vue.pricePerDayReservation = "";
                         return;
                     }
@@ -864,6 +922,59 @@ export default {
                     }
                 });
         },
+        ClearTag(tagName) {
+            for (let i = 0; i < this.additionalEquipmentArray.length; i++) {
+                if (this.additionalEquipmentArray[i].name == tagName) {
+                    this.additionalEquipmentArray.splice(i, 1);
+                    return;
+                }
+            }
+        },
+        AddTag() {
+            if (this.newTagName === "" || this.newTagPrice === "") {
+                return;
+            }
+            for (let tag of this.additionalEquipmentArray) {
+                if (tag.name == this.newTagName) {
+                    return;
+                }
+            }
+            this.additionalEquipmentArray.push({
+                name: this.newTagName,
+                price: this.newTagPrice,
+            });
+            this.newTagName = "";
+            this.newTagPrice = "";
+        },
+        ParseAdditionalEquipment(additionalEquipment) {
+            this.additionalEquipmentArray = new Array();
+            if (
+                additionalEquipment == null ||
+                additionalEquipment == undefined
+            ) {
+                return;
+            }
+
+            let receivedEq = additionalEquipment.split(";");
+            for (let eq of receivedEq) {
+                let name = eq.split(":")[0];
+                let price = eq.split(":")[1];
+                if (name === "" || price === "") {
+                    continue;
+                }
+                this.additionalEquipmentArray.push({
+                    name: name,
+                    price: price,
+                });
+            }
+        },
+        MergeAdditioanlEquipment() {
+            let ret = "";
+            for (let eq of this.additionalEquipmentArray) {
+                ret += eq.name + ":" + eq.price + ";";
+            }
+            return ret;
+        },
     },
     watch: {
         selectedService: function () {
@@ -871,6 +982,9 @@ export default {
         },
         currentMode: function () {
             this.errors = new Array();
+            this.additionalEquipmentArray = new Array();
+            this.selectedDate = ["", ""];
+            this.selectedDateReservation = ["", ""];
         },
     },
 };
@@ -1038,5 +1152,68 @@ export default {
     height: 15px;
     position: relative;
     top: -2px;
+}
+.horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.horizontal-part {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.left {
+    margin-right: 10px;
+}
+
+.equipment-input {
+    height: 50px;
+    width: 165px;
+    outline: none;
+    border-radius: 25px;
+    padding-left: 20px;
+    padding-right: 10px;
+    border: none;
+    -moz-appearance: textfield;
+}
+.equipment-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.add-equipment {
+    margin-top: 10px;
+    height: 40px;
+    outline: none;
+    border: none;
+    width: 60px;
+    border-radius: 25px;
+    background-color: #345fed;
+    color: white;
+    cursor: pointer;
+}
+
+.tag-div {
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: 10px;
+    max-width: 400px;
+}
+
+.tag {
+    margin-top: 5px;
+    margin-right: 7px;
+    font-size: 12px;
+    background-color: #345fed;
+    color: white;
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-image: url("../assets/white-x.png");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 23px 23px;
 }
 </style>

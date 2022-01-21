@@ -25,10 +25,19 @@
                 <div class="left">Max people:</div>
                 <div class="right">{{ action.capacity }}</div>
             </div>
+            <hr />
             <div class="flex-row">
-                <div class="left">Added benefits:</div>
-                <div class="right">{{ action.addedBenefits }}</div>
+                <div class="left">Benefits(Name:Price):</div>
+                <div class="right">
+                    <div
+                        v-for="ben in action.addedBenefits.split(';')"
+                        :key="ben[0]"
+                    >
+                        {{ ben }}
+                    </div>
+                </div>
             </div>
+            <hr />
             <div class="flex-row">
                 <div class="left">Place:</div>
                 <div class="right">{{ action.place }}</div>
@@ -110,7 +119,7 @@ export default {
     transition: 0.3s;
     padding: 20px;
     margin: 20px;
-    background: rgb(50, 205, 128);
+    background: rgb(187, 230, 208);
 }
 
 .card:hover {

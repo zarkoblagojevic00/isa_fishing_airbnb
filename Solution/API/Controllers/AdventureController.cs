@@ -29,6 +29,10 @@ namespace API.Controllers
         public IActionResult AddAdventure(AdventureDTO adventure)
         {
             var ownerId = GetUserIdFromCookie();
+            if(adventure == null)
+            {
+                return BadRequest("No adventure passed.");
+            }
             adventure.OwnerId = ownerId;
 
             var city = UoW.GetRepository<ICityReadRepository>()
@@ -124,6 +128,26 @@ namespace API.Controllers
             adventureInfo.ImageIds = images.Select(x => x.ImageId);
 
             return Ok(adventureInfo);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Instructor })]
+        public IActionResult GetAdventureByName(string name)
+        {
+            var ownerId = GetUserIdFromCookie();
+
+            var adventure = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .Where(adv => adv.Name == name)
+                .Where(adv => adv.OwnerId == ownerId)
+                .FirstOrDefault();
+
+            if(adventure == null)
+            {
+                return BadRequest("No adventure with such name for user.");
+            }
+
+            return Ok(adventure);
         }
 
         [HttpGet]

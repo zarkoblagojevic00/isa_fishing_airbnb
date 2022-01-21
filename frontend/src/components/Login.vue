@@ -36,8 +36,10 @@
 
 <script>
 import sessionService from "../services/session-service.js";
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "Login",
+    mixins: [swalCommons],
     components: {},
     props: {
         changeMode: Function,
@@ -66,9 +68,10 @@ export default {
         async login() {
             try {
                 if (!this.isValidInput()) {
-                    alert(
-                        "Please insert all the required data in valid format!"
-                    );
+                    this.toast.fire({
+                        icon: "error",
+                        title: "Please insert all the required data in valid format!",
+                    });
                     return false;
                 }
                 const claims = await sessionService.login(
@@ -77,7 +80,10 @@ export default {
                 );
                 this.navigate(claims);
             } catch (e) {
-                alert(e.response.data);
+                this.toast.fire({
+                    icon: "error",
+                    title: "Error! Message: " + e.response.data,
+                });
             }
         },
         navigate({ userType }) {

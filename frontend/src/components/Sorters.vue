@@ -1,23 +1,28 @@
 <template>
-    <div class="sorters-wrapper">
-        <div class="sort-by">Sort by</div>
-        <button
-            class="sorter underline-container transition-ease"
-            :class="{ 'active-sorter': isActive(index) }"
-            v-for="(value, key, index) in sortBy"
-            :key="key"
-            @click="activate(index)"
-        >
-            {{ value }}
-            <div v-if="isActive(index)" class="sorter-icon">
-                <font-awesome-icon
-                    v-if="sorters[index].order === -1"
-                    icon="sort-up"
-                />
-                <font-awesome-icon v-else icon="sort-down" />
-            </div>
-            <div v-else class="ghost-padding"></div>
-        </button>
+    <div class="sorters-back-fall">
+        <div class="sorters-wrapper">
+            <div class="sort-by">Sort by</div>
+            <button
+                class="sorter underline-container transition-ease"
+                :class="{ 'active-sorter': isActive(index) }"
+                v-for="(value, key, index) in sortBy"
+                :key="key"
+                @click="activate(index)"
+            >
+                {{ value }}
+                <div v-if="isActive(index)" class="sorter-icon">
+                    <font-awesome-icon
+                        v-if="sorters[index].order === -1"
+                        icon="sort-up"
+                    />
+                    <font-awesome-icon v-else icon="sort-down" />
+                </div>
+                <div v-else class="ghost-padding"></div>
+            </button>
+        </div>
+        <div class="sorter-right-end">
+            <slot></slot>
+        </div>
     </div>
 </template>
 
@@ -81,18 +86,31 @@ export default {
 </script>
 
 <style scoped>
-.sorters-wrapper {
-    min-height: 2.85rem;
+.sorters-back-fall {
+    height: 4.7em;
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
     margin-bottom: 2em;
+    background: #fff;
+    border-bottom: 1px solid var(--control-border-color);
+}
+
+.sorters-wrapper {
+    box-sizing: border-box;
+    height: 2.85rem;
+    width: 100%;
     display: flex;
     justify-content: flex-begin;
-    border-bottom: 1px solid var(--control-border-color);
 }
 
 .sort-by {
     align-self: center;
     font-size: 1.4em;
     margin-right: 2em;
+    margin-left: 1em;
 }
 
 .sorter {
@@ -143,5 +161,10 @@ export default {
 .ghost-padding {
     min-width: 1em;
     margin-left: 1em;
+}
+
+.sorter-right-end {
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
 }
 </style>

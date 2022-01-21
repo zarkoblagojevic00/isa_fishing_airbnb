@@ -14,6 +14,7 @@ import {
     faMapMarkerAlt,
     faSortUp,
     faSortDown,
+    faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VCalendar from "v-calendar";
@@ -34,7 +35,7 @@ library.add(faPlusCircle);
 library.add(faMapMarkerAlt);
 library.add(faSortUp);
 library.add(faSortDown);
-
+library.add(faCalendarCheck);
 const $ = jQuery;
 window.$ = $;
 

@@ -50,6 +50,10 @@ export default {
             );
         },
 
+        addedBenefitsEntries() {
+            return Object.entries(this.equipment);
+        },
+
         finalCostPerDay() {
             return Object.entries(this.equipment).reduce(
                 (acc, [, item]) =>

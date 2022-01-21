@@ -168,7 +168,7 @@ namespace API.Controllers
             Service service = null;
             
             // if PromoAction
-            if (reservationDto.PromoId > 0)
+            if (reservationDto.PromoId >= 0)
             {
                 try
                 {
@@ -185,6 +185,7 @@ namespace API.Controllers
                 }
                 promo.IsTaken = true;
                 UoW.GetRepository<IPromoActionWriteRepository>().Update(promo);
+                service = UoW.GetRepository<IServiceReadRepository>().GetById(reservationDto.ServiceId);
             }
             // if Service
             else {

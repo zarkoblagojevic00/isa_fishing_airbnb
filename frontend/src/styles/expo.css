@@ -1,9 +1,12 @@
 .service-content {
     display: inline-block;
+    width: 75%;
 }
 
 .item-container {
     background-color: #fcfcfc;
+    width: 98.5%;
+    margin: auto;
     min-height: 26vh;
     display: flex;
     justify-content: space-between;
@@ -39,8 +42,8 @@
 
 .expo-container {
     min-height: 185px;
-    width: 75%;
-    padding-right: 5%;
+    width: 77%;
+    padding-right: 2%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -59,7 +62,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-width: 65%;
+    min-width: 72%;
 }
 
 .expo-container-primary-info .avgmark {
@@ -97,7 +100,7 @@
     margin-right: 1em;
     padding: 0.1em 0.5em;
     width: auto;
-    min-width: 65px;
+    min-width: 5%;
     height: 25px;
     border-radius: 0.3em;
     background: var(--primary-comp);
@@ -106,7 +109,3 @@
     border: none;
 }
 
-.book-service {
-    margin-left: auto;
-    min-width: 100px;
-}

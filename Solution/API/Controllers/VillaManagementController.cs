@@ -105,6 +105,67 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetQuickActionsForClient()
+        {
+            int userId = -1;
+            try
+            {
+                userId = GetUserIdFromCookie();
+            }
+            catch (Exception ignore) { };
+
+            var userUnavailableDates = (userId >= 0) ? UoW.GetRepository<IReservationReadRepository>().GetAll().Where(r => r.UserId == userId) : new List<Reservation>(); 
+            var promoActions = UoW.GetRepository<IPromoActionReadRepository>().GetAll().Where(p => !p.IsTaken && !p.AnyOverlapping(userUnavailableDates));
+            var serviceReadRepository = UoW.GetRepository<IServiceReadRepository>();
+            var additionalInformation = UoW.GetRepository<IAdditionalVillaServiceInfoReadRepository>().GetAll();
+            var villas = serviceReadRepository.GetAll().Where(s => s.ServiceType == ServiceType.Villa);
+
+            var villaDTOS = villas.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new VillaDTO()
+            {
+                AdditionalEquipment = x.AdditionalEquipment,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Name = x.Name,
+                NumberOfBeds = y.NumberOfBeds,
+                NumberOfRooms = y.NumberOfRooms,
+                PercentageToTake = x.PercentageToTake,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                VillaId = x.ServiceId,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+            });
+
+            var result = villaDTOS.Join(promoActions, p => p.VillaId, q => q.ServiceId, (p, q) => new ClientVillaPromoDTO
+            {
+                Villa = p,
+                Promo = new PromoActionWrapperDTO()
+                {
+                    PromoActionId = q.PromoActionId,
+                    ServiceId = q.ServiceId,
+                    PricePerDay = q.PricePerDay,
+                    IsTaken = q.IsTaken,
+                    Capacity = q.Capacity,
+                    AddedBenefits = q.AddedBenefits,
+                    Place = q.Place,
+                    StartDateTime = q.StartDateTime,
+                    EndDateTime = q.EndDateTime
+                },
+            });
+
+            return Ok(result);
+
+        }
+
+
+        [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] {false, UserType.VillaOwner})]
         public IActionResult GetVillaInfo(int villaId)
         {

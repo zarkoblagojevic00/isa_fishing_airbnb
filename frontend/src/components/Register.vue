@@ -133,8 +133,10 @@
 
 <script>
 import registrationService from "../services/registration-service.js";
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "Register",
+    mixins: [swalCommons],
     props: {
         changeMode: Function,
     },
@@ -214,7 +216,6 @@ export default {
                 !this.ValidatePhone() ||
                 !this.ValidateReason()
             ) {
-                alert("Error in validation!");
                 return false;
             }
 
@@ -240,6 +241,8 @@ export default {
 
                 console.log(dto);
 
+                let vue = this;
+
                 fetch("api/Registration/RegisterServiceOwner", {
                     method: "POST",
                     redirect: "follow",
@@ -249,22 +252,53 @@ export default {
                     },
                 })
                     .then((response) => {
-                        alert(
-                            "Success! You should receive the confirmation link in the mailbox!"
-                        );
+                        if (response.ok) {
+                            vue.toast.fire({
+                                icon: "success",
+                                title: "Success! You should receive the confirmation link in the mailbox!",
+                            });
+                            vue.firstname = "";
+                            vue.lastname = "";
+                            vue.password = "";
+                            vue.confirmPassword = "";
+                            vue.address = "";
+                            vue.email = "";
+                            vue.regreason = "";
+                            vue.phone = "";
+                            vue.changeMode();
+                            return "";
+                        }
                         return response.json();
                     })
                     .catch((data) => {
-                        console.log(data);
-                        if (
-                            data.errors != undefined &&
-                            data.errors.length > 0
-                        ) {
-                            let message = "";
-                            for (let key of data.errors) {
-                                message += key + ": " + data.errors[key];
+                        if (data === "") return;
+                        let error = "";
+                        let strcost = "".constructor;
+                        try {
+                            error = JSON.parse(data);
+                        } catch {
+                            error = data;
+                        }
+
+                        if (data.constructor == strcost) {
+                            vue.toast.fire({
+                                icon: "error",
+                                title: "Error! Message: " + error,
+                            });
+                        } else {
+                            if (
+                                data.errors != undefined &&
+                                data.errors.length > 0
+                            ) {
+                                let message = "";
+                                for (let key of data.errors) {
+                                    message += key + ": " + data.errors[key];
+                                }
+                                vue.toast.fire({
+                                    icon: "error",
+                                    title: "Error! Message: " + message,
+                                });
                             }
-                            alert(message);
                         }
                     });
             } else {
@@ -294,11 +328,15 @@ export default {
             };
             try {
                 await registrationService.registerServiceUser(data);
-                alert(
-                    "Your registration has been submitted successfully. You should receive the confirmation link in the mailbox!"
-                );
+                this.toast.fire({
+                    icon: "success",
+                    title: "Your registration has been submitted successfully. You should receive the confirmation link in the mailbox!",
+                });
             } catch (e) {
-                alert(e.response.data);
+                this.toast.fire({
+                    icon: "error",
+                    title: "Error! Message: " + e.response.data,
+                });
             }
         },
     },

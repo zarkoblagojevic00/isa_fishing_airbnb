@@ -1,16 +1,19 @@
 <template>
-    <div v-if="villa" class="item-container shadow-item-clickable">
+    <div v-if="adventure" class="item-container shadow-item-clickable">
         <div class="img-container">
-            <div class="img" :style="getImageStyle(villa.imageIds[0])"></div>
+            <div
+                class="img"
+                :style="getImageStyle(adventure.imageIds[0])"
+            ></div>
         </div>
         <div class="expo-container">
             <div>
                 <div class="expo-container-header">
-                    <div class="expo-container-name">{{ villa.name }}</div>
+                    <div class="expo-container-name">{{ adventure.name }}</div>
                     <div class="expo-container-primary-info">
                         <star-rating
-                            v-if="villa.averageMark"
-                            :rating="villa.averageMark"
+                            v-if="adventure.averageMark"
+                            :rating="adventure.averageMark"
                             :increment="0.1"
                             :max-rating="5"
                             :star-size="20"
@@ -24,31 +27,29 @@
                             Not reviewed
                         </div>
                         <div>
-                            <span class="villaPricePerDay">{{
-                                villa.pricePerDay
+                            <span class="adventurePricePerDay">{{
+                                adventure.pricePerDay
                             }}</span>
                             <span class="promoPricePerDay">{{
                                 promo.pricePerDay
                             }}</span>
-                            $/day
+                            $/hour
                             <span class="promoPricePerDay">
                                 {{ sale }}% off
                             </span>
                         </div>
                         <div>
                             <font-awesome-icon icon="map-marker-alt" />
-                            {{ villa.address }}, {{ villa.cityName }}
+                            {{ adventure.address }}, {{ adventure.cityName }}
                         </div>
                     </div>
                 </div>
                 <hr />
             </div>
             <p class="description">
-                {{ villa.promoDescription }}
+                {{ adventure.promoDescription }}
             </p>
             <div class="ammenity-container">
-                <div class="ammenity">Beds: {{ villa.numberOfBeds }}</div>
-                <div class="ammenity">Rooms: {{ villa.numberOfRooms }}</div>
                 <div
                     class="ammenity"
                     v-for="i in addedBenefitsEntries.length <= 4
@@ -72,7 +73,6 @@
                             readonly
                             range
                             placeholder="Select a date range"
-                            :enableTimePicker="false"
                             inputClassName="date-picker-input"
                             hideInputIcon
                         />
@@ -108,7 +108,7 @@ export default {
     },
     mixins: [fetchImageBackground, roleValidator, swalCommons, equipmentPicker],
     props: {
-        villa: {
+        adventure: {
             type: Object,
             required: true,
         },
@@ -143,7 +143,7 @@ export default {
         buildReservation() {
             return {
                 userId: getId(),
-                serviceId: this.villa.villaId,
+                serviceId: this.adventure.adventureId,
                 additionalEquipment: this.promo.addedBenefits,
                 price: this.promo.pricePerDay,
                 startDateTime: this.promo.startDateTime,
@@ -184,14 +184,14 @@ export default {
 }
 
 .date-picker-container {
-    width: 60%;
+    width: 66%;
 }
 
 .calendar-icon {
     margin-top: 0.5em;
 }
 
-.villaPricePerDay {
+.adventurePricePerDay {
     text-decoration: line-through;
 }
 

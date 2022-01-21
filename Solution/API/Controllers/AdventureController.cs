@@ -256,6 +256,63 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        public IActionResult GetQuickActionsForClient()
+        {
+            int userId = -1;
+            try
+            {
+                userId = GetUserIdFromCookie();
+            }
+            catch (Exception ignore) { };
+
+            var userUnavailableDates = (userId >= 0) ? UoW.GetRepository<IReservationReadRepository>().GetAll().Where(r => r.UserId == userId) : new List<Reservation>();
+            var promoActions = UoW.GetRepository<IPromoActionReadRepository>().GetAll().Where(p => !p.IsTaken && !p.AnyOverlapping(userUnavailableDates));
+            var serviceReadRepository = UoW.GetRepository<IServiceReadRepository>();
+            var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>().GetAll();
+            var adventures = serviceReadRepository.GetAll().Where(s => s.ServiceType == ServiceType.Adventure);
+
+            var adventureDTOS = adventures.Join(additionalInformation, x => x.ServiceId, y => y.AdventureId, (x, y) => new AdventureDTO()
+            {
+                AdditionalEquipment = x.AdditionalEquipment,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Name = x.Name,
+                PercentageToTake = x.PercentageToTake,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                AdventureId = x.ServiceId,
+                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+            });
+
+            var result = adventureDTOS.Join(promoActions, p => p.AdventureId, q => q.ServiceId, (p, q) => new ClientAdventurePromoDTO
+            {
+                Adventure = p,
+                Promo = new PromoActionWrapperDTO()
+                {
+                    PromoActionId = q.PromoActionId,
+                    ServiceId = q.ServiceId,
+                    PricePerDay = q.PricePerDay,
+                    IsTaken = q.IsTaken,
+                    Capacity = q.Capacity,
+                    AddedBenefits = q.AddedBenefits,
+                    Place = q.Place,
+                    StartDateTime = q.StartDateTime,
+                    EndDateTime = q.EndDateTime
+                },
+            });
+
+            return Ok(result);
+        }
 
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]

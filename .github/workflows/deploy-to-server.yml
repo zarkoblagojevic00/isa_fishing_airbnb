@@ -14,6 +14,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ubuntu@35.180.11.147 '
           cat ~/.bash_profile 
           source ~/.bash_profile 
+          sudo systemctl start mssql-server 
           cd ~/gitrepo 
           git add . 
           git reset --hard 

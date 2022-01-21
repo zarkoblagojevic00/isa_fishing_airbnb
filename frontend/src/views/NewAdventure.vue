@@ -60,6 +60,27 @@
             <input
                 type="text"
                 class="field"
+                placeholder="City"
+                v-model="v$.newAdventure.cityName.$model"
+                list="cities"
+            />
+            <datalist id="cities">
+                <option
+                    v-for="city in cities"
+                    :key="city.id"
+                    :value="city.name"
+                />
+            </datalist>
+            <div
+                class="input-errors"
+                v-for="(error, index) of v$.newAdventure.cityName.$errors"
+                :key="index"
+            >
+                <div class="error-msg">{{ error.$message }}</div>
+            </div>
+            <input
+                type="text"
+                class="field"
                 placeholder="Promo description"
                 v-model="v$.newAdventure.promoDescription.$model"
             />
@@ -203,7 +224,9 @@ export default {
     setup() {
         return { v$: useVuelidate() };
     },
-    mounted() {},
+    mounted() {
+        this.getCities();
+    },
     data() {
         return {
             navbarItems: [
@@ -219,6 +242,7 @@ export default {
                 address: "",
                 longitude: "",
                 latitude: "",
+                cityName: "",
                 promoDescription: "",
                 pricePerDay: "",
                 capacity: "",
@@ -234,6 +258,7 @@ export default {
 
             newTagName: "",
             newTagPrice: "",
+            cities: [],
         };
     },
     validations() {
@@ -247,6 +272,7 @@ export default {
                     max: maxValue(180),
                 },
                 latitude: { required, min: minValue(-90), max: maxValue(90) },
+                cityName: { required },
                 promoDescription: { required },
                 pricePerDay: { required, min: minValue(0) },
                 capacity: { required, min: minValue(0) },
@@ -315,6 +341,11 @@ export default {
                 ret += eq.name + ":" + eq.price + ";";
             }
             return ret;
+        },
+        getCities() {
+            axios.get("/api/City/GetCities").then((res) => {
+                this.cities = res.data;
+            });
         },
     },
 };

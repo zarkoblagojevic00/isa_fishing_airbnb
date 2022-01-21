@@ -75,7 +75,33 @@
             >
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
-
+            <div class="flexbox-row">
+                <label> City </label>
+                <div>
+                    <input
+                        type="text"
+                        class="field"
+                        placeholder="City"
+                        v-model="v$.newAdventure.cityName.$model"
+                        list="cities"
+                    />
+                    <datalist id="cities">
+                        <option
+                            v-for="city in cities"
+                            :key="city.id"
+                            :value="city.name"
+                        />
+                    </datalist>
+                    <div
+                        class="input-errors"
+                        v-for="(error, index) of v$.newAdventure.cityName
+                            .$errors"
+                        :key="index"
+                    >
+                        <div class="error-msg">{{ error.$message }}</div>
+                    </div>
+                </div>
+            </div>
             <div class="flexbox-row">
                 <label> Promo description </label>
                 <input
@@ -137,16 +163,6 @@
                     class="field"
                     placeholder="Terms of use"
                     v-model="newAdventure.termsOfUse"
-                />
-            </div>
-            <div class="flexbox-row">
-                <label> Additional equipment </label>
-
-                <input
-                    type="text"
-                    class="field"
-                    placeholder="Additional equipment"
-                    v-model="newAdventure.additionalEquipment"
                 />
             </div>
 
@@ -274,6 +290,7 @@ export default {
     },
     mounted() {
         this.loadAdventure();
+        this.getCities();
     },
     data() {
         return {
@@ -285,6 +302,7 @@ export default {
                 address: "",
                 longitude: "",
                 latitude: "",
+                cityName: "",
                 promoDescription: "",
                 pricePerDay: "",
                 capacity: "",
@@ -298,6 +316,7 @@ export default {
 
             newTagName: "",
             newTagPrice: "",
+            cities: [],
         };
     },
     validations() {
@@ -312,6 +331,7 @@ export default {
                 },
                 latitude: { required, min: minValue(-90), max: maxValue(90) },
                 promoDescription: { required },
+                cityName: { required },
                 pricePerDay: { required, min: minValue(0) },
                 capacity: { required, min: minValue(0) },
                 percentageToTake: { min: minValue(0), max: maxValue(100) },
@@ -452,6 +472,11 @@ export default {
                 ret += eq.name + ":" + eq.price + ";";
             }
             return ret;
+        },
+        getCities() {
+            axios.get("/api/City/GetCities").then((res) => {
+                this.cities = res.data;
+            });
         },
     },
 };

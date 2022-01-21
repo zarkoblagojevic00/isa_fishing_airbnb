@@ -267,7 +267,9 @@ namespace API.Controllers
             catch (Exception ignore) { };
 
             var userUnavailableDates = (userId >= 0) ? UoW.GetRepository<IReservationReadRepository>().GetAll().Where(r => r.UserId == userId) : new List<Reservation>();
-            var promoActions = UoW.GetRepository<IPromoActionReadRepository>().GetAll().Where(p => !p.IsTaken && !p.AnyOverlapping(userUnavailableDates));
+            var promoActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(p => !p.IsTaken && !p.AnyOverlapping(userUnavailableDates) && p.StartDateTime > DateTime.Now);
             var serviceReadRepository = UoW.GetRepository<IServiceReadRepository>();
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>().GetAll();
             var adventures = serviceReadRepository.GetAll().Where(s => s.ServiceType == ServiceType.Adventure);

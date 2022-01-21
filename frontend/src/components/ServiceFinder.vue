@@ -8,21 +8,31 @@
             </div>
             <div class="control-wrapper">
                 <span class="input-label">Reservation time</span>
-                <Datepicker
-                    class="date-range"
-                    v-model="fromToDate"
-                    range
-                    twoCalendars
-                    placeholder="Select a date range"
-                    :partialRange="false"
-                    :clearable="false"
-                    :enableTimePicker="false"
-                    :minDate="minDate"
-                    :inputClassName="isValidDatePicker ? '' : 'control-invalid'"
-                />
-                <small v-if="!isValidDatePicker" class="control-invalid-hint"
-                    >both dates must be picked</small
-                >
+                <div v-if="adventure" class="adventure-time-picker">
+                    <DateTimespanPicker v-model="fromToDate" />
+                </div>
+
+                <div v-else class="regular-date-picker">
+                    <Datepicker
+                        class="date-picker"
+                        v-model="fromToDate"
+                        range
+                        twoCalendars
+                        placeholder="Select a date range"
+                        :partialRange="false"
+                        :clearable="false"
+                        :enableTimePicker="false"
+                        :minDate="minDate"
+                        :inputClassName="
+                            isValidDatePicker ? '' : 'control-invalid'
+                        "
+                    />
+                    <small
+                        v-if="!isValidDatePicker"
+                        class="control-invalid-hint"
+                        >both dates must be picked</small
+                    >
+                </div>
             </div>
 
             <div class="control-wrapper capacity">
@@ -122,9 +132,11 @@
 <script>
 import Datepicker from "vue3-date-time-picker";
 import "vue3-date-time-picker/dist/main.css";
+import moment from "moment";
+
 import Slider from "@vueform/slider";
 import NumInputRange from "../components/NumInputRange.vue";
-import moment from "moment";
+import DateTimespanPicker from "../components/DateTimespanPicker.vue";
 
 export default {
     name: "ServiceFinder",
@@ -132,6 +144,7 @@ export default {
         Datepicker,
         Slider,
         NumInputRange,
+        DateTimespanPicker,
     },
     props: {
         title: {
@@ -143,6 +156,10 @@ export default {
             required: true,
         },
         reservation: {
+            type: Boolean,
+            default: false,
+        },
+        adventure: {
             type: Boolean,
             default: false,
         },
@@ -167,7 +184,7 @@ export default {
                 capacity: 4,
             },
             fromToPrice: [10, 60],
-            minDate: moment().add(1, "days").toDate(),
+            minDate: moment().add(1, "days").startOf("day").toDate(),
             fromToDate: [fDate, tDate],
         };
     },
@@ -258,8 +275,12 @@ export default {
     margin-bottom: 1px;
 }
 
-.date-range {
+.date-picker {
     width: 100%;
+}
+
+.time-picker {
+    margin-top: 0.5em;
 }
 
 .slider {

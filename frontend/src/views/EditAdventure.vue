@@ -211,8 +211,40 @@
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
         </form>
+        <div class="input-wrapper">
+            <span class="label">Additional equipment:</span>
+            <div class="horizontal">
+                <div class="horizontal-part left">
+                    <input
+                        type="text"
+                        placeholder="Name:"
+                        class="equipment-input"
+                        v-model="newTagName"
+                    />
+                </div>
+                <div class="horizontal-part">
+                    <input
+                        type="number"
+                        placeholder="Price:"
+                        class="equipment-input"
+                        v-model="newTagPrice"
+                    />
+                </div>
+            </div>
+            <button class="add-equipment" @click="AddTag">Add</button>
+            <div class="tag-div">
+                <div
+                    v-for="tag in additionalEquipmentArray"
+                    :key="tag.name"
+                    class="tag"
+                    @click="ClearTag(tag.name)"
+                >
+                    {{ tag.name + ": " + tag.price }}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="flexbox">
+    <div class="flexbox-row">
         <button
             class="button-update"
             @click="onSubmit"
@@ -262,6 +294,10 @@ export default {
                 isPercentageTakenFromCanceledReservations: false,
                 percentageToTake: 0,
             },
+            additionalEquipmentArray: [],
+
+            newTagName: "",
+            newTagPrice: "",
         };
     },
     validations() {
@@ -269,7 +305,11 @@ export default {
             newAdventure: {
                 name: { required },
                 address: { required },
-                longitude: { required, min: minValue(-180), max: maxValue(0) },
+                longitude: {
+                    required,
+                    min: minValue(-180),
+                    max: maxValue(180),
+                },
                 latitude: { required, min: minValue(-90), max: maxValue(90) },
                 promoDescription: { required },
                 pricePerDay: { required, min: minValue(0) },
@@ -285,6 +325,10 @@ export default {
         },
         onSubmit() {
             console.log(this.newAdventure);
+            let eq = this.MergeAdditioanlEquipment();
+
+            console.log(eq);
+            this.newAdventure.additionalEquipment = eq;
             const adventure = Object.assign({}, this.newAdventure);
             console.log(adventure);
 
@@ -296,7 +340,7 @@ export default {
                         "Your adventure has been updated.",
                         "success"
                     );
-                    this.$router.push(this.baseUrlInstructor);
+                    this.$router.push(this.baseUrlInstructor + "home");
                 })
                 .catch((error) => {
                     if (error.response) {
@@ -320,6 +364,9 @@ export default {
                 )
                 .then((res) => {
                     this.newAdventure = res.data;
+                    this.ParseAdditionalEquipment(
+                        this.newAdventure.additionalEquipment
+                    );
                     console.log(res.data);
                 })
                 .catch((err) => console.log(err));
@@ -352,6 +399,59 @@ export default {
                             });
                     }
                 });
+        },
+        ClearTag(tagName) {
+            for (let i = 0; i < this.additionalEquipmentArray.length; i++) {
+                if (this.additionalEquipmentArray[i].name == tagName) {
+                    this.additionalEquipmentArray.splice(i, 1);
+                    return;
+                }
+            }
+        },
+        AddTag() {
+            if (this.newTagName === "" || this.newTagPrice === "") {
+                return;
+            }
+            for (let tag of this.additionalEquipmentArray) {
+                if (tag.name == this.newTagName) {
+                    return;
+                }
+            }
+            this.additionalEquipmentArray.push({
+                name: this.newTagName,
+                price: this.newTagPrice,
+            });
+            this.newTagName = "";
+            this.newTagPrice = "";
+        },
+        ParseAdditionalEquipment(additionalEquipment) {
+            this.additionalEquipmentArray = new Array();
+            if (
+                additionalEquipment == null ||
+                additionalEquipment == undefined
+            ) {
+                return;
+            }
+
+            let receivedEq = additionalEquipment.split(";");
+            for (let eq of receivedEq) {
+                let name = eq.split(":")[0];
+                let price = eq.split(":")[1];
+                if (name === "" || price === "") {
+                    continue;
+                }
+                this.additionalEquipmentArray.push({
+                    name: name,
+                    price: price,
+                });
+            }
+        },
+        MergeAdditioanlEquipment() {
+            let ret = "";
+            for (let eq of this.additionalEquipmentArray) {
+                ret += eq.name + ":" + eq.price + ";";
+            }
+            return ret;
         },
     },
 };
@@ -458,5 +558,75 @@ button:disabled {
 
 span {
     margin-left: 100px;
+}
+
+.equipment-input {
+    height: 50px;
+    width: 165px;
+    outline: none;
+    border-radius: 25px;
+    padding-left: 20px;
+    padding-right: 10px;
+    -moz-appearance: textfield;
+}
+.equipment-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.add-equipment {
+    margin-top: 10px;
+    height: 40px;
+    outline: none;
+    border: none;
+    width: 60px;
+    border-radius: 25px;
+    background-color: #345fed;
+    color: white;
+    cursor: pointer;
+}
+
+.tag-div {
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: 10px;
+    max-width: 400px;
+}
+
+.tag {
+    margin-top: 5px;
+    margin-right: 7px;
+    font-size: 12px;
+    background-color: #345fed;
+    color: white;
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-image: url("../assets/white-x.png");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 23px 23px;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.horizontal-part {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.left {
+    margin-right: 10px;
 }
 </style>

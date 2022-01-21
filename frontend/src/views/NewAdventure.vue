@@ -103,12 +103,7 @@
                 placeholder="Terms of use"
                 v-model="newAdventure.termsOfUse"
             />
-            <input
-                type="text"
-                class="field"
-                placeholder="Additional equipment"
-                v-model="newAdventure.additionalEquipment"
-            />
+
             <input
                 type="text"
                 class="field"
@@ -156,9 +151,37 @@
                 <div class="error-msg">{{ error.$message }}</div>
             </div>
         </form>
-        <div>
-            <h3>Set initial availability period</h3>
-            <v-date-picker v-model="range" mode="dateTime" is-range />
+        <div class="input-wrapper">
+            <span class="label">Additional equipment:</span>
+            <div class="horizontal">
+                <div class="horizontal-part left">
+                    <input
+                        type="text"
+                        placeholder="Name:"
+                        class="equipment-input"
+                        v-model="newTagName"
+                    />
+                </div>
+                <div class="horizontal-part">
+                    <input
+                        type="number"
+                        placeholder="Price:"
+                        class="equipment-input"
+                        v-model="newTagPrice"
+                    />
+                </div>
+            </div>
+            <button class="add-equipment" @click="AddTag">Add</button>
+            <div class="tag-div">
+                <div
+                    v-for="tag in additionalEquipmentArray"
+                    :key="tag.name"
+                    class="tag"
+                    @click="ClearTag(tag.name)"
+                >
+                    {{ tag.name + ": " + tag.price }}
+                </div>
+            </div>
         </div>
     </div>
     <button @click="onSubmit" :disabled="v$.newAdventure.$invalid">
@@ -207,11 +230,10 @@ export default {
                 availableFrom: new Date(),
                 availableTo: new Date(),
             },
+            additionalEquipmentArray: [],
 
-            range: {
-                start: new Date(),
-                end: new Date(),
-            },
+            newTagName: "",
+            newTagPrice: "",
         };
     },
     validations() {
@@ -219,7 +241,11 @@ export default {
             newAdventure: {
                 name: { required },
                 address: { required },
-                longitude: { required, min: minValue(-180), max: maxValue(0) },
+                longitude: {
+                    required,
+                    min: minValue(-180),
+                    max: maxValue(180),
+                },
                 latitude: { required, min: minValue(-90), max: maxValue(90) },
                 promoDescription: { required },
                 pricePerDay: { required, min: minValue(0) },
@@ -234,10 +260,11 @@ export default {
             this.percentageToTake = 0;
         },
         onSubmit() {
-            console.log(this.newAdventure);
+            let eq = this.MergeAdditioanlEquipment();
+
+            console.log(eq);
+            this.newAdventure.additionalEquipment = eq;
             const adventure = Object.assign({}, this.newAdventure);
-            adventure.availableFrom = this.range.start;
-            adventure.availableTo = this.range.end;
             console.log(adventure);
 
             axios
@@ -258,6 +285,37 @@ export default {
                     }
                 });
         },
+        ClearTag(tagName) {
+            for (let i = 0; i < this.additionalEquipmentArray.length; i++) {
+                if (this.additionalEquipmentArray[i].name == tagName) {
+                    this.additionalEquipmentArray.splice(i, 1);
+                    return;
+                }
+            }
+        },
+        AddTag() {
+            if (this.newTagName === "" || this.newTagPrice === "") {
+                return;
+            }
+            for (let tag of this.additionalEquipmentArray) {
+                if (tag.name == this.newTagName) {
+                    return;
+                }
+            }
+            this.additionalEquipmentArray.push({
+                name: this.newTagName,
+                price: this.newTagPrice,
+            });
+            this.newTagName = "";
+            this.newTagPrice = "";
+        },
+        MergeAdditioanlEquipment() {
+            let ret = "";
+            for (let eq of this.additionalEquipmentArray) {
+                ret += eq.name + ":" + eq.price + ";";
+            }
+            return ret;
+        },
     },
 };
 </script>
@@ -274,7 +332,7 @@ export default {
     padding: 50px;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
 }
 
 button {
@@ -313,5 +371,68 @@ button {
 button[disabled="disabled"],
 button:disabled {
     background-color: rgb(74, 75, 77);
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.horizontal-part {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.left {
+    margin-right: 10px;
+}
+
+.equipment-input {
+    height: 50px;
+    width: 165px;
+    outline: none;
+    border-radius: 25px;
+    padding-left: 20px;
+    padding-right: 10px;
+    -moz-appearance: textfield;
+}
+.equipment-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.add-equipment {
+    margin-top: 10px;
+    height: 40px;
+    outline: none;
+    border: none;
+    width: 60px;
+    border-radius: 25px;
+    background-color: #345fed;
+    color: white;
+    cursor: pointer;
+}
+
+.tag-div {
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: 10px;
+    max-width: 400px;
+}
+
+.tag {
+    margin-top: 5px;
+    margin-right: 7px;
+    font-size: 12px;
+    background-color: #345fed;
+    color: white;
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-image: url("../assets/white-x.png");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 23px 23px;
 }
 </style>

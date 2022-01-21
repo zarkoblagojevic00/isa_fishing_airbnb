@@ -32,7 +32,22 @@
         </div>
         <div class="subheading">Additional equipment we offer you</div>
         <div class="flexbox-container card">
-            {{ adventure.additionalEquipment }}
+            <table class="reservations-table">
+                <thead>
+                    <tr>
+                        <th>Additional</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody v-for="eq in additionalEquipmentArray" :key="eq.name">
+                    <tr>
+                        <td class="left">{{ eq.name }}</td>
+                        <td class="left">
+                            {{ eq.price }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="subheading">Terms of use</div>
         <div class="flexbox-container card">
@@ -80,6 +95,7 @@ export default {
             currentRole: "",
             addressInfo: { longitude: 19.8227, latitude: 45.2396 },
             addressLoaded: false,
+            additionalEquipmentArray: [],
         };
     },
     computed: {},
@@ -92,6 +108,9 @@ export default {
                 )
                 .then((res) => {
                     this.adventure = res.data;
+                    this.ParseAdditionalEquipment(
+                        this.adventure.additionalEquipment
+                    );
                 })
                 .catch((err) => console.log(err));
         },
@@ -106,6 +125,29 @@ export default {
                     this.addressLoaded = true;
                     console.log(res.data);
                 });
+        },
+
+        ParseAdditionalEquipment(additionalEquipment) {
+            this.additionalEquipmentArray = new Array();
+            if (
+                additionalEquipment == null ||
+                additionalEquipment == undefined
+            ) {
+                return;
+            }
+
+            let receivedEq = additionalEquipment.split(";");
+            for (let eq of receivedEq) {
+                let name = eq.split(":")[0];
+                let price = eq.split(":")[1];
+                if (name === "" || price === "") {
+                    continue;
+                }
+                this.additionalEquipmentArray.push({
+                    name: name,
+                    price: price,
+                });
+            }
         },
     },
 };
@@ -245,5 +287,30 @@ button {
 .map {
     width: 500px;
     height: 500px;
+}
+
+.reservations-table {
+    border: solid 1px #ddeeee;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font: normal 13px Arial, sans-serif;
+}
+.reservations-table thead th {
+    background-color: #ddefef;
+    border: solid 1px #ddeeee;
+    color: #336b6b;
+    padding: 10px;
+    text-align: left;
+    text-shadow: 1px 1px 1px #fff;
+}
+.reservations-table tbody td {
+    border: solid 1px #ddeeee;
+    color: #333;
+    padding: 10px;
+    text-shadow: 1px 1px 1px #fff;
+}
+.left {
+    text-align: left;
+    width: 250px;
 }
 </style>

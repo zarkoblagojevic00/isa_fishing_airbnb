@@ -5,8 +5,8 @@
             :rotation="rotation"
             :projection="projection"
             :center="center"
-            :zoom="16"
-            :minZoom="8"
+            :zoom="10"
+            :minZoom="2"
             :maxZoom="18"
         />
 

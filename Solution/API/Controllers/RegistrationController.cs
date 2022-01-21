@@ -201,7 +201,7 @@ namespace API.Controllers
 
             UoW.Commit();
 
-            return Redirect(Details.BaseUrl + "login");
+            return LocalRedirect("~/login");
         }
 
         private User ExtractServiceOwner(ServiceOwnerRegistrationDTO userRegistrationData)

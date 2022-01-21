@@ -11,14 +11,19 @@
             />
         </div>
 
-        <div class="card-price">${{ adventure.pricePerDay }} per day</div>
+        <div class="card-price">${{ adventure.pricePerDay }} per hour</div>
     </div>
     <div class="sub-header">
         <p>{{ adventure.promoDescription }}</p>
     </div>
     <div class="flexbox-container">
         <InstructorInfo />
-        <Map />
+        <Map
+            v-if="addressLoaded"
+            :lon="addressInfo.longitude"
+            :lat="addressInfo.latitude"
+            class="map"
+        />
     </div>
     <div class="flex-column">
         <div class="subheading">Additional offers</div>
@@ -27,7 +32,22 @@
         </div>
         <div class="subheading">Additional equipment we offer you</div>
         <div class="flexbox-container card">
-            {{ adventure.additionalEquipment }}
+            <table class="reservations-table">
+                <thead>
+                    <tr>
+                        <th>Additional</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody v-for="eq in additionalEquipmentArray" :key="eq.name">
+                    <tr>
+                        <td class="left">{{ eq.name }}</td>
+                        <td class="left">
+                            {{ eq.price }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="subheading">Terms of use</div>
         <div class="flexbox-container card">
@@ -51,7 +71,7 @@
 
 <script>
 import InstructorInfo from "@/components/InstructorInfo.vue";
-import Map from "@/components/Map.vue";
+import Map from "@/components/DisplayMap.vue";
 import Navbar from "../components/Navbar.vue";
 import axios from "../api/api.js";
 
@@ -63,6 +83,7 @@ export default {
         Navbar,
     },
     mounted() {
+        this.loadAddressInfo();
         this.loadAdventure();
         this.currentRole = localStorage.getItem("role");
     },
@@ -72,6 +93,9 @@ export default {
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             adventure: {},
             currentRole: "",
+            addressInfo: { longitude: 19.8227, latitude: 45.2396 },
+            addressLoaded: false,
+            additionalEquipmentArray: [],
         };
     },
     computed: {},
@@ -84,11 +108,46 @@ export default {
                 )
                 .then((res) => {
                     this.adventure = res.data;
-                    console.log(res.data);
-                    this.range.start = res.data.availableFrom;
-                    this.range.end = res.data.availableTo;
+                    this.ParseAdditionalEquipment(
+                        this.adventure.additionalEquipment
+                    );
                 })
                 .catch((err) => console.log(err));
+        },
+        loadAddressInfo() {
+            axios
+                .get(
+                    "/api/Adventure/GetAddressInfoByAdventureId?adventureId=" +
+                        this.$route.params.id
+                )
+                .then((res) => {
+                    this.addressInfo = res.data;
+                    this.addressLoaded = true;
+                    console.log(res.data);
+                });
+        },
+
+        ParseAdditionalEquipment(additionalEquipment) {
+            this.additionalEquipmentArray = new Array();
+            if (
+                additionalEquipment == null ||
+                additionalEquipment == undefined
+            ) {
+                return;
+            }
+
+            let receivedEq = additionalEquipment.split(";");
+            for (let eq of receivedEq) {
+                let name = eq.split(":")[0];
+                let price = eq.split(":")[1];
+                if (name === "" || price === "") {
+                    continue;
+                }
+                this.additionalEquipmentArray.push({
+                    name: name,
+                    price: price,
+                });
+            }
         },
     },
 };
@@ -223,5 +282,35 @@ button {
     position: absolute;
     left: -9px;
     top: 17px;
+}
+
+.map {
+    width: 500px;
+    height: 500px;
+}
+
+.reservations-table {
+    border: solid 1px #ddeeee;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font: normal 13px Arial, sans-serif;
+}
+.reservations-table thead th {
+    background-color: #ddefef;
+    border: solid 1px #ddeeee;
+    color: #336b6b;
+    padding: 10px;
+    text-align: left;
+    text-shadow: 1px 1px 1px #fff;
+}
+.reservations-table tbody td {
+    border: solid 1px #ddeeee;
+    color: #333;
+    padding: 10px;
+    text-shadow: 1px 1px 1px #fff;
+}
+.left {
+    text-align: left;
+    width: 250px;
 }
 </style>

@@ -81,8 +81,10 @@
 </template>
 
 <script>
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "ViewVillas",
+    mixins: [swalCommons],
     props: {
         changeMode: Function,
         changeChosenVilla: Function,
@@ -115,10 +117,12 @@ export default {
             })
                 .then((response) => {
                     if (response.status != 200) {
-                        alert(
-                            "Something went wrong!\nStatus code: " +
-                                response.status
-                        );
+                        vue.toast.fire({
+                            icon: "error",
+                            title:
+                                "Something went wrong!\nStatus code: " +
+                                response.status,
+                        });
                         return;
                     }
                     return response.json();

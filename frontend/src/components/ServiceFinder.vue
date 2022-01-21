@@ -1,12 +1,12 @@
 <template>
     <div class="wrapper shadow-item">
-        <div class="title">{{ title }}</div>
+        <div class="search-title">{{ title }}</div>
         <form class="form-wrapper">
             <div v-if="reservation" class="step step-container">
                 1. Enter reservation details
                 <span class="step-explanation">required</span>
             </div>
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label">Reservation time</span>
                 <Datepicker
                     class="date-range"
@@ -14,6 +14,8 @@
                     range
                     twoCalendars
                     placeholder="Select a date range"
+                    :partialRange="false"
+                    :clearable="false"
                     :enableTimePicker="false"
                     :minDate="minDate"
                     :inputClassName="isValidDatePicker ? '' : 'control-invalid'"
@@ -23,7 +25,7 @@
                 >
             </div>
 
-            <div class="input-wrapper capacity">
+            <div class="control-wrapper capacity">
                 <span class="input-label">Number of people</span>
                 <NumInputRange
                     v-model="searchParams.capacity"
@@ -36,7 +38,7 @@
 
             <div v-if="reservation" class="step">2. Narrow your search</div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Price range
                     <span class="step-explanation">$/day</span>
@@ -50,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label">Mark</span>
                 <select
                     class="control transition-ease"
@@ -63,7 +65,7 @@
                 </select>
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Name
                     <span class="step-explanation">
@@ -79,7 +81,7 @@
                 />
             </div>
 
-            <div class="input-wrapper">
+            <div class="control-wrapper">
                 <span class="input-label step-container"
                     >Location
                     <span class="step-explanation">
@@ -140,20 +142,21 @@ export default {
             type: Function,
             required: true,
         },
-        fromDate: {
-            type: Date,
-            default: moment().add(1, "days").toDate(),
-        },
-        toDate: {
-            type: Date,
-            default: moment().add(8, "days").toDate(),
-        },
         reservation: {
             type: Boolean,
             default: false,
         },
     },
     data() {
+        const fromDateString = localStorage.getItem("fromDate");
+        const toDateString = localStorage.getItem("toDate");
+
+        const fDate = fromDateString
+            ? new Date(Date.parse(fromDateString))
+            : moment().add(20, "days").toDate();
+        const tDate = toDateString
+            ? new Date(Date.parse(toDateString))
+            : moment().add(25, "days").toDate();
         return {
             searchParams: {
                 name: "",
@@ -165,10 +168,7 @@ export default {
             },
             fromToPrice: [10, 60],
             minDate: moment().add(1, "days").toDate(),
-            fromToDate: [
-                moment().add(20, "days").toDate(),
-                moment().add(30, "days").toDate(),
-            ],
+            fromToDate: [fDate, tDate],
         };
     },
 
@@ -178,6 +178,8 @@ export default {
 
     methods: {
         async onSearch() {
+            localStorage.setItem("fromDate", this.fromToDate[0]);
+            localStorage.setItem("toDate", this.fromToDate[1]);
             if (!this.isValidDatePicker) {
                 alert("Please insert all the required data in valid format!");
                 return;
@@ -202,22 +204,6 @@ export default {
             return this.fromToDate && this.fromToDate[1];
         },
     },
-
-    watch: {
-        fromToDate: {
-            handler(newValue, oldValue) {
-                console.log(oldValue);
-                if (!newValue) {
-                    this.$emit("update:fromDate", null);
-                    this.$emit("update:toDate", null);
-                } else {
-                    this.$emit("update:fromDate", newValue[0]);
-                    this.$emit("update:toDate", newValue[1]);
-                }
-            },
-            immediate: true,
-        },
-    },
 };
 </script>
 
@@ -230,7 +216,7 @@ export default {
     background: #fdfdfd;
 }
 
-.title {
+.search-title {
     font-size: 1.4rem;
     text-align: left;
     margin-bottom: 1.3em;
@@ -243,6 +229,10 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     align-items: space-between;
+}
+
+.control-wrapper {
+    margin-bottom: 0.9em;
 }
 
 .step-container {

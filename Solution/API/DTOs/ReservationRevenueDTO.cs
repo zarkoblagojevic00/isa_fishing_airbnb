@@ -23,5 +23,6 @@ namespace API.DTOs
         public DateTime? ServiceStart { get; set; }
         [Required(ErrorMessage = "End date is required!")]
         public DateTime? ServiceEnd { get; set; }
+        public string AdditionalEquipment { get; set; }
     }
 }

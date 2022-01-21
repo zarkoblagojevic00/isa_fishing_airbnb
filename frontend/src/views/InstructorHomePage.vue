@@ -1,6 +1,5 @@
 <template>
     <Navbar :baseUrl="baseUrlInstructor" :navbarItems="navbarItems" />
-    <h1>Instructor</h1>
 </template>
 
 <script>
@@ -22,6 +21,9 @@ export default {
             ],
             baseUrlInstructor: "/instructor/",
         };
+    },
+    mounted() {
+        this.$router.push(this.baseUrlInstructor + "services");
     },
 };
 </script>

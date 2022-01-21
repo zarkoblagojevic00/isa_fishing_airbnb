@@ -2,6 +2,7 @@
     --default: #888;
     --white: #fafafa;
     --primary: #ada;
+    --primary-transparency: 170, 221, 170;
     --primary-dark: #77b577;
     --primary-comp: #b655a0;
     --primary-comp-dark: #9b3f86;
@@ -165,7 +166,6 @@
 
 .sidebar {
     max-width: 20%;
-    margin-right: 35px; 
     margin-bottom: 30px;
     
     /* Stick to the top left corner */

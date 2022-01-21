@@ -46,6 +46,14 @@ namespace Infrastructure
             {
                 //TODO: PostgreSql
             }
+            else if (DbType == "Test")
+            {
+                configuration
+                    .SetProperty(Environment.ReleaseConnections, "on_close")
+                    .SetProperty(Environment.Dialect, typeof(MsSql2008Dialect).AssemblyQualifiedName)
+                    .SetProperty(Environment.ConnectionDriver, typeof(Sql2008ClientDriver).AssemblyQualifiedName)
+                    .SetProperty(Environment.ConnectionString, "data source=:memory:");
+            }
 
             var mapper = new ModelMapper();
 

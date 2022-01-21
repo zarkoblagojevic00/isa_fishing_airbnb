@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <img
-            src="../assets/gallery-item-1.jpg"
+            src="../assets/adventure-placeholder.jpg"
             alt="Avatar"
             style="width: 100%"
         />

@@ -58,10 +58,19 @@ export default {
             });
         },
         onRespondToIssue(issue) {
-            axios.put("/api/Admin/RespondToIssue", issue).then(() => {
-                this.loadIssues();
-                this.$swal.fire("Response sent to coresponding emails.");
-            });
+            axios
+                .put("/api/Admin/RespondToIssue", issue)
+                .then(() => {
+                    this.loadIssues();
+                    this.$swal.fire("Response sent to coresponding emails.");
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        this.loadIssues();
+                        this.$swal.fire(error.response.data);
+                    }
+                });
         },
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");

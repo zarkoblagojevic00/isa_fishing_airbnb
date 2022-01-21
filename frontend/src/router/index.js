@@ -30,6 +30,7 @@ import AdminIssues from "../views/AdminIssues.vue";
 import InstructorAnalytics from "../views/InstructorAnalytics.vue";
 import BoatProfile from "../views/BoatProfile.vue";
 import NewAdventureReservation from "../views/NewAdventureReservation.vue";
+import VillasPromoExpo from "../views/VillasPromoExpo.vue";
 
 const routes = [
     {
@@ -46,6 +47,11 @@ const routes = [
         path: "/villas",
         name: "VillasExpo",
         component: VillasExpo,
+    },
+    {
+        path: "/villas-promo",
+        name: "VillasPromoExpo",
+        component: VillasPromoExpo,
     },
     {
         path: "/villas/details",

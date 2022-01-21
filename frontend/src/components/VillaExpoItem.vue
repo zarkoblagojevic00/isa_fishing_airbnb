@@ -42,8 +42,24 @@
             <div class="ammenity-container">
                 <div class="ammenity">Beds: {{ villa.numberOfBeds }}</div>
                 <div class="ammenity">Rooms: {{ villa.numberOfRooms }}</div>
-                <div class="ammenity">Wi-Fi</div>
-                <div class="ammenity">Pet friendly</div>
+                <div
+                    class="ammenity"
+                    v-for="i in baseEquipmentEntries.length <= 3
+                        ? baseEquipmentEntries.length
+                        : 3"
+                    :key="i"
+                >
+                    {{ baseEquipmentEntries[i - 1][0] }}
+                </div>
+                <div
+                    class="ammenity"
+                    v-for="i in additionalEquipmentEntries.length <= 2
+                        ? additionalEquipmentEntries.length
+                        : 2"
+                    :key="i"
+                >
+                    {{ additionalEquipmentEntries[i - 1][0] }}
+                </div>
                 <button
                     v-if="isRegistered"
                     class="clickable primary transition-ease book-service"
@@ -65,26 +81,35 @@ import StarRating from "vue-star-rating";
 import BookVilla from "./BookVilla.ce.vue";
 import generalService from "../services/general-service.js";
 import { getId } from "../utils/local-storage-util.js";
+import equipmentPicker from "../mixins/equipment-picker.js";
+import stateDateLoader from "../mixins/state-date-loader.js";
 
 export default {
     name: "VillaExpoItem",
     components: {
         StarRating,
     },
-    mixins: [fetchImageBackground, roleValidator, vnodeInSwal, swalCommons],
+    mixins: [
+        fetchImageBackground,
+        roleValidator,
+        vnodeInSwal,
+        swalCommons,
+        equipmentPicker,
+        stateDateLoader,
+    ],
     props: {
         villa: {
             type: Object,
             required: true,
         },
-        fromDate: {
-            type: Date,
-            required: true,
-        },
-        toDate: {
-            type: Date,
-            required: true,
-        },
+    },
+
+    created() {
+        this.parseEquipment(
+            this.villa.additionalEquipment ||
+                "stavka1:0;stavka2:5;stavka3:10;stavka4:0;stavka5:10;stavka6:5;stavka7:10;stavka8:10;stavka9:10;stavka10:5;stavka11:10;stavka12:10"
+        );
+        console.log(this.equipment);
     },
 
     methods: {

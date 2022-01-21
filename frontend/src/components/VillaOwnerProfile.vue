@@ -85,7 +85,9 @@
 </template>
 
 <script>
+import swalCommons from "../mixins/swal-commons.js";
 export default {
+    mixins: [swalCommons],
     name: "VillaOwnerProfile",
     data() {
         return {
@@ -198,7 +200,10 @@ export default {
             });
 
             if (response.ok) {
-                alert("Successfully updated!");
+                this.toast.fire({
+                    icon: "success",
+                    title: "Successfully updated!",
+                });
                 this.GetInfo();
                 return;
             }
@@ -212,7 +217,10 @@ export default {
             }
 
             if (error.constructor == "".constructor) {
-                alert("Something went wrong!\nError message: " + error);
+                this.toast.fire({
+                    icon: "error",
+                    title: "Something went wrong!\nError message: " + error,
+                });
             } else {
                 let errors = error.errors;
                 for (let err of errors) {

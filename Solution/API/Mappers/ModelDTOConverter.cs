@@ -9,7 +9,7 @@ namespace API.Mappers
 {
     public static class ModelDTOConverter
     {
-        public static Service ToModel(this AdventureDTO dto)
+        public static Service ToModel(this AdventureDTO dto, City city)
         {
             if (dto == null) return null;
 
@@ -29,7 +29,8 @@ namespace API.Mappers
                 PercentageToTake = dto.PercentageToTake,
                 OwnerId = dto.OwnerId,
                 AvailableFrom = dto.AvailableFrom,
-                AvailableTo = dto.AvailableTo
+                AvailableTo = dto.AvailableTo,
+                CityId = city.CityId,
             };
         }
 

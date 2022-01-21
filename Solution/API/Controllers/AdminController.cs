@@ -235,6 +235,7 @@ namespace API.Controllers
                     UserId = revenue.u.UserId,
                     UserName = revenue.u.Name,
                     UserSurname = revenue.u.Surname,
+                    AdditionalEquipment = revenue.rs.r.AdditionalEquipment,
                 });
 
             return Ok(reservationRevenueInfos);
@@ -347,15 +348,31 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult ApproveMarkRequest(UserMarkInformationDTO mark)
         {
-            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
-            oldMark.IsReviewed = true;
-            oldMark.IsApproved = true;
+            MarkLocker markLocker = new MarkLocker(UoW);
+            Mark oldMark;
 
             try
             {
                 UoW.BeginTransaction();
+
+                try
+                {
+                    oldMark = markLocker.ObtainLockedMark(mark.MarkId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (oldMark == null || oldMark.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with mark request.");
+                }
+
+                
+                oldMark.IsReviewed = true;
+                oldMark.IsApproved = true;
                 UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
-                UoW.Commit();
 
                 var mailService = new MailingService(UoW)
                 {
@@ -364,6 +381,10 @@ namespace API.Controllers
                     Title = "Mark review"
                 };
                 mailService.Send();
+
+                UoW.Commit();
+
+
             }
             catch (Exception e)
             {
@@ -378,13 +399,28 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult DeclineMarkRequest(UserMarkInformationDTO mark)
         {
-            var oldMark = UoW.GetRepository<IMarkReadRepository>().GetById(mark.MarkId);
-            oldMark.IsReviewed = true;
-            oldMark.IsApproved = false;
-
+            MarkLocker markLocker = new MarkLocker(UoW);
+            Mark oldMark;
             try
             {
                 UoW.BeginTransaction();
+                try
+                {
+                    oldMark = markLocker.ObtainLockedMark(mark.MarkId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if(oldMark == null || oldMark.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with mark request.");
+                }
+
+                
+                oldMark.IsReviewed = true;
+                oldMark.IsApproved = false;
                 UoW.GetRepository<IMarkWriteRepository>().Update(oldMark);
                 UoW.Commit();
 
@@ -392,7 +428,7 @@ namespace API.Controllers
             catch (Exception e)
             {
                 UoW.Rollback();
-                return BadRequest("Approval failed.");
+                return BadRequest("Review failed.");
             }
             return Ok("Mark reviewed");
 
@@ -403,24 +439,41 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult RespondToIssue(IssueInformationDTO issue)
         {
-            var oldIssue = UoW.GetRepository<IIssueReadRepository>().GetById(issue.IssueId);
-            oldIssue.IsReviewed = true;
-
-
+            Issue oldIssue;
+            var issueLocker = new IssueLocker(UoW);
             try
             {
                 UoW.BeginTransaction();
+                try
+                {
+                    oldIssue = issueLocker.ObtainLockedIssue(issue.IssueId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                if (oldIssue == null || oldIssue.IsReviewed)
+                {
+                    return BadRequest("Issue not found.");
+                }
+
+                oldIssue.IsReviewed = true;
+
                 UoW.GetRepository<IIssueWriteRepository>().Update(oldIssue);
-                UoW.Commit();
+
                 var mailService = new MailingService(UoW)
                 {
                     Body = GenerateIssueReviewMailBody(issue),
-                    Receiver = issue.UserEmail,
+                    Receiver = issue.ServiceOwnerEmail,
                     Title = "Issue review"
                 };
                 mailService.Send();
-                mailService.Receiver = issue.ServiceOwnerEmail;
+                mailService.Receiver = issue.UserEmail;
                 mailService.Send();
+
+                UoW.Commit();
+                
             }
             catch (Exception e)
             {
@@ -435,25 +488,40 @@ namespace API.Controllers
         [TypeFilter(typeof(CustomAdminAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
         public IActionResult RespondAccountDeletionRequest(AccountDeletionRequestViewDTO request)
         {
-            var oldRequest = UoW.GetRepository<IAccountDeletionRequestReadRepository>().GetAll()
-                .Where(req => request.UserId == request.UserId).FirstOrDefault();
-            oldRequest.IsReviewed = true;
-            oldRequest.IsApproved = request.IsApproved;
-
+            var adminService = new AdminRequestsService(UoW);
 
             try
             {
-                bool deleted = false;
+                UoW.BeginTransaction();
+                AccountDeletionRequest oldRequest = new AccountDeletionRequest();
+                try
+                {
+                    oldRequest = new AccountDeletionRequestLocker(UoW).ObtainLockedAccountDeletionRequest(request.UserId);
+                }
+                catch
+                {
+                    return BadRequest(Responses.UnavailableRightNow);
+                }
+
+                oldRequest.IsReviewed = true;
+                oldRequest.IsApproved = request.IsApproved;
+
                 if (request.IsApproved)
                 {
-                    deleted = DeleteRequestedUser(request.UserId);
-                    if (!deleted)
+                    bool canBeDeleted = adminService.CanUserBeDeleted(request.UserId);
+                    
+                    if (!canBeDeleted)
                     {
-                        return BadRequest(Responses.CannotRequestDeletion);
+                        return BadRequest(Responses.UserCannotBeDeleted);
                     }
+
+                    var user = UoW.GetRepository<IUserReadRepository>().GetById(request.UserId);
+                    adminService.DeleteRequestedUser(user);
+
                 }
-                UoW.BeginTransaction();
+                
                 UoW.GetRepository<IAccountDeletionRequestWriteRepository>().Update(oldRequest);
+
                 UoW.Commit();
 
                 var mailService = new MailingService(UoW)
@@ -531,6 +599,61 @@ namespace API.Controllers
         }
 
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult CalculateFinishedReservationsRevenue(RevenueRangeDTO revenueRange)
+        {
+            if (revenueRange == null)
+            {
+                return BadRequest("Bad revenue range");
+            }
+
+            revenueRange.Start = revenueRange.Start.ToLocalTime();
+            revenueRange.End = revenueRange.End.ToLocalTime();
+
+            var services = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll();
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(res => res.EndDateTime < revenueRange.End && res.EndDateTime > revenueRange.Start && !res.IsCanceled);
+
+            var systemConfig = UoW.GetRepository<ISystemConfigReadRepository>()
+                .GetAll()
+                .Where(con => con.Name == "MoneyPercentageSystemTakes")
+                .FirstOrDefault();
+
+            if(systemConfig == null)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+            double percentageSystemTakes;
+            bool success = double.TryParse(systemConfig.Value, out percentageSystemTakes);
+
+
+            if (!success)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+
+            double totalPrice = 0;
+            foreach (var reservation in reservations)
+            {
+                TimeSpan span = reservation.EndDateTime.Subtract(reservation.StartDateTime);
+                double hours = span.TotalHours;
+                var parsedEquipment = ParseAdditionalEquipment(reservation.AdditionalEquipment);
+                totalPrice += reservation.Price * hours;
+                foreach (var eq in parsedEquipment)
+                {
+                    totalPrice += eq.Price * hours;
+                }
+            }
+            return Ok(totalPrice * percentageSystemTakes * 0.01);
+        }
+
+
         private string GenerateMarkReviewMailBody(UserMarkInformationDTO mark)
         {
             var stringBuilder = new StringBuilder();
@@ -584,54 +707,40 @@ namespace API.Controllers
             return stringBuilder.ToString();
         }
 
-        private bool DeleteRequestedUser(int userId)
+        private List<AdditionalEquipmentDTO> ParseAdditionalEquipment(string additionalEquipment)
         {
-            var services = UoW.GetRepository<IServiceReadRepository>().GetAll()
-                            .Where(service => service.OwnerId == userId);
-
-            var userReservationDates = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && x.UserId == userId && !x.IsCanceled);
-
-            var ownerReservationDates = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(x => x.EndDateTime >= DateTime.Now && services.Any(service => service.ServiceId == x.ServiceId) && !x.IsCanceled);
-
-
-            if (userReservationDates.Any() || ownerReservationDates.Any())
+            List<AdditionalEquipmentDTO> additionalEquipmentArray = new List<AdditionalEquipmentDTO>();
+            if (additionalEquipment == null || additionalEquipment == "")
             {
-                return false;
+                return additionalEquipmentArray;
             }
 
-            try
+            var receivedEq = additionalEquipment.Split(";");
+            foreach (var eq in receivedEq)
             {
-
-                UoW.BeginTransaction();
-
-                var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
-                    .FirstOrDefault(x => x.UserId == userId);
-
-                var user = UoW.GetRepository<IUserReadRepository>().GetById(userId);
-
-                if (user.UserType == UserType.Admin)
+                if (eq == "" || eq == null)
                 {
-                    UoW.Rollback();
-                    return false;
+                    continue;
                 }
+                string name = eq.Split(":")[0];
+                string price = eq.Split(":")[1];
 
-                if (additionalInstructorInfo != null)
-                    UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>().Delete(additionalInstructorInfo);
+                double priceVal;
+                bool success = double.TryParse(price, out priceVal);
 
-                UoW.GetRepository<IUserWriteRepository>().Delete(user);
 
-                UoW.Commit();
+                if (!success || name == "" || price == "")
+                {
+                    continue;
+                }
+                additionalEquipmentArray.Add(new AdditionalEquipmentDTO
+                {
+                    Name = name,
+                    Price = priceVal,
+                });
             }
-            catch (Exception e)
-            {
-                UoW.Rollback();
-                return false;
-            }
-            return true;
+
+            return additionalEquipmentArray;
         }
     }
 }

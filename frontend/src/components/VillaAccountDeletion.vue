@@ -31,8 +31,10 @@
 </template>
 
 <script>
+import swalCommons from "../mixins/swal-commons.js";
 export default {
     name: "VillaAccountDeletion",
+    mixins: [swalCommons],
     data() {
         return {
             reason: "",
@@ -67,7 +69,10 @@ export default {
             })
                 .then((response) => {
                     if (response.ok) {
-                        alert("Account deletion request noted!");
+                        vue.toast.fire({
+                            icon: "info",
+                            title: "Account deletion request noted!",
+                        });
                         vue.reason = "";
                         return "";
                     } else {
@@ -88,6 +93,10 @@ export default {
 
                     if (message.constructor == "".constructor) {
                         vue.errors.push(message);
+                        vue.toast.fire({
+                            icon: "error",
+                            title: message,
+                        });
                     } else {
                         for (let key in message) {
                             for (let err of message[key]) {

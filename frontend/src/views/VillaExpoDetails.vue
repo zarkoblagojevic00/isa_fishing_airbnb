@@ -14,16 +14,20 @@
                     <label for="villamark">Average Mark</label>
                     <div class="stars">
                         <star-rating
-                            :rating="3.6"
+                            v-if="villa.averageMark"
+                            :rating="villa.averageMark"
                             :increment="0.1"
                             :max-rating="5"
-                            :star-size="35"
+                            :star-size="20"
                             inactive-color="#555"
                             active-color="#ada"
                             read-only
                             :show-rating="true"
                         >
                         </star-rating>
+                        <div v-else class="expo-details-not-reviewed">
+                            Not reviewed
+                        </div>
                     </div>
                 </div>
                 <div class="price">
@@ -38,38 +42,150 @@
                     readonly
                     :value="`${villa.address}, Novi Sad, Serbia ${villa.latitude} ${villa.longitude}`"
                 />
-                <div class="loc-info-map"></div>
+                <div class="loc-info-map">
+                    <DisplayMap
+                        :lon="villa.longitude"
+                        :lat="villa.latitude"
+                    ></DisplayMap>
+                </div>
             </div>
             <div class="desc-info">
                 <label for="description">Description</label>
                 <textarea v-model="villa.promoDescription" />
             </div>
-            <div class="ammen-info">
-                <label>Amennities</label>
-                <div class="additional">
-                    <div class="ammenity">Beds: {{ villa.numberOfBeds }}</div>
-                    <div class="ammenity">Rooms: {{ villa.numberOfRooms }}</div>
-                    <div class="ammenity">Wi-Fi</div>
-                    <div class="ammenity">Pet friendly</div>
+            <div class="ammen-flex">
+                <div class="ammen-flex-comp">
+                    <div class="ammen-flex-comp-title">Other info</div>
+                    <div class="ammen-equip-container vertical-scroll-no-bar">
+                        <div class="equip-item shadow-item">
+                            <div class="ammen-equip-left">Beds</div>
+                            <div class="ammen-equip-right">
+                                {{ villa.numberOfBeds }}
+                            </div>
+                        </div>
+                        <div class="equip-item shadow-item">
+                            <div class="ammen-equip-left">Rooms</div>
+                            <div class="ammen-equip-right">
+                                {{ villa.numberOfRooms }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ammen-flex-comp">
+                    <div class="ammen-flex-comp-title">Base ammenities</div>
+                    <div class="ammen-equip-container vertical-scroll-no-bar">
+                        <div
+                            class="equip-item shadow-item"
+                            v-for="(value, name, index) in baseEquipment"
+                            :key="index"
+                        >
+                            {{ name }}
+                        </div>
+                    </div>
+                </div>
+                <div class="ammen-flex-comp">
+                    <div class="ammen-flex-comp-title">Paid ammenities</div>
+                    <div class="ammen-equip-container vertical-scroll-no-bar">
+                        <div
+                            class="equip-item shadow-item"
+                            v-for="(value, name, index) in additionalEquipment"
+                            :key="index"
+                        >
+                            {{ name }}
+                            <span class="equip-item-right-end">
+                                <span class="money">
+                                    {{ value.price }} $/day</span
+                                >
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <button
+        v-if="isRegistered"
+        class="clickable primary transition-ease book-service-details"
+        @click.stop="openBookServiceDialog"
+    >
+        Book
+    </button>
 </template>
 
 <script>
 import BaseCarousel from "../components/BaseCarousel.vue";
 import StarRating from "vue-star-rating";
+import DisplayMap from "../components/DisplayMap.vue";
+import equipmentPicker from "../mixins/equipment-picker.js";
+import generalService from "../services/general-service.js";
+import BookVilla from "../components/BookVilla.ce.vue";
+import { getId } from "../utils/local-storage-util.js";
+import roleValidator from "../mixins/role-validator.js";
+import vnodeInSwal from "../mixins/vnode-in-swal.js";
+import swalCommons from "../mixins/swal-commons.js";
+import stateDateLoader from "../mixins/state-date-loader.js";
+
 export default {
     name: "VillaExpoDetails",
     components: {
         BaseCarousel,
         StarRating,
+        DisplayMap,
     },
+    mixins: [
+        equipmentPicker,
+        vnodeInSwal,
+        swalCommons,
+        roleValidator,
+        stateDateLoader,
+    ],
     data() {
         return {
             villa: JSON.parse(localStorage.getItem("villa")),
         };
+    },
+    created() {
+        this.parseEquipment(
+            this.villa.additionalEquipment ||
+                "stavka1:0;stavka2:5;stavka3:10;stavka4:0;stavka5:10;stavka6:5;stavka7:10;stavka8:10;stavka9:10;stavka10:5;stavka11:10;stavka12:10"
+        );
+        console.log(this.equipment);
+    },
+    unmounted() {
+        localStorage.removeItem("villa");
+    },
+    methods: {
+        openBookServiceDialog() {
+            this.showComponent(
+                BookVilla,
+                {
+                    villa: this.villa,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                    userId: getId(),
+                },
+                this.bookSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    this.handleReservationResult(componentRes);
+                }
+            );
+        },
+        async handleReservationResult(componentRes) {
+            this.$router.push({ name: "VillasExpo" });
+            try {
+                await generalService.makeReservation(componentRes);
+                this.toast.fire({
+                    icon: "success",
+                    title: "You reservation was successful. Check your email for reservation details!",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Service was made unavailable or was reserved before you finished reservation",
+                });
+            }
+        },
     },
 };
 </script>
@@ -96,8 +212,8 @@ h2 {
 }
 
 .info {
+    height: 130vh;
     max-width: 90%;
-    min-height: 120vh;
     margin: 10px auto;
     display: flex;
     flex-direction: column;
@@ -136,12 +252,20 @@ input {
 .mi-info .avgmark .stars {
     border-radius: 3px;
     width: 99%;
+    min-height: 2.28rem;
     border: 2px solid;
     padding: 4px 0 3px 5px;
 }
 
+.expo-details-not-reviewed {
+    margin-top: 0.3em;
+    margin-left: 0.1em;
+    display: flex;
+    justify-content: flex-start;
+}
+
 .loc-info {
-    min-height: 45vh;
+    min-height: 35%;
 }
 
 .loc-info label {
@@ -154,18 +278,11 @@ input {
 }
 
 .loc-info-map {
-    min-height: 350px;
-    background-image: url("../assets/map.png");
-    background-size: cover;
-    background-position: center;
-    border-radius: 5px;
+    min-width: 100%;
 }
 
 .desc-info {
-    min-height: 20vh;
-}
-
-.desc-info {
+    min-height: 20%;
     font-size: 1.2rem;
 }
 
@@ -177,40 +294,41 @@ input {
     margin: 0;
     color: #ada;
     width: stretch;
-    height: 205px;
+    height: 82%;
     font-size: 0.9em;
     padding: 5px 0.5em;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.ammen-info {
-    min-height: 15vh;
-    font-size: 1.2rem;
+.ammen-flex {
+    height: 20%;
+    display: flex;
+    justify-content: space-between;
 }
 
-.additional {
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    min-height: 25%;
-    max-height: 25%;
+.ammen-flex-comp {
+    text-align: left;
+    width: 30%;
 }
 
-.ammenity {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 2rem;
-    padding: 0.25em;
-    width: auto;
-    min-width: 70px;
-    height: 25px;
-    border-radius: 3px;
-    background: #aca;
-    outline: none;
-    color: #fff;
-    border: none;
-    font-size: 0.9rem;
+.ammen-flex-comp-title {
+    font-size: 1.4rem;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid var(--control-border-color-focused);
+}
+
+.ammen-equip-container {
+    max-height: 80%;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    color: var(--default);
+}
+
+.book-service-details {
+    width: 8%;
+    position: fixed;
+    font-size: 1.5rem;
+    bottom: 35%;
+    right: 10px;
 }
 </style>

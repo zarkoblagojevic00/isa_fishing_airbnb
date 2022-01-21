@@ -16,18 +16,16 @@ namespace Services.Validators
         {
             UoW = uow;
         }
-        private IEnumerable<Reservation> GetAllReservationsForOwnerInPeriod(int ownerId, DateTime periodStart, DateTime periodEnd)
-        {
-            var services = UoW.GetRepository<IServiceReadRepository>()
-               .GetAll()
-               .Where(x => x.OwnerId == ownerId);
 
-            var reservations = UoW.GetRepository<IReservationReadRepository>()
-                .GetAll()
-                .Where(res => (res.StartDateTime <= periodEnd && res.EndDateTime >= periodStart));
+        public UserUnavailabilityValidationService() { }
+
+
+        public IEnumerable<Reservation> FindReservationsForOwnerInPeriod(IEnumerable<Reservation> allReservations, IEnumerable<Service> ownerServices, DateTime periodStart, DateTime periodEnd)
+        {
+            var reservations = allReservations.Where(res => (res.StartDateTime <= periodEnd && res.EndDateTime >= periodStart));
 
             var userReservations = reservations
-                .Join(services, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
+                .Join(ownerServices, r => r.ServiceId, a => a.ServiceId, (r, a) => new { r, a })
                 .Select(reservation => new Reservation
                 {
                     ReservationId = reservation.r.ReservationId,
@@ -44,7 +42,7 @@ namespace Services.Validators
 
         }
 
-        private IEnumerable<UserAvailability> GetAllUnavailabilityPeriods(int ownerId, DateTime periodStart, DateTime periodEnd)
+        public IEnumerable<UserAvailability> GetAllUnavailabilityPeriods(int ownerId, DateTime periodStart, DateTime periodEnd)
         {
             var instructorAvailabilityPeriods = UoW.GetRepository<IUserAvailabilityReadRepository>().GetAll()
                 .Where(x => x.UserId == ownerId)
@@ -54,7 +52,7 @@ namespace Services.Validators
 
         }
 
-        private IEnumerable<PromoAction> GetAllPromoActionsForOwnerInPeriod(int ownerId, DateTime periodStart, DateTime periodEnd)
+        public IEnumerable<PromoAction> GetAllPromoActionsForOwnerInPeriod(int ownerId, DateTime periodStart, DateTime periodEnd)
         {
             var services = UoW.GetRepository<IServiceReadRepository>()
                .GetAll()
@@ -82,11 +80,8 @@ namespace Services.Validators
 
         }
 
-        public bool CanUnavailabilityPeriodBeAdded(int ownerId, DateTime periodStart, DateTime periodEnd)
+        public bool CanUnavailabilityPeriodBeAdded(IEnumerable<Reservation> reservations, IEnumerable<PromoAction> promoActions, IEnumerable<UserAvailability> userAvailabilities)
         {
-            var reservations = GetAllReservationsForOwnerInPeriod(ownerId, periodStart, periodEnd);
-            var promoActions = GetAllPromoActionsForOwnerInPeriod(ownerId, periodStart, periodEnd);
-            var userAvailabilities = GetAllUnavailabilityPeriods(ownerId, periodStart, periodEnd);
             if (reservations.Any() || promoActions.Any() || userAvailabilities.Any())
             {
                 return false;

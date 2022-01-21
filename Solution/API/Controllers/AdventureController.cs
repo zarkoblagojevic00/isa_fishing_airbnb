@@ -29,14 +29,28 @@ namespace API.Controllers
         public IActionResult AddAdventure(AdventureDTO adventure)
         {
             var ownerId = GetUserIdFromCookie();
+            if(adventure == null)
+            {
+                return BadRequest("No adventure passed.");
+            }
             adventure.OwnerId = ownerId;
+
+            var city = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .Where(ci => ci.Name == adventure.CityName)
+                .FirstOrDefault();
+
+            if(city == null)
+            {
+                return BadRequest("City not found.");
+            }
 
             var serviceRepository = UoW.GetRepository<IServiceWriteRepository>();
             var adventureAdditionalInfoRepository = UoW.GetRepository<IAdditionalAdventureInfoWriteRepository>();
 
             var existingAdventure = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
-                .FirstOrDefault(x => x.Name == adventure.Name && x.OwnerId == GetUserIdFromCookie());
+                .FirstOrDefault(x => x.Name == adventure.Name && x.OwnerId == ownerId);
 
             if (existingAdventure != null)
             {
@@ -47,7 +61,7 @@ namespace API.Controllers
             try
             {
                 UoW.BeginTransaction();
-                int serviceId = serviceRepository.AddAndGetInsertedId(adventure.ToModel());
+                int serviceId = serviceRepository.AddAndGetInsertedId(adventure.ToModel(city));
                 adventureAdditionalInfoRepository.Add(adventure.ToModel(serviceId));
                 adventure.AdventureId = serviceId;
                 UoW.Commit();
@@ -69,7 +83,14 @@ namespace API.Controllers
 
             if (adventure == null)
             {
-                return NotFound();
+                return BadRequest("Adventure not found");
+            }
+
+            var city = UoW.GetRepository<ICityReadRepository>().GetById(adventure.CityId);
+
+            if (city == null)
+            {
+                return BadRequest("City not found.");
             }
 
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
@@ -86,7 +107,6 @@ namespace API.Controllers
             {
                 Name = adventure.Name,
                 PricePerDay = adventure.PricePerDay,
-                CityName = UoW.GetRepository<ICityReadRepository>().GetById(adventure.CityId).Name,
                 Address = adventure.Address,
                 Longitude = adventure.Longitude,
                 Latitude = adventure.Latitude,
@@ -102,6 +122,7 @@ namespace API.Controllers
                 AdditionalOffers = additionalInformation.AdditionalOffers,
                 AdventureId = adventure.ServiceId,
                 ShortInstructorBiography = additionalInstructorInfo.ShortBiography,
+                CityName = city.Name,
             };
 
             adventureInfo.ImageIds = images.Select(x => x.ImageId);
@@ -110,40 +131,70 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Instructor })]
+        public IActionResult GetAdventureByName(string name)
+        {
+            var ownerId = GetUserIdFromCookie();
+
+            var adventure = UoW.GetRepository<IServiceReadRepository>()
+                .GetAll()
+                .Where(adv => adv.Name == name)
+                .Where(adv => adv.OwnerId == ownerId)
+                .FirstOrDefault();
+
+            if(adventure == null)
+            {
+                return BadRequest("No adventure with such name for user.");
+            }
+
+            return Ok(adventure);
+        }
+
+        [HttpGet]
         public IEnumerable<AdventureDTO> GetAllAdventures()
         {
             var adventures = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll();
+
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
                 .GetAll()
                 .Where(x => x.AdventureId.In(adventures.Select(y => y.ServiceId).ToArray()));
+
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>()
+                .GetAll();
+
+            var cities = UoW.GetRepository<ICityReadRepository>().GetAll();
 
             var images = UoW.GetRepository<IImageReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId.In(adventures.Select(y => y.ServiceId).ToArray()));
 
-            var allAdventures = adventures.Join(additionalInformation, x => x.ServiceId, y => y.AdventureId, (x, y) => new AdventureDTO()
-            {
-                Name = x.Name,
-                PricePerDay = x.PricePerDay,
-                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
-                Address = x.Address,
-                Longitude = x.Longitude,
-                Latitude = x.Latitude,
-                AvailableFrom = x.AvailableFrom,
-                AvailableTo = x.AvailableTo,
-                PromoDescription = x.PromoDescription,
-                TermsOfUse = x.TermsOfUse,
-                AdditionalEquipment = x.AdditionalEquipment,
-                Capacity = x.Capacity,
-                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
-                PercentageToTake = x.PercentageToTake,
-                OwnerId = x.OwnerId,
-                AdditionalOffers = y.AdditionalOffers,
-                AdventureId = x.ServiceId,
-                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
-                ImageIds = images.Where(x => x.ServiceId == y.AdventureId).Select(img => img.ImageId),
-        });
+            var allAdventures = adventures
+                .Join(additionalInformation, ad => ad.ServiceId, ai => ai.AdventureId, (ad, ai) => (ad, ai))
+                .Join(additionalInstructorInfo, adi => adi.ad.OwnerId, aii => aii.UserId, (adi, aii) => (adi, aii))
+                .Join(cities, adii => adii.adi.ad.CityId, c => c.CityId, (adii, c) => (adii, c))
+                .Select(information => new AdventureDTO
+            {                                
+                Name = information.adii.adi.ad.Name,
+                PricePerDay = information.adii.adi.ad.PricePerDay,
+                Address = information.adii.adi.ad.Address,
+                Longitude = information.adii.adi.ad.Longitude,
+                Latitude = information.adii.adi.ad.Latitude,
+                AvailableFrom = information.adii.adi.ad.AvailableFrom,
+                AvailableTo = information.adii.adi.ad.AvailableTo,
+                PromoDescription = information.adii.adi.ad.PromoDescription,
+                TermsOfUse = information.adii.adi.ad.TermsOfUse,
+                AdditionalEquipment = information.adii.adi.ad.AdditionalEquipment,
+                Capacity = information.adii.adi.ad.Capacity,
+                IsPercentageTakenFromCanceledReservations = information.adii.adi.ad.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = information.adii.adi.ad.PercentageToTake,
+                OwnerId = information.adii.adi.ad.OwnerId,
+                AdditionalOffers = information.adii.adi.ai.AdditionalOffers,
+                AdventureId = information.adii.adi.ad.ServiceId,
+                ShortInstructorBiography = information.adii.aii.ShortBiography,
+                ImageIds = images.Where(x => x.ServiceId == information.adii.adi.ai.AdventureId).Select(img => img.ImageId),
+                CityName = information.c.Name,
+            });
 
             return allAdventures;
         }
@@ -157,43 +208,48 @@ namespace API.Controllers
             var adventures = UoW.GetRepository<IServiceReadRepository>()
                 .GetAll()
                 .Where(x => x.OwnerId == ownerId);
+
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
                 .GetAll()
                 .Where(x => x.AdventureId.In(adventures.Select(y => y.ServiceId).ToArray()));
+
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>()
+                .GetAll();
+
+            var cities = UoW.GetRepository<ICityReadRepository>().GetAll();
 
             var images = UoW.GetRepository<IImageReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId.In(adventures.Select(y => y.ServiceId).ToArray()));
 
-            var ownedAdventures = adventures.Join(additionalInformation, x => x.ServiceId, y => y.AdventureId, (x, y) => new AdventureDTO()
-            {
-                Name = x.Name,
-                PricePerDay = x.PricePerDay,
-                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
-                Address = x.Address,
-                Longitude = x.Longitude,
-                Latitude = x.Latitude,
-                AvailableFrom = x.AvailableFrom,
-                AvailableTo = x.AvailableTo,
-                PromoDescription = x.PromoDescription,
-                TermsOfUse = x.TermsOfUse,
-                AdditionalEquipment = x.AdditionalEquipment,
-                Capacity = x.Capacity,
-                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
-                PercentageToTake = x.PercentageToTake,
-                OwnerId = x.OwnerId,
-                AdditionalOffers = y.AdditionalOffers,
-                AdventureId = x.ServiceId,
-                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography,
-            });
+            var allAdventures = adventures
+                .Join(additionalInformation, ad => ad.ServiceId, ai => ai.AdventureId, (ad, ai) => (ad, ai))
+                .Join(additionalInstructorInfo, adi => adi.ad.OwnerId, aii => aii.UserId, (adi, aii) => (adi, aii))
+                .Join(cities, adii => adii.adi.ad.CityId, c => c.CityId, (adii, c) => (adii, c))
+                .Select(information => new AdventureDTO
+                {
+                    Name = information.adii.adi.ad.Name,
+                    PricePerDay = information.adii.adi.ad.PricePerDay,
+                    Address = information.adii.adi.ad.Address,
+                    Longitude = information.adii.adi.ad.Longitude,
+                    Latitude = information.adii.adi.ad.Latitude,
+                    AvailableFrom = information.adii.adi.ad.AvailableFrom,
+                    AvailableTo = information.adii.adi.ad.AvailableTo,
+                    PromoDescription = information.adii.adi.ad.PromoDescription,
+                    TermsOfUse = information.adii.adi.ad.TermsOfUse,
+                    AdditionalEquipment = information.adii.adi.ad.AdditionalEquipment,
+                    Capacity = information.adii.adi.ad.Capacity,
+                    IsPercentageTakenFromCanceledReservations = information.adii.adi.ad.IsPercentageTakenFromCanceledReservations,
+                    PercentageToTake = information.adii.adi.ad.PercentageToTake,
+                    OwnerId = information.adii.adi.ad.OwnerId,
+                    AdditionalOffers = information.adii.adi.ai.AdditionalOffers,
+                    AdventureId = information.adii.adi.ad.ServiceId,
+                    ShortInstructorBiography = information.adii.aii.ShortBiography,
+                    ImageIds = images.Where(x => x.ServiceId == information.adii.adi.ai.AdventureId).Select(img => img.ImageId),
+                    CityName = information.c.Name,
+                });
 
-            foreach (AdventureDTO adventure in ownedAdventures)
-            {
-                adventure.ImageIds = images.Where(x => x.ServiceId == adventure.AdventureId.Value)
-                    .Select(x => x.ImageId);
-            }
-
-            return ownedAdventures;
+            return allAdventures;
         }
 
 
@@ -203,43 +259,49 @@ namespace API.Controllers
         {
             int ownerId = GetUserIdFromCookie();
             var adventures = UoW.GetRepository<IServiceReadRepository>()
-                .GetAll()
-                .Where(x => x.OwnerId == ownerId);
+                .GetAll();
+
             var additionalInformation = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
                 .GetAll()
                 .Where(x => x.AdventureId.In(adventures.Select(y => y.ServiceId).ToArray()));
+
+            var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>()
+                .GetAll();
+
+            var cities = UoW.GetRepository<ICityReadRepository>().GetAll();
 
             var images = UoW.GetRepository<IImageReadRepository>()
                 .GetAll()
                 .Where(x => x.ServiceId.In(adventures.Select(y => y.ServiceId).ToArray()));
 
-            var ownedAdventures = adventures.Join(additionalInformation, x => x.ServiceId, y => y.AdventureId, (x, y) => new AdventureDTO()
-            {
-                Name = x.Name,
-                PricePerDay = x.PricePerDay,
-                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
-                Address = x.Address,
-                Longitude = x.Longitude,
-                Latitude = x.Latitude,
-                PromoDescription = x.PromoDescription,
-                TermsOfUse = x.TermsOfUse,
-                AdditionalEquipment = x.AdditionalEquipment,
-                Capacity = x.Capacity,
-                IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
-                PercentageToTake = x.PercentageToTake,
-                OwnerId = x.OwnerId,
-                AdditionalOffers = y.AdditionalOffers,
-                AdventureId = x.ServiceId,
-                ShortInstructorBiography = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetById(x.OwnerId).ShortBiography
-            });
+            var allAdventures = adventures
+                .Join(additionalInformation, ad => ad.ServiceId, ai => ai.AdventureId, (ad, ai) => (ad, ai))
+                .Join(additionalInstructorInfo, adi => adi.ad.OwnerId, aii => aii.UserId, (adi, aii) => (adi, aii))
+                .Join(cities, adii => adii.adi.ad.CityId, c => c.CityId, (adii, c) => (adii, c))
+                .Select(information => new AdventureDTO
+                {
+                    Name = information.adii.adi.ad.Name,
+                    PricePerDay = information.adii.adi.ad.PricePerDay,
+                    Address = information.adii.adi.ad.Address,
+                    Longitude = information.adii.adi.ad.Longitude,
+                    Latitude = information.adii.adi.ad.Latitude,
+                    AvailableFrom = information.adii.adi.ad.AvailableFrom,
+                    AvailableTo = information.adii.adi.ad.AvailableTo,
+                    PromoDescription = information.adii.adi.ad.PromoDescription,
+                    TermsOfUse = information.adii.adi.ad.TermsOfUse,
+                    AdditionalEquipment = information.adii.adi.ad.AdditionalEquipment,
+                    Capacity = information.adii.adi.ad.Capacity,
+                    IsPercentageTakenFromCanceledReservations = information.adii.adi.ad.IsPercentageTakenFromCanceledReservations,
+                    PercentageToTake = information.adii.adi.ad.PercentageToTake,
+                    OwnerId = information.adii.adi.ad.OwnerId,
+                    AdditionalOffers = information.adii.adi.ai.AdditionalOffers,
+                    AdventureId = information.adii.adi.ad.ServiceId,
+                    ShortInstructorBiography = information.adii.aii.ShortBiography,
+                    ImageIds = images.Where(x => x.ServiceId == information.adii.adi.ai.AdventureId).Select(img => img.ImageId),
+                    CityName = information.c.Name,
+                });
 
-            foreach (AdventureDTO adventure in ownedAdventures)
-            {
-                adventure.ImageIds = images.Where(x => x.ServiceId == adventure.AdventureId.Value)
-                    .Select(x => x.ImageId);
-            }
-
-            return ownedAdventures.Where(adventure => String.IsNullOrEmpty(name) || adventure.Name.Contains(name));
+            return allAdventures.Where(adventure => String.IsNullOrEmpty(name) || adventure.Name.Contains(name));
         }
 
 
@@ -271,7 +333,17 @@ namespace API.Controllers
             var additionalAdventureInfo = UoW.GetRepository<IAdditionalAdventureInfoReadRepository>()
                 .GetAll().First(x => x.AdventureId == adventure.AdventureId.Value);
 
-            MapNewInformation(adventure, existingAdventure, additionalAdventureInfo);
+            var city = UoW.GetRepository<ICityReadRepository>()
+                .GetAll()
+                .Where(c => c.Name == adventure.CityName)
+                .FirstOrDefault();
+
+            if(city == null)
+            {
+                return BadRequest("City not found");
+            }
+
+            MapNewInformation(adventure, existingAdventure, additionalAdventureInfo, city.CityId);
 
             try
             {
@@ -392,7 +464,7 @@ namespace API.Controllers
         }
 
 
-        private void MapNewInformation(AdventureDTO adventureDTO, Service adventure, AdditionalAdventureInfo additionalAdventureInfo)
+        private void MapNewInformation(AdventureDTO adventureDTO, Service adventure, AdditionalAdventureInfo additionalAdventureInfo, int cityId)
         {
             adventure.Name = adventureDTO.Name;
             adventure.PricePerDay = adventureDTO.PricePerDay;
@@ -406,6 +478,7 @@ namespace API.Controllers
             adventure.Capacity = adventureDTO.Capacity;
             adventure.IsPercentageTakenFromCanceledReservations = adventureDTO.IsPercentageTakenFromCanceledReservations;
             adventure.PercentageToTake = adventureDTO.PercentageToTake;
+            adventure.CityId = cityId;
 
             additionalAdventureInfo.AdditionalOffers = adventureDTO.AdditionalOffers;
         }

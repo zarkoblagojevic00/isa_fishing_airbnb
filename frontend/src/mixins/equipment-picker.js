@@ -6,6 +6,30 @@ export default {
     },
 
     computed: {
+        additionalEquipment() {
+            return Object.entries(this.equipment).reduce(
+                (acc, [key, item]) =>
+                    item.isAdditional ? { ...acc, [key]: item } : acc,
+                {}
+            );
+        },
+
+        additionalEquipmentEntries() {
+            return Object.entries(this.additionalEquipment);
+        },
+
+        baseEquipment() {
+            return Object.entries(this.equipment).reduce(
+                (acc, [key, item]) =>
+                    !item.isAdditional ? { ...acc, [key]: item } : acc,
+                {}
+            );
+        },
+
+        baseEquipmentEntries() {
+            return Object.entries(this.baseEquipment);
+        },
+
         notChosenEquipment() {
             return Object.entries(this.equipment).reduce(
                 (acc, [key, item]) =>
@@ -24,6 +48,10 @@ export default {
                         : acc,
                 {}
             );
+        },
+
+        addedBenefitsEntries() {
+            return Object.entries(this.equipment);
         },
 
         finalCostPerDay() {

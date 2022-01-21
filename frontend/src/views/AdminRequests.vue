@@ -217,6 +217,7 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response) {
+                        // Request made and server responded
                         this.$swal.fire(error.response.data);
                     }
                 });
@@ -242,18 +243,10 @@ export default {
                             )
                             .then(() => this.loadRequests("2"))
 
-                            .catch(function (error) {
+                            .catch((error) => {
                                 if (error.response) {
                                     // Request made and server responded
-                                    console.log(error.response.data);
-                                    console.log(error.response.status);
-                                    console.log(error.response.headers);
-                                } else if (error.request) {
-                                    // The request was made but no response was received
-                                    console.log(error.request);
-                                } else {
-                                    // Something happened in setting up the request that triggered an Error
-                                    console.log("Error", error.message);
+                                    this.$swal.fire(error.response.data);
                                 }
                             });
                     },
@@ -279,16 +272,34 @@ export default {
                 });
         },
         onAcceptMarkRequest(markRequest) {
-            axios.put("/api/Admin/ApproveMarkRequest", markRequest).then(() => {
-                this.$swal.fire("Mark approved!");
-                this.loadMarkRequests();
-            });
+            axios
+                .put("/api/Admin/ApproveMarkRequest", markRequest)
+                .then(() => {
+                    this.$swal.fire("Mark approved!");
+                    this.loadMarkRequests();
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        this.$swal.fire(error.response.data);
+                        this.loadMarkRequests();
+                    }
+                });
         },
         onDeclineMarkRequest(markRequest) {
-            axios.put("/api/Admin/DeclineMarkRequest", markRequest).then(() => {
-                this.$swal.fire("Mark declined!");
-                this.loadMarkRequests();
-            });
+            axios
+                .put("/api/Admin/DeclineMarkRequest", markRequest)
+                .then(() => {
+                    this.$swal.fire("Mark declined!");
+                    this.loadMarkRequests();
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // Request made and server responded
+                        this.$swal.fire(error.response.data);
+                        this.loadMarkRequests();
+                    }
+                });
         },
         onDeclineRegistrationRequest(userId) {
             this.$swal

@@ -220,7 +220,7 @@ export default {
     methods: {
         getResult() {
             const additionalEquipment = this.chosenEquipmentToString();
-            const price = this.totalFinalCost;
+            const price = this.finalCostPerDay + this.villa.pricePerDay;
             return {
                 userId: this.userId,
                 serviceId: this.villa.villaId,

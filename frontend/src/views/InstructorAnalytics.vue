@@ -87,6 +87,7 @@
                     <th>Client</th>
                     <th>Number of guests</th>
                     <th>Price</th>
+                    <th>Additional equipment</th>
                 </tr>
             </thead>
             <tbody v-for="res in finishedReservations" :key="res.serviceId">
@@ -105,6 +106,18 @@
                     </td>
                     <td class="left">{{ res.capacity }}</td>
                     <td class="left">{{ res.price }}</td>
+                    <td>
+                        <div class="right">
+                            <div
+                                v-for="ben in res.additionalEquipment.split(
+                                    ';'
+                                )"
+                                :key="ben[0]"
+                            >
+                                {{ ben }}
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -112,7 +125,7 @@
     <div class="flexbox-container-reservations">
         <h3>Calculate revenue within date range</h3>
         <div class="flexbox-container">
-            <v-date-picker v-model="range" is-range />
+            <v-date-picker v-model="range" is-range :max-date="new Date()" />
             <h3 class="revenue">Total revenue: {{ revenue }}</h3>
         </div>
     </div>
@@ -141,10 +154,12 @@ export default {
             .get("/api/Instructor/GetFinishedReservationsWithBasicUserInfo")
             .then((res) => {
                 this.finishedReservations = res.data;
-                this.revenue = this.finishedReservations
-                    .map((res) => res.price)
-                    .reduce((a, b) => a + b);
-                this.revenue = Number(this.revenue).toFixed(2);
+                // var date = new Date();
+                // date.setDate(date.getDate() - 365);
+                // this.calculateRevenue({
+                //     start: date.toISOString(),
+                //     end: new Date().toISOString(),
+                // });
             });
     },
     data() {
@@ -168,6 +183,31 @@ export default {
         dateFormat(value) {
             return moment(value).format("YYYY-MM-DD HH:mm");
         },
+        calculateRevenue(range) {
+            axios
+                .post(
+                    "/api/Instructor/CalculateFinishedReservationsRevenue",
+                    range
+                )
+                .then((res) => {
+                    this.revenue = res.data;
+                    this.revenue = Number(this.revenue).toFixed(2);
+                })
+                .catch(function (error) {
+                    if (error.response) {
+                        // Request made and server responded
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log("Error", error.message);
+                    }
+                });
+        },
     },
     watch: {
         range: {
@@ -175,22 +215,7 @@ export default {
                 this.range.start.setHours(0, 0, 0, 0);
                 this.range.end.setHours(23, 59, 59, 999);
 
-                let finishedReservationsFiltered =
-                    this.finishedReservations.filter((el) => {
-                        return (
-                            new Date(el.serviceTo) >= this.range.start &&
-                            new Date(el.serviceTo) <= this.range.end
-                        );
-                    });
-
-                if (finishedReservationsFiltered.length > 0) {
-                    this.revenue = finishedReservationsFiltered
-                        .map((res) => res.price)
-                        .reduce((a, b) => a + b);
-                    this.revenue = Number(this.revenue).toFixed(2);
-                } else {
-                    this.revenue = 0;
-                }
+                this.calculateRevenue(this.range);
             },
             deep: true,
         },

@@ -553,6 +553,44 @@ namespace API.Controllers
         }
 
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Instructor })]
+        public IActionResult CalculateFinishedReservationsRevenue(RevenueRangeDTO revenueRange)
+        {
+            int ownerId = GetUserIdFromCookie();
+
+            if(revenueRange == null)
+            {
+                return BadRequest("Bad revenue range");
+            }
+
+            revenueRange.Start = revenueRange.Start.ToLocalTime();
+            revenueRange.End = revenueRange.End.ToLocalTime();
+
+            var adventures = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll()
+               .Where(x => x.OwnerId == ownerId);
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(res => res.EndDateTime < revenueRange.End && res.EndDateTime > revenueRange.Start && adventures.Any(adv => adv.ServiceId == res.ServiceId) && !res.IsCanceled);
+
+            double totalPrice = 0;
+            foreach(var reservation in reservations)
+            {
+                TimeSpan span = reservation.EndDateTime.Subtract(reservation.StartDateTime);
+                double hours = span.TotalHours;
+                var parsedEquipment = ParseAdditionalEquipment(reservation.AdditionalEquipment);
+                totalPrice += reservation.Price * hours;
+                foreach(var eq in parsedEquipment)
+                {
+                    totalPrice += eq.Price * hours;
+                }
+            }
+            return Ok(totalPrice);
+        }
+
+
         private Report CreateNewReport(ReportDTO report)
         {
             return new Report()
@@ -562,6 +600,43 @@ namespace API.Controllers
                 ShownUp = report.ShownUp,
             };
         }
+
+        private List<AdditionalEquipmentDTO> ParseAdditionalEquipment(string additionalEquipment)
+        {
+            List<AdditionalEquipmentDTO> additionalEquipmentArray = new List<AdditionalEquipmentDTO>();
+            if (additionalEquipment == null || additionalEquipment == "")
+            {
+                return additionalEquipmentArray;
+            }
+
+            var receivedEq = additionalEquipment.Split(";");
+            foreach (var eq in receivedEq)
+            {
+                if(eq == "" || eq == null)
+                {
+                    continue;
+                }
+                string name = eq.Split(":")[0];
+                string price = eq.Split(":")[1];
+
+                double priceVal;
+                bool success = double.TryParse(price, out priceVal);
+
+
+                if (!success || name == "" || price == "")
+                {
+                    continue;
+                }
+                additionalEquipmentArray.Add(new AdditionalEquipmentDTO
+                {
+                    Name = name,
+                    Price = priceVal,
+                });
+            }
+
+            return additionalEquipmentArray;
+        }
+    
 
     }
 }

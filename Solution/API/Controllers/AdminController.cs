@@ -235,6 +235,7 @@ namespace API.Controllers
                     UserId = revenue.u.UserId,
                     UserName = revenue.u.Name,
                     UserSurname = revenue.u.Surname,
+                    AdditionalEquipment = revenue.rs.r.AdditionalEquipment,
                 });
 
             return Ok(reservationRevenueInfos);
@@ -598,6 +599,61 @@ namespace API.Controllers
         }
 
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.Admin })]
+        public IActionResult CalculateFinishedReservationsRevenue(RevenueRangeDTO revenueRange)
+        {
+            if (revenueRange == null)
+            {
+                return BadRequest("Bad revenue range");
+            }
+
+            revenueRange.Start = revenueRange.Start.ToLocalTime();
+            revenueRange.End = revenueRange.End.ToLocalTime();
+
+            var services = UoW.GetRepository<IServiceReadRepository>()
+               .GetAll();
+
+            var reservations = UoW.GetRepository<IReservationReadRepository>()
+                .GetAll()
+                .Where(res => res.EndDateTime < revenueRange.End && res.EndDateTime > revenueRange.Start && !res.IsCanceled);
+
+            var systemConfig = UoW.GetRepository<ISystemConfigReadRepository>()
+                .GetAll()
+                .Where(con => con.Name == "MoneyPercentageSystemTakes")
+                .FirstOrDefault();
+
+            if(systemConfig == null)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+            double percentageSystemTakes;
+            bool success = double.TryParse(systemConfig.Value, out percentageSystemTakes);
+
+
+            if (!success)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+
+            double totalPrice = 0;
+            foreach (var reservation in reservations)
+            {
+                TimeSpan span = reservation.EndDateTime.Subtract(reservation.StartDateTime);
+                double hours = span.TotalHours;
+                var parsedEquipment = ParseAdditionalEquipment(reservation.AdditionalEquipment);
+                totalPrice += reservation.Price * hours;
+                foreach (var eq in parsedEquipment)
+                {
+                    totalPrice += eq.Price * hours;
+                }
+            }
+            return Ok(totalPrice * percentageSystemTakes * 0.01);
+        }
+
+
         private string GenerateMarkReviewMailBody(UserMarkInformationDTO mark)
         {
             var stringBuilder = new StringBuilder();
@@ -649,6 +705,42 @@ namespace API.Controllers
 
 
             return stringBuilder.ToString();
+        }
+
+        private List<AdditionalEquipmentDTO> ParseAdditionalEquipment(string additionalEquipment)
+        {
+            List<AdditionalEquipmentDTO> additionalEquipmentArray = new List<AdditionalEquipmentDTO>();
+            if (additionalEquipment == null || additionalEquipment == "")
+            {
+                return additionalEquipmentArray;
+            }
+
+            var receivedEq = additionalEquipment.Split(";");
+            foreach (var eq in receivedEq)
+            {
+                if (eq == "" || eq == null)
+                {
+                    continue;
+                }
+                string name = eq.Split(":")[0];
+                string price = eq.Split(":")[1];
+
+                double priceVal;
+                bool success = double.TryParse(price, out priceVal);
+
+
+                if (!success || name == "" || price == "")
+                {
+                    continue;
+                }
+                additionalEquipmentArray.Add(new AdditionalEquipmentDTO
+                {
+                    Name = name,
+                    Price = priceVal,
+                });
+            }
+
+            return additionalEquipmentArray;
         }
     }
 }

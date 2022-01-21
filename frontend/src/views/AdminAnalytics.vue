@@ -29,6 +29,7 @@
                     <th>To</th>
                     <th>Client</th>
                     <th>Price</th>
+                    <th>Additional equipment</th>
                 </tr>
             </thead>
             <tbody v-for="res in reservationRevenues" :key="res.reservationId">
@@ -48,6 +49,18 @@
                         {{ res.userName }} {{ res.userSurname }}
                     </td>
                     <td class="left">{{ res.price }}</td>
+                    <td>
+                        <div class="right">
+                            <div
+                                v-for="ben in res.additionalEquipment.split(
+                                    ';'
+                                )"
+                                :key="ben[0]"
+                            >
+                                {{ ben }}
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -55,8 +68,10 @@
     <div class="flexbox-container-reservations">
         <h3>Calculate revenue within date range</h3>
         <div class="flexbox-revenue">
-            <v-date-picker v-model="range" is-range />
-            <h3 class="revenue">Total revenue: {{ overallRevenue }}</h3>
+            <v-date-picker v-model="range" is-range :max-date="new Date()" />
+            <h3 class="revenue">
+                Total revenue(percentage system takes): {{ overallRevenue }}
+            </h3>
         </div>
     </div>
 </template>
@@ -124,11 +139,17 @@ export default {
         loadReservationRevenues() {
             axios.get("/api/Admin/GetReservationRevenue").then((res) => {
                 this.reservationRevenues = res.data;
-                console.log(res.data);
-                this.overallRevenue = this.reservationRevenues
-                    .map((item) => item.price)
-                    .reduce((prev, next) => prev + next);
             });
+        },
+        calculateRevenue(range) {
+            axios
+                .post("/api/Admin/CalculateFinishedReservationsRevenue", range)
+                .then((res) => {
+                    this.overallRevenue = res.data;
+                    this.overallRevenue = Number(this.overallRevenue).toFixed(
+                        2
+                    );
+                });
         },
     },
     watch: {
@@ -137,23 +158,7 @@ export default {
                 this.range.start.setHours(0, 0, 0, 0);
                 this.range.end.setHours(23, 59, 59, 999);
 
-                let finishedReservationsFiltered =
-                    this.reservationRevenues.filter((el) => {
-                        return (
-                            new Date(el.serviceEnd) >= this.range.start &&
-                            new Date(el.serviceEnd) <= this.range.end
-                        );
-                    });
-                if (finishedReservationsFiltered.length > 0) {
-                    this.overallRevenue = finishedReservationsFiltered
-                        .map((res) => res.price)
-                        .reduce((a, b) => a + b);
-                    this.overallRevenue = Number(this.overallRevenue).toFixed(
-                        2
-                    );
-                } else {
-                    this.overallRevenue = 0;
-                }
+                this.calculateRevenue(this.range);
             },
             deep: true,
         },

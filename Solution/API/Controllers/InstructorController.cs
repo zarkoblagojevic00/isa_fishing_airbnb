@@ -575,6 +575,26 @@ namespace API.Controllers
                 .GetAll()
                 .Where(res => res.EndDateTime < revenueRange.End && res.EndDateTime > revenueRange.Start && adventures.Any(adv => adv.ServiceId == res.ServiceId) && !res.IsCanceled);
 
+            var systemConfig = UoW.GetRepository<ISystemConfigReadRepository>()
+                .GetAll()
+                .Where(con => con.Name == "MoneyPercentageSystemTakes")
+                .FirstOrDefault();
+
+            if (systemConfig == null)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+            double percentageSystemTakes;
+            bool success = double.TryParse(systemConfig.Value, out percentageSystemTakes);
+
+
+            if (!success)
+            {
+                return BadRequest("Money percentage system takes not set.");
+            }
+
+
             double totalPrice = 0;
             foreach(var reservation in reservations)
             {
@@ -587,7 +607,7 @@ namespace API.Controllers
                     totalPrice += eq.Price * hours;
                 }
             }
-            return Ok(totalPrice);
+            return Ok(totalPrice * (100 - percentageSystemTakes) * 0.01);
         }
 
 

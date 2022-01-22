@@ -26,27 +26,11 @@
                     >
                         <span class="menu-text"> Subscriptions </span>
                     </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ViewProfile')"
-                    >
-                        <span class="menu-text"> View profile </span>
-                    </div>
+
                     <div class="submenu-item" @click="ChangeMode('ChangePass')">
                         <span class="menu-text"> Change password </span>
                     </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ClientPenalties')"
-                    >
-                        <span class="menu-text"> Penalties </span>
-                    </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ClientComplaints')"
-                    >
-                        <span class="menu-text"> Leave a complaint </span>
-                    </div>
+
                     <div
                         class="submenu-item"
                         @click="ChangeMode('RequestDeletion')"
@@ -56,29 +40,6 @@
                         </span>
                     </div>
                 </div>
-
-                <!-- <div
-                    class="menu-item report-icon"
-                    @click="ToggleSubmenu('report')"
-                >
-                    <span class="menu-text"> Reports </span>
-                </div>
-                <div class="submenu" id="sub-report">
-                    <div class="submenu-item">
-                        <span
-                            class="menu-text"
-                            @click="ChangeMode('VillaReport')"
-                        >
-                            Report for villa
-                        </span>
-                    </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('GeneralReport')"
-                    >
-                        <span class="menu-text"> Report for all villas </span>
-                    </div>
-                </div> -->
             </div>
 
             <div class="service-content">
@@ -92,6 +53,7 @@
                 <HistoryReservationsExpo
                     v-if="mode == 'ClientHistoryReservations'"
                 />
+                <ClientSubscriptions v-if="mode == 'ClientSubscriptions'" />
             </div>
         </div>
     </div>
@@ -104,6 +66,7 @@ import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
 import BookedReservationsExpo from "../components/BookedReservationsExpo.vue";
 import HistoryReservationsExpo from "../components/HistoryReservationsExpo.vue";
+import ClientSubscriptions from "../components/ClientSubscriptions.vue";
 
 export default {
     name: "ClientHomepage",
@@ -114,6 +77,7 @@ export default {
         VillaOwnerDeletion,
         BookedReservationsExpo,
         HistoryReservationsExpo,
+        ClientSubscriptions,
     },
     data() {
         return {

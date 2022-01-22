@@ -153,6 +153,97 @@ namespace API.Controllers
 
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult AddClientSubscription(ReservationIdDTO reservationIdDTO)
+        {
+            int userId = GetUserIdFromCookie();
+            int serviceId = reservationIdDTO.ReservationId;
+
+            try
+            {
+                UoW.BeginTransaction();
+                var subs = UoW.GetRepository<ISubscriptionReadRepository>().GetAll().FirstOrDefault(s => s.UserId == userId && s.ServiceId == serviceId);
+                if (subs != null)
+                {
+                    return BadRequest();
+                }
+                UoW.GetRepository<ISubscriptionWriteRepository>().Add(new Subscription() { ServiceId = serviceId, UserId=userId } );
+
+                UoW.Commit();
+            }
+
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult CancelClientSubscription(ReservationIdDTO reservationIdDTO)
+        {
+            int userId = GetUserIdFromCookie();
+            int serviceId = reservationIdDTO.ReservationId;
+
+            try
+            {
+                UoW.BeginTransaction();
+                var subs = UoW.GetRepository<ISubscriptionReadRepository>().GetAll().FirstOrDefault(s => s.UserId == userId && s.ServiceId == serviceId);
+                if (subs == null)
+                {
+                    return BadRequest();
+                }
+                UoW.GetRepository<ISubscriptionWriteRepository>().Delete(subs);
+
+                UoW.Commit();
+            }
+
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult GetClientSubscriptions()
+        {
+            int userId = GetUserIdFromCookie();
+            var repo = UoW.GetRepository<IServiceReadRepository>();
+            var result = UoW.GetRepository<ISubscriptionReadRepository>().GetAll()
+                .Where(s => s.UserId == userId)
+                .Select(s => repo.GetById(s.ServiceId))
+                .Select(x => new ServiceOverviewDTO()
+                {
+                    AdditionalEquipment = x.AdditionalEquipment,
+                    CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                    Address = x.Address,
+                    AvailableFrom = x.AvailableFrom,
+                    AvailableTo = x.AvailableTo,
+                    Capacity = x.Capacity,
+                    IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    Name = x.Name,
+                    PercentageToTake = x.PercentageToTake,
+                    PricePerDay = x.PricePerDay,
+                    PromoDescription = x.PromoDescription,
+                    TermsOfUse = x.PromoDescription,
+                    AdventureId = x.ServiceId,
+                    ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                    AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+                });
+            return Ok(result);
+        }
+
+
+
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
         public IActionResult CreateNewClientIssue(NewClientIssueDTO issueDTO)
         {
             int userId = GetUserIdFromCookie();

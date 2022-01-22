@@ -34,4 +34,5 @@ IF @Environment = 'LOCAL'
 		:r LOCAL/Issues.Table.sql
 		:r LOCAL/AccountDeletionRequests.Table.sql
 		:r LOCAL/Marks.Table.sql
+		:r LOCAL/Subscriptions.Table.sql
 	END

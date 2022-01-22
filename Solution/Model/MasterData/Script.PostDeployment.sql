@@ -31,4 +31,7 @@ IF @Environment = 'LOCAL'
 		:r LOCAL/NavigationTools.Table.sql
 		:r LOCAL/Images.Table.sql
 		:r LOCAL/LinkNavigationBoat.Table.sql
+		:r LOCAL/Issues.Table.sql
+		:r LOCAL/AccountDeletionRequests.Table.sql
+		:r LOCAL/Marks.Table.sql
 	END

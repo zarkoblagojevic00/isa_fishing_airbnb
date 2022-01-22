@@ -9,4 +9,11 @@ INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, 
 INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (7, 2, DATEADD(day, 66,GETDATE()), DATEADD(day, 71, GETDATE()), 15.22, 0, 10, 'fruits:0;wine:0')
 INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (8, 2, DATEADD(day, 80,GETDATE()), DATEADD(day, 85, GETDATE()), 13.22, 0, 10, 'dragon fruit:0;white wine:0')
 
+-- instructor's
+INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (9, 1, DATEADD(hour, 150, GETDATE()), DATEADD(hour, 153, GETDATE()), 13.22, 0, 10, 'dragon fruit:0;white wine:0')
+INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (10, 1, DATEADD(hour, 160, GETDATE()), DATEADD(hour, 163, GETDATE()), 13.22, 0, 10, 'dragon fruit:0;white wine:0')
+INSERT INTO PromoActions (PromoActionId, ServiceId, StartDateTime, EndDateTime, PricePerDay, IsTaken, Capacity, AddedBenefits) VALUES (11, 1, DATEADD(hour, 170, GETDATE()), DATEADD(hour, 173, GETDATE()), 13.22, 0, 10, 'dragon fruit:0;white wine:0')
+
+
+
 SET IDENTITY_INSERT PromoActions OFF;

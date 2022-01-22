@@ -219,45 +219,37 @@ export default {
                     if (error.response) {
                         // Request made and server responded
                         this.$swal.fire(error.response.data);
+                        this.loadRequests("2");
                     }
                 });
         },
         onDeclineDeletionRequest(req) {
             req.isApproved = false;
-            this.$swal
-                .fire({
-                    title: "Enter reason for declining request.",
-                    input: "text",
-                    inputAttributes: {
-                        autocapitalize: "off",
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: "Submit",
-                    showLoaderOnConfirm: true,
-                    preConfirm: (reason) => {
-                        req.response = reason;
-                        axios
-                            .put(
-                                "/api/Admin/RespondAccountDeletionRequest",
-                                req
-                            )
-                            .then(() => this.loadRequests("2"))
+            this.$swal.fire({
+                title: "Enter reason for declining request.",
+                input: "text",
+                inputAttributes: {
+                    autocapitalize: "off",
+                },
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                showLoaderOnConfirm: true,
+                preConfirm: (reason) => {
+                    req.response = reason;
+                    axios
+                        .put("/api/Admin/RespondAccountDeletionRequest", req)
+                        .then(() => this.loadRequests("2"))
 
-                            .catch((error) => {
-                                if (error.response) {
-                                    // Request made and server responded
-                                    this.$swal.fire(error.response.data);
-                                }
-                            });
-                    },
-                    allowOutsideClick: () => !this.$swal.isLoading(),
-                })
-                .then((result) => {
-                    console.log("result", result);
-                    if (result.isConfirmed) {
-                        this.$swal.fire("Successfully saved.");
-                    }
-                });
+                        .catch((error) => {
+                            if (error.response) {
+                                // Request made and server responded
+                                this.$swal.fire(error.response.data);
+                                this.loadRequests("2");
+                            }
+                        });
+                },
+                allowOutsideClick: () => !this.$swal.isLoading(),
+            });
         },
         onAcceptRegistrationRequest(userId) {
             axios

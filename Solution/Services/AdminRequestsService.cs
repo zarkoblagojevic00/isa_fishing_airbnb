@@ -64,8 +64,32 @@ namespace Services
             var additionalInstructorInfo = UoW.GetRepository<IAdditionalInstructorInfoReadRepository>().GetAll()
                 .FirstOrDefault(x => x.UserId == user.UserId);
 
+            var connectedMarks = UoW.GetRepository<IMarkReadRepository>()
+                .GetAll()
+                .Where(mar => !mar.IsReviewed && mar.UserId == user.UserId);
+
+            var connectedAccountDeletionRequests = UoW.GetRepository<IAccountDeletionRequestReadRepository>()
+                .GetAll()
+                .Where(a => !a.IsReviewed && a.UserId == user.UserId);
+
             if (additionalInstructorInfo != null)
                 UoW.GetRepository<IAdditionalInstructorInfoWriteRepository>().Delete(additionalInstructorInfo);
+
+            if (connectedMarks.Any())
+            {
+                foreach (var mark in connectedMarks)
+                {
+                    UoW.GetRepository<IMarkWriteRepository>().Delete(mark);
+                }
+            }
+
+            if (connectedAccountDeletionRequests.Any())
+            {
+                foreach (var account in connectedAccountDeletionRequests)
+                {
+                    UoW.GetRepository<IAccountDeletionRequestWriteRepository>().Delete(account);
+                }
+            }
 
             if (connectedServices.Any())
             {

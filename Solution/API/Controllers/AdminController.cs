@@ -503,6 +503,12 @@ namespace API.Controllers
                     return BadRequest(Responses.UnavailableRightNow);
                 }
 
+                if (oldRequest.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with user right now.");
+                }
+
+
                 oldRequest.IsReviewed = true;
                 oldRequest.IsApproved = request.IsApproved;
 

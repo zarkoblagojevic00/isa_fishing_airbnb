@@ -64,6 +64,11 @@ export default {
                                     "Your user has been deleted.",
                                     "success"
                                 );
+                            })
+                            .catch(() => {
+                                this.$swal.fire(
+                                    "User cannot be deleted right now, as he has unresolved reservations."
+                                );
                             });
                     }
                 });

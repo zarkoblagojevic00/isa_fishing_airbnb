@@ -38,11 +38,9 @@
     min-height: 180px;
     min-width: 180px;
     border-radius: 5px;
-    position: relative;
 }
 
 .promo-on-img {
-    position: absolute;
     top: 0;
     right: 0;
     background: var(--danger);

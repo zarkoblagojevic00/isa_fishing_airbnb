@@ -151,6 +151,74 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
 
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult CreateNewClientIssue(NewClientIssueDTO issueDTO)
+        {
+            int userId = GetUserIdFromCookie();
+            if (IsServiceIssuedByUser(userId, issueDTO.IssuedEntityId) || !WasServiceVisitedByUser(userId, issueDTO.IssuedEntityId))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                UoW.BeginTransaction();
+                var newIssue = new Issue()
+                {
+                    IssuedEntityId = issueDTO.IssuedEntityId,
+                    UserId = userId,
+                    CreatedDateTime = DateTime.Now,
+                    Reason = issueDTO.Reason,
+                };
+                UoW.GetRepository<IIssueWriteRepository>().Add(newIssue);
+                
+                UoW.Commit();
+            }
+
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult CreateNewClientMark(NewClientMarkDTO markDTO)
+        {
+            int userId = GetUserIdFromCookie();
+            if (IsServiceIssuedByUser(userId, markDTO.ServiceId) || !WasServiceVisitedByUser(userId, markDTO.ServiceId))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                UoW.BeginTransaction();
+                var newMark = new Mark()
+                {
+                    ServiceId = markDTO.ServiceId,
+                    UserId = userId,
+                    Description = markDTO.Description,
+                    GivenMark = markDTO.GivenMark,
+                };
+
+                UoW.GetRepository<IMarkWriteRepository>().Add(newMark);
+
+                UoW.Commit();
+            }
+
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
+
         [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
         public IActionResult GetBookedClientReservation(int userId) {
@@ -201,10 +269,29 @@ namespace API.Controllers
                     AdventureId = x.ServiceId,
                     ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
                     AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+                    IsIssuedByUser = IsServiceIssuedByUser(y.UserId, x.ServiceId),
+                    IsReviewedByUser = IsServiceReviewedByUser(y.UserId, x.ServiceId),
                 },
             });
             return result;
+        }
 
+        private bool IsServiceIssuedByUser(int userId, int serviceId)
+        {
+            var usersIssue = UoW.GetRepository<IIssueReadRepository>().GetAll().FirstOrDefault(i => i.UserId == userId && i.IssuedEntityId == serviceId);
+            return usersIssue != null;
+        }
+
+        private bool IsServiceReviewedByUser(int userId, int serviceId)
+        {
+            var usersReview = UoW.GetRepository<IMarkReadRepository>().GetAll().FirstOrDefault(i => i.UserId == userId && i.ServiceId == serviceId);
+            return usersReview != null;
+        }
+
+        private bool WasServiceVisitedByUser(int userId, int serviceId)
+        {
+            var usersVisit = UoW.GetRepository<IReservationReadRepository>().GetAll().FirstOrDefault(r => !r.IsCanceled && r.EndDateTime > DateTime.Now && r.UserId == userId && r.ServiceId == serviceId);
+            return usersVisit != null;
         }
 
         [HttpPost]

@@ -9,28 +9,11 @@
                     <span class="menu-text"> Booked Reservations </span>
                 </div>
 
-                <div class="menu-item" @click="ToggleSubmenu('villa')">
+                <div
+                    class="menu-item"
+                    @click="ChangeMode('ClientHistoryReservations')"
+                >
                     <span class="menu-text"> Reservation history </span>
-                </div>
-                <div class="submenu" id="sub-villa">
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ClientHistoryVillas')"
-                    >
-                        <span class="menu-text"> Villas </span>
-                    </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ClientHistoryBoats')"
-                    >
-                        <span class="menu-text"> Boats </span>
-                    </div>
-                    <div
-                        class="submenu-item"
-                        @click="ChangeMode('ClientHistoryAdventures')"
-                    >
-                        <span class="menu-text"> Adventures </span>
-                    </div>
                 </div>
 
                 <div class="menu-item" @click="ToggleSubmenu('profile')">
@@ -106,6 +89,9 @@
                 <BookedReservationsExpo
                     v-if="mode == 'ClientBookedReservations'"
                 />
+                <HistoryReservationsExpo
+                    v-if="mode == 'ClientHistoryReservations'"
+                />
             </div>
         </div>
     </div>
@@ -117,6 +103,7 @@ import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
 import BookedReservationsExpo from "../components/BookedReservationsExpo.vue";
+import HistoryReservationsExpo from "../components/HistoryReservationsExpo.vue";
 
 export default {
     name: "ClientHomepage",
@@ -126,6 +113,7 @@ export default {
         VillaOwnerPassChange,
         VillaOwnerDeletion,
         BookedReservationsExpo,
+        HistoryReservationsExpo,
     },
     data() {
         return {

@@ -46,5 +46,8 @@ namespace API.DTOs
 
         public double AverageMark { get; set; }
 
+        public bool IsIssuedByUser { get; set; }
+
+        public bool IsReviewedByUser { get; set; }
     }
 }

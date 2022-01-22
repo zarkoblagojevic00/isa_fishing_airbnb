@@ -49,10 +49,13 @@ export default {
                 id: field,
                 order: -1,
                 getSortFunction() {
-                    return (a, b) =>
-                        parseProperty(a, field) < parseProperty(b, field)
-                            ? this.order
-                            : -this.order;
+                    return (a, b) => {
+                        const valueA = parseProperty(a, field);
+                        const valueB = parseProperty(b, field);
+
+                        if (valueA == valueB) return 0;
+                        return valueA < valueB ? this.order : -this.order;
+                    };
                 },
             })),
             activeSorterIndex: -1,

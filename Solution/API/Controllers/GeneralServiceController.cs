@@ -207,6 +207,11 @@ namespace API.Controllers
                     }
                 }
 
+                if (service.ServiceType == ServiceType.Boat && reservationDto.IsCaptain == null)
+                {
+                    return BadRequest(Responses.MissingResponsibility);
+                }
+
                 if (service.ServiceType == ServiceType.Adventure)
                 {
                     var unavailabilityService = new UserUnavailabilityValidationService(UoW);
@@ -236,11 +241,7 @@ namespace API.Controllers
                 }
             }
 
-            if (service.ServiceType == ServiceType.Boat && reservationDto.IsCaptain == null)
-            {
-                return BadRequest(Responses.MissingResponsibility);
-            }
-
+            
             
             try
             {

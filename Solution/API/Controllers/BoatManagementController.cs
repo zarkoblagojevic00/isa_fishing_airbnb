@@ -87,6 +87,80 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetQuickActionsForClient()
+        {
+            int userId = -1;
+            try
+            {
+                userId = GetUserIdFromCookie();
+            }
+            catch (Exception ignore) { };
+
+            var userUnavailableDates = (userId >= 0) ? UoW.GetRepository<IReservationReadRepository>().GetAll().Where(r => r.UserId == userId) : new List<Reservation>();
+            var promoActions = UoW.GetRepository<IPromoActionReadRepository>()
+                .GetAll()
+                .Where(p => !p.IsTaken && !p.AnyOverlapping(userUnavailableDates) && p.StartDateTime > DateTime.Now);
+            var serviceReadRepository = UoW.GetRepository<IServiceReadRepository>();
+            var boats = serviceReadRepository.GetAll().Where(s => s.ServiceType == ServiceType.Boat);
+
+            var additionalInformation = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>().GetAll();
+            var linkNavigationRepo = UoW.GetRepository<ILinkNavigationBoatReadRepository>();
+            var navigationToolRepo = UoW.GetRepository<IBoatServiceNavigationToolReadRepository>();
+
+            var boatDTOS = boats.Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new BoatDTO()
+            {
+                BoatId = x.ServiceId,
+                Name = x.Name,
+                AdditionalEquipment = x.AdditionalEquipment,
+                BoatType = y.BoatType,
+                Length = y.Length,
+                EngineNum = y.NumberOfEngines,
+                EnginePower = y.PowerOfEngines,
+                Speed = y.MaxSpeed,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTaken = x.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = x.PercentageToTake,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+                NavigationToolsObj = linkNavigationRepo
+                .GetAll()
+                .Where(p => p.ServiceId == x.ServiceId)
+                .Select(n => navigationToolRepo.GetById(n.BoatServiceNavigationToolId))
+            });
+
+            // var addBoatResDetails = UoW.GetRepository<IBoatReservationDetailReadRepository>().GetAll();
+            var result = boatDTOS.Join(promoActions, p => p.BoatId, q => q.ServiceId, (p, q) => new ClientBoatPromoDTO
+            {
+                Boat = p,
+                Promo = new PromoActionWrapperDTO()
+                {
+                    PromoActionId = q.PromoActionId,
+                    ServiceId = q.ServiceId,
+                    PricePerDay = q.PricePerDay,
+                    IsTaken = q.IsTaken,
+                    Capacity = q.Capacity,
+                    AddedBenefits = q.AddedBenefits,
+                    Place = q.Place,
+                    StartDateTime = q.StartDateTime,
+                    EndDateTime = q.EndDateTime,
+                    // Role = addBoatResDetails.FirstOrDefault(m => m.RelevantId == q.PromoActionId).BoatOwnerResponsibilityType.ToString()
+                },
+            });
+
+            return Ok(result);
+
+        }
+        
+        [HttpGet]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { false, UserType.BoatOwner })]
         public IActionResult GetBoatInfo(int boatId)
         {

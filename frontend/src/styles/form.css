@@ -192,6 +192,20 @@
     display: none;
 }
 
+/* Scrollable with scrollbar hidden */
+.horizontal-scroll-no-bar {
+    max-height: inherit;
+    max-width: inherit;
+    padding: inherit;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.horizontal-scroll-no-bar::-webkit-scrollbar {
+    display: none;
+}
+
 .service-content {
     min-width: 70%;
 }

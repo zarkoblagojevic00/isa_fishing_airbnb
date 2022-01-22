@@ -15,7 +15,7 @@ Pored ovih stvari neophodno je postaviti i određene **environment promenljive**
 | Naziv promenljive | Vrednost | Značenje |
 | :---: |:---:|:---:|
 | ISA_FRONT_DIR | .\\..\\..\frontend | putanja do direktorijuma gde se nalazi front
-| ApiKey | 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 | ključ koji se koristi za SendGrid
+| ApiKey | poslali smo asistentu Anđeli Trajković | ključ koji se koristi za SendGrid
 
 ---
 Nakon instaliranja svih programa i podešavanja promenljivih okruženja, neophodno je otići u direktorijum *frontend* i kroz neku konzolu (git bash, powershell) pokrenuti 

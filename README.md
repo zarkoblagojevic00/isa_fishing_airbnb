@@ -75,6 +75,17 @@ Ako su svi koraci ispraćeni kako treba, osnovna stranica za koja bi trebalo da 
         style="width: 750px;"/>
 </p>
 
+## Kredencijali za aplikaciju
+---
+Kredencijali za sve role
+|Email|Password|Role|
+|:---:|:---:|:---:|
+|testvillaowner@gmail.com|vilaowner123|Villa owner|
+|ljubovicstefan@gmail.com|brodisa123|Boat owner|
+|stef@gmail.com|ljubaljuba|Adventure instructor|
+|srdjansukovic@gmail.com|adminadmin|Admin|
+|zarexblage00@gmail.com|strongmf|Registrovani korisnik|
+
 ## PDF-ovi
 ---
 Dokumenti o rešenju konfliktnih situacija se nalaze u direktorijumu *KonfliktneSituacije*.

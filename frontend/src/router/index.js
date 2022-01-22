@@ -21,6 +21,7 @@ import AdminAnalytics from "../views/AdminAnalytics.vue";
 import VillasExpo from "../views/VillasExpo.vue";
 import VillaExpoDetails from "../views/VillaExpoDetails";
 import BoatsExpo from "../views/BoatsExpo.vue";
+import BoatExpoDetails from "../views/BoatExpoDetails.vue";
 import AdventuresExpo from "../views/AdventuresExpo.vue";
 import EditAdventure from "../views/EditAdventure.vue";
 import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
@@ -31,6 +32,8 @@ import InstructorAnalytics from "../views/InstructorAnalytics.vue";
 import BoatProfile from "../views/BoatProfile.vue";
 import NewAdventureReservation from "../views/NewAdventureReservation.vue";
 import VillasPromoExpo from "../views/VillasPromoExpo.vue";
+import AdventuresPromoExpo from "../views/AdventuresPromoExpo.vue";
+import BoatsPromoExpo from "../views/BoatsPromoExpo.vue";
 
 const routes = [
     {
@@ -42,6 +45,16 @@ const routes = [
         path: "/boats",
         name: "BoatsExpo",
         component: BoatsExpo,
+    },
+    {
+        path: "/boats/details",
+        name: "BoatExpoDetails",
+        component: BoatExpoDetails,
+    },
+    {
+        path: "/boats-promo",
+        name: "BoatsPromoExpo",
+        component: BoatsPromoExpo,
     },
     {
         path: "/villas",
@@ -62,6 +75,11 @@ const routes = [
         path: "/adventures",
         name: "AdventuresExpo",
         component: AdventuresExpo,
+    },
+    {
+        path: "/adventures-promo",
+        name: "AdventuresPromoExpo",
+        component: AdventuresPromoExpo,
     },
     {
         path: "/client",

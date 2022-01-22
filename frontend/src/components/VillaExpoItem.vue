@@ -134,6 +134,7 @@ export default {
             );
         },
         async handleReservationResult(componentRes) {
+            this.$router.push({ name: "ClientHomePage" });
             try {
                 await generalService.makeReservation(componentRes);
                 this.toast.fire({

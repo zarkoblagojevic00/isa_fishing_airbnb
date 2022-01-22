@@ -67,6 +67,13 @@
             }}
         </div>
     </div>
+    <button
+        v-if="isRegistered"
+        class="clickable primary transition-ease book-service-details"
+        @click.stop="openBookServiceDialog"
+    >
+        Book
+    </button>
 </template>
 
 <script>
@@ -75,6 +82,16 @@ import Map from "@/components/DisplayMap.vue";
 import Navbar from "../components/Navbar.vue";
 import axios from "../api/api.js";
 
+import fetchImageBackground from "../mixins/fetch-image-bg.js";
+import roleValidator from "../mixins/role-validator.js";
+import vnodeInSwal from "../mixins/vnode-in-swal.js";
+import swalCommons from "../mixins/swal-commons.js";
+import BookAdventure from "../components/BookAdventure.ce.vue";
+import generalService from "../services/general-service.js";
+import { getId } from "../utils/local-storage-util.js";
+import equipmentPicker from "../mixins/equipment-picker.js";
+import stateDateLoader from "../mixins/state-date-loader.js";
+
 export default {
     name: "AdventureProfile",
     components: {
@@ -82,9 +99,18 @@ export default {
         Map,
         Navbar,
     },
+    mixins: [
+        fetchImageBackground,
+        roleValidator,
+        vnodeInSwal,
+        swalCommons,
+        equipmentPicker,
+        stateDateLoader,
+    ],
     mounted() {
         this.loadAddressInfo();
         this.loadAdventure();
+        this.bookAdventure = this.loadAdventure();
         this.currentRole = localStorage.getItem("role");
     },
     data() {
@@ -92,6 +118,7 @@ export default {
             navbarItems: ["Home", "Quick reservation", "Gallery"],
             baseUrlInstructor: "/adventure/" + this.$route.params.id + "/",
             adventure: {},
+            bookAdventure: JSON.parse(localStorage.getItem("adventure")),
             currentRole: "",
             addressInfo: { longitude: 19.8227, latitude: 45.2396 },
             addressLoaded: false,
@@ -135,7 +162,6 @@ export default {
             ) {
                 return;
             }
-
             let receivedEq = additionalEquipment.split(";");
             for (let eq of receivedEq) {
                 let name = eq.split(":")[0];
@@ -146,6 +172,37 @@ export default {
                 this.additionalEquipmentArray.push({
                     name: name,
                     price: price,
+                });
+            }
+        },
+        openBookServiceDialog() {
+            this.showComponent(
+                BookAdventure,
+                {
+                    adventure: this.adventure,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                    userId: getId(),
+                },
+                this.bookSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    this.handleReservationResult(componentRes);
+                }
+            );
+        },
+        async handleReservationResult(componentRes) {
+            this.$router.push({ name: "ClientHomePage" });
+            try {
+                await generalService.makeReservation(componentRes);
+                this.toast.fire({
+                    icon: "success",
+                    title: "You reservation was successful. Check your email for reservation details!",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Service was made unavailable or was reserved before you finished reservation",
                 });
             }
         },
@@ -312,5 +369,14 @@ button {
 .left {
     text-align: left;
     width: 250px;
+}
+
+button.book-service-details {
+    width: 8%;
+    position: fixed;
+    font-size: 1.5rem;
+    bottom: 35%;
+    right: 10px;
+    background: #ada;
 }
 </style>

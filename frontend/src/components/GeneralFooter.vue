@@ -7,19 +7,27 @@
                 <div class="submenu">
                     General
                     <div class="options">
-                        <div class="option">Home page</div>
-                        <div class="option">Browse</div>
-                        <div class="option">Villas</div>
-                        <div class="option">Boats</div>
-                        <div class="option">Adventures</div>
+                        <div class="option" @click="$router.push('/')">
+                            Home page
+                        </div>
+                        <div class="option" @click="$router.push('/villas')">
+                            Villas
+                        </div>
+                        <div class="option" @click="$router.push('/boats')">
+                            Boats
+                        </div>
+                        <div
+                            class="option"
+                            @click="$router.push('/adventures')"
+                        >
+                            Adventures
+                        </div>
                     </div>
                 </div>
                 <div class="submenu">
                     account
                     <div class="options">
-                        <div class="option">login</div>
-                        <div class="option">Register</div>
-                        <div class="option">Forgot password</div>
+                        <div class="option" @click="GoToLogin()">login</div>
                     </div>
                 </div>
                 <div class="submenu">
@@ -46,6 +54,11 @@ export default {
         return {};
     },
     props: {},
+    methods: {
+        GoToLogin() {
+            window.location.href = "/login";
+        },
+    },
 };
 </script>
 

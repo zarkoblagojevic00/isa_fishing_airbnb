@@ -47,5 +47,7 @@ namespace API.DTOs
         public DateTime? AvailableTo { get; set; }
         public IEnumerable<int> ImageIds { get; set; }
 
+        public double AverageMark { get; set; }
+
     }
 }

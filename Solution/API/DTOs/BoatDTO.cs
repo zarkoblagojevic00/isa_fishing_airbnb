@@ -54,5 +54,9 @@ namespace API.DTOs
         public int Capacity { get; set; }
         public DateTime? AvailableFrom { get; set; }
         public DateTime? AvailableTo { get; set; }
+
+        public double AverageMark { get; set; }
+
+        public IEnumerable<BoatServiceNavigationTool> NavigationToolsObj { get; set; }
     }
 }

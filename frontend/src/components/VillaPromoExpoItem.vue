@@ -163,10 +163,7 @@ export default {
         sale() {
             return (
                 100 *
-                (1 -
-                    (this.promo.pricePerDay / this.villa.pricePerDay).toFixed(
-                        2
-                    ))
+                (1 - this.promo.pricePerDay / this.villa.pricePerDay).toFixed(2)
             );
         },
     },

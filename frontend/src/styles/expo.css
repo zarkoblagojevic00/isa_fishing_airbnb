@@ -109,3 +109,9 @@
     border: none;
 }
 
+.book-service {
+    margin-left: auto;
+    width: 10%;
+    font-size: 1.1rem;
+}
+

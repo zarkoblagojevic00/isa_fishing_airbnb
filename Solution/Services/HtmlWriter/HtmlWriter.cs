@@ -64,7 +64,7 @@ namespace Services.HtmlWriter
         public static string ReservationNotificationTemplate(Reservation reservation, Service service)
         {
             var stringBuilder = new StringBuilder();
-
+            var timeUnit = service.ServiceType == ServiceType.Adventure ? "hour" : "day";
             stringBuilder
                 .Append("<h3>New reservation!</h3>")
                 .Append("<p> Dear user,</p>")
@@ -74,7 +74,7 @@ namespace Services.HtmlWriter
                 .Append("<ul>")
                 .Append("<li><strong> Service name </strong>:").Append(service.Name).Append("</li>")
                 .Append("<li><strong> Creation date </strong>:").Append(reservation.ReservedDateTime).Append("</li>")
-                .Append("<li><strong> Price per day</strong>:").Append(reservation.Price).Append("</li>")
+                .Append($"<li><strong> Price per {timeUnit}</strong>:").Append(reservation.Price).Append("</li>")
                 .Append("<li><strong> Start date</strong>:").Append(reservation.StartDateTime).Append("</li>")
                 .Append("<li><strong> End date </strong>:").Append(reservation.EndDateTime).Append("</li>")
                 .Append("</ul>")

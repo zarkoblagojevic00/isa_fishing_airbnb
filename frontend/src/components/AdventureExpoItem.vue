@@ -1,5 +1,9 @@
 <template>
-    <div v-if="adventure" class="container" @click="showDetails()">
+    <div
+        v-if="adventure"
+        class="item-container shadow-item-clickable"
+        @click="showDetails()"
+    >
         <div class="img-container">
             <div
                 class="img"
@@ -7,155 +11,144 @@
             ></div>
         </div>
         <div class="expo-container">
-            <div class="title-mark-price">
-                <div>{{ adventure.name }}</div>
-                <star-rating
-                    :rating="3.6"
-                    :increment="0.1"
-                    :max-rating="5"
-                    :star-size="20"
-                    inactive-color="#555"
-                    active-color="#ada"
-                    read-only
-                    :show-rating="true"
-                >
-                </star-rating>
-
-                <div>{{ adventure.pricePerDay }}$ per day</div>
-                <div>
-                    <font-awesome-icon icon="map-marker-alt" /> Novi Sad, Serbia
+            <div>
+                <div class="expo-container-header">
+                    <div class="expo-container-name">{{ adventure.name }}</div>
+                    <div class="expo-container-primary-info">
+                        <star-rating
+                            v-if="adventure.averageMark"
+                            :rating="adventure.averageMark"
+                            :increment="0.1"
+                            :max-rating="5"
+                            :star-size="20"
+                            inactive-color="#555"
+                            active-color="#ada"
+                            read-only
+                            :show-rating="true"
+                        >
+                        </star-rating>
+                        <div v-else class="expo-contaner-not-reviewed">
+                            Not reviewed
+                        </div>
+                        <div>{{ adventure.pricePerDay }} $/hour</div>
+                        <div>
+                            <font-awesome-icon icon="map-marker-alt" />
+                            {{ adventure.address }}, {{ adventure.cityName }}
+                        </div>
+                    </div>
                 </div>
+                <hr />
             </div>
-            <hr />
             <p class="description">
                 {{ adventure.promoDescription }}
             </p>
-            <div class="additional"></div>
+            <div class="ammenity-container">
+                <div
+                    class="ammenity"
+                    v-for="i in baseEquipmentEntries.length <= 3
+                        ? baseEquipmentEntries.length
+                        : 3"
+                    :key="i"
+                >
+                    {{ baseEquipmentEntries[i - 1][0] }}
+                </div>
+                <div
+                    class="ammenity"
+                    v-for="i in additionalEquipmentEntries.length <= 2
+                        ? additionalEquipmentEntries.length
+                        : 2"
+                    :key="i"
+                >
+                    {{ additionalEquipmentEntries[i - 1][0] }}
+                </div>
+                <button
+                    v-if="isRegistered"
+                    class="clickable primary transition-ease book-service"
+                    @click.stop="openBookServiceDialog"
+                >
+                    Book
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import fetchImageBackground from "../mixins/fetch-image-bg.js";
+import roleValidator from "../mixins/role-validator.js";
+import vnodeInSwal from "../mixins/vnode-in-swal.js";
+import swalCommons from "../mixins/swal-commons.js";
 import StarRating from "vue-star-rating";
+import BookAdventure from "./BookAdventure.ce.vue";
+import generalService from "../services/general-service.js";
+import { getId } from "../utils/local-storage-util.js";
+import equipmentPicker from "../mixins/equipment-picker.js";
+import stateDateLoader from "../mixins/state-date-loader.js";
 export default {
     name: "AdventureExpoItem",
     components: {
         StarRating,
     },
-    mixins: [fetchImageBackground],
+    mixins: [
+        fetchImageBackground,
+        roleValidator,
+        vnodeInSwal,
+        swalCommons,
+        equipmentPicker,
+        stateDateLoader,
+    ],
     props: {
         adventure: {
             type: Object,
             required: true,
         },
     },
+    created() {
+        this.parseEquipment(
+            // TO DO Should be - this.adventure.additionalEquipment
+            undefined ||
+                "stavka1:0;stavka2:5;stavka3:10;stavka4:0;stavka5:10;stavka6:5;stavka7:10;stavka8:10;stavka9:10;stavka10:5;stavka11:10;stavka12:10"
+        );
+        console.log(this.equipment);
+    },
+
     methods: {
         showDetails() {
-            // localStorage.setItem("adventure", JSON.stringify(this.adventure));
-            // this.$router.push({ name: "AdventureExpoDetails" });
+            localStorage.setItem("adventure", JSON.stringify(this.adventure));
             const id = this.adventure.adventureId;
             this.$router.push(`/adventure/${id}/home`);
+        },
+        openBookServiceDialog() {
+            this.showComponent(
+                BookAdventure,
+                {
+                    adventure: this.adventure,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                    userId: getId(),
+                },
+                this.bookSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    this.handleReservationResult(componentRes);
+                }
+            );
+        },
+        async handleReservationResult(componentRes) {
+            this.$router.push({ name: "ClientHomePage" });
+            try {
+                await generalService.makeReservation(componentRes);
+                this.toast.fire({
+                    icon: "success",
+                    title: "You reservation was successful. Check your email for reservation details!",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Service was made unavailable or was reserved before you finished reservation",
+                });
+            }
         },
     },
 };
 </script>
-
-<style scoped>
-.container {
-    background-color: #fcfcfc;
-    max-width: 80%;
-    margin: 50px auto;
-    min-height: 26vh;
-    display: flex;
-    justify-content: space-between;
-    border-radius: 5px;
-    box-shadow: 0px 4px 8px 0 rgba(0, 0, 0, 0.6);
-    transition: all 0.2s ease-in;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.container:hover {
-    box-shadow: 0px 8px 12px 0 rgba(40, 27, 26, 0.6);
-}
-
-.container hr {
-    width: 100%;
-    height: 2px;
-    margin: 0;
-    background-color: #aca;
-    outline: none;
-    border: 1px solid #aca;
-    border-radius: 2px;
-}
-
-.img-container {
-    width: 22%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.img {
-    min-height: 170px;
-    min-width: 170px;
-    border-radius: 5px;
-}
-
-.expo-container {
-    min-height: 80%;
-    width: 75%;
-    padding-right: 5%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-}
-
-.title-mark-price {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-self: flex-start;
-    min-height: 20%;
-    font-size: 1rem;
-}
-
-.avgmark {
-    margin-right: -70px;
-}
-
-.description {
-    min-height: 80px;
-    text-align: justify;
-    font-size: 0.9 rem;
-    overflow: none;
-}
-
-.additional {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    min-height: 25%;
-    max-height: 25%;
-}
-
-.ammenity {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 2rem;
-    padding: 0.25em;
-    width: auto;
-    min-width: 70px;
-    height: 25px;
-    border-radius: 3px;
-    background: #aca;
-    outline: none;
-    color: #fff;
-    border: none;
-    font-size: 0.9rem;
-}
-</style>

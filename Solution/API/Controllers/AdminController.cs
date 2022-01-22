@@ -503,6 +503,12 @@ namespace API.Controllers
                     return BadRequest(Responses.UnavailableRightNow);
                 }
 
+                if (oldRequest.IsReviewed)
+                {
+                    return BadRequest("Cannot interract with user right now.");
+                }
+
+
                 oldRequest.IsReviewed = true;
                 oldRequest.IsApproved = request.IsApproved;
 
@@ -571,7 +577,32 @@ namespace API.Controllers
                     IsReviewed = information.iisu.iis.ii.IsReviewed,
                 });
 
-            return Ok(userIssueInformation);
+            var serviceOwners = UoW.GetRepository<IUserReadRepository>().GetAll()
+                .Where(u => u.UserType != UserType.Admin && u.UserType != UserType.Registered);
+
+            var clients = UoW.GetRepository<IUserReadRepository>().GetAll()
+                .Where(u => u.UserType == UserType.Registered);
+
+            var userIssueInformationServiceOwner = issues
+                .Join(clients, ii => ii.IssuedEntityId, s => s.UserId, (ii, s) => new { ii, s })
+                .Join(serviceOwners, iis => iis.ii.UserId, u => u.UserId, (iis, u) => new { iis, u })
+                .Select(information => new IssueInformationDTO
+                {
+                    IssueId = information.iis.ii.IssueId,
+                    IssuedEntityId = information.iis.s.UserId,
+                    UserName = information.u.Name,
+                    UserSurname = information.u.Surname,
+                    UserEmail = information.u.Email,
+                    ServiceOwnerName = information.iis.s.Name,
+                    ServiceOwnerSurname = information.iis.s.Surname,
+                    ServiceOwnerEmail = information.iis.s.Email,
+                    Reason = information.iis.ii.Reason,
+                    Response = "",
+                    CreatedDateTime = information.iis.ii.CreatedDateTime,
+                    IsReviewed = information.iis.ii.IsReviewed,
+                });
+
+            return Ok(userIssueInformation.Concat(userIssueInformationServiceOwner));
         }
 
         [HttpGet]
@@ -641,13 +672,24 @@ namespace API.Controllers
             double totalPrice = 0;
             foreach (var reservation in reservations)
             {
+                var service = services.Where(ser => ser.ServiceId == reservation.ServiceId)
+                    .FirstOrDefault();
+                if (service == null)
+                    continue;
+
                 TimeSpan span = reservation.EndDateTime.Subtract(reservation.StartDateTime);
-                double hours = span.TotalHours;
+
+                double spanDuration = 0;
+                if (service.ServiceType == ServiceType.Adventure)
+                    spanDuration = span.TotalHours;
+                else
+                    spanDuration = span.TotalDays;
+
                 var parsedEquipment = ParseAdditionalEquipment(reservation.AdditionalEquipment);
-                totalPrice += reservation.Price * hours;
+                totalPrice += reservation.Price * spanDuration;
                 foreach (var eq in parsedEquipment)
                 {
-                    totalPrice += eq.Price * hours;
+                    totalPrice += eq.Price * spanDuration;
                 }
             }
             return Ok(totalPrice * percentageSystemTakes * 0.01);

@@ -30,6 +30,7 @@
                 class="primaryContained"
                 type="submit"
                 @click="onRespondToIssue(issue)"
+                :disabled="issue.response == ''"
             >
                 Respond
             </button>
@@ -157,5 +158,9 @@ button.primaryContained {
 }
 button.primaryContained:hover {
     background: #193649;
+}
+
+button.primaryContained:disabled {
+    background: #6c6c6d;
 }
 </style>

@@ -15,5 +15,7 @@ INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, P
 INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (9, 4, 'Adminos', 'Adminaro', 'adminadmin', 'Bulevar vecnih ratnika 140', 138, '066103132', 'admin@gmail.com', 1, 1)
 INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (10, 3, 'Stefanos', 'Ljubovic', 'ljubaljuba', 'Bulevar vecnih ratnika 180', 138, '066103130', 'instructor@gmail.com', 1, 1)
 INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (11, 0, 'ClientTest', 'Test', 'strongmf', 'Bulevar vecnih ratnika 150', 138, '0661115555', 'maraipera5@gmail.com', 1, 1)
+INSERT INTO Users (UserId, UserType, Name, Surname, Password, Address, CityId, PhoneNumber, Email, IsAccountVerified, IsAccountActive) VALUES (12, 3, 'Instro', 'Ljubovic', 'ljubaljuba', 'Bulevar vecnih ratnika 180', 138, '066103130', 'maraipera4@gmail.com', 1, 1)
+
 SET IDENTITY_INSERT Users OFF;
 

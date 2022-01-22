@@ -1,18 +1,18 @@
 <template>
-    <div v-if="adventure" class="item-container shadow-item-clickable">
+    <div v-if="service" class="item-container shadow-item-clickable">
         <div class="img-container">
-            <div class="img" :style="getImageStyle(adventure.imageIds[0])">
-                <div class="promo-on-img">Promo</div>
+            <div class="img" :style="getImageStyle(service.imageIds[0])">
+                <div v-if="reservation.isPromo" class="promo-on-img">Promo</div>
             </div>
         </div>
         <div class="expo-container">
             <div>
                 <div class="expo-container-header">
-                    <div class="expo-container-name">{{ adventure.name }}</div>
+                    <div class="expo-container-name">{{ service.name }}</div>
                     <div class="expo-container-primary-info">
                         <star-rating
-                            v-if="adventure.averageMark"
-                            :rating="adventure.averageMark"
+                            v-if="service.averageMark"
+                            :rating="service.averageMark"
                             :increment="0.1"
                             :max-rating="5"
                             :star-size="20"
@@ -25,28 +25,32 @@
                         <div v-else class="expo-contaner-not-reviewed">
                             Not reviewed
                         </div>
-                        <div>
-                            <span class="adventurePricePerDay">{{
-                                adventure.pricePerDay
+                        <div v-if="reservation.isPromo">
+                            <span class="reservationPricePerDay">{{
+                                service.pricePerDay
                             }}</span>
                             <span class="promoPricePerDay">{{
-                                promo.pricePerDay
+                                reservation.price
                             }}</span>
-                            $/hour
+                            $/day
                             <span class="promoPricePerDay">
                                 {{ sale }}% off
                             </span>
                         </div>
+                        <div v-else>
+                            {{ reservation.price }}
+                            $/day
+                        </div>
                         <div>
                             <font-awesome-icon icon="map-marker-alt" />
-                            {{ adventure.address }}, {{ adventure.cityName }}
+                            {{ service.address }}, {{ service.cityName }}
                         </div>
                     </div>
                 </div>
                 <hr />
             </div>
             <p class="description">
-                {{ adventure.promoDescription }}
+                {{ service.promoDescription }}
             </p>
             <div class="ammenity-container">
                 <div
@@ -72,17 +76,25 @@
                             readonly
                             range
                             placeholder="Select a date range"
+                            :enableTimePicker="false"
                             inputClassName="date-picker-input"
                             hideInputIcon
                         />
                     </div>
+                    <div
+                        v-if="history && !reservation.isCanceled"
+                        class="history-buttons"
+                    ></div>
                     <button
-                        v-if="isRegistered"
+                        v-if="!history && !reservation.isCanceled"
                         class="clickable danger transition-ease"
-                        @click.stop="makeReservation"
+                        @click.stop="CancelReservation"
                     >
-                        Book
+                        Cancel
                     </button>
+                    <div v-if="reservation.isCanceled" class="promoPricePerDay">
+                        Canceled
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,7 +109,6 @@ import equipmentPicker from "../mixins/equipment-picker.js";
 
 import StarRating from "vue-star-rating";
 import generalService from "../services/general-service.js";
-import { getId } from "../utils/local-storage-util.js";
 import Datepicker from "vue3-date-time-picker";
 
 export default {
@@ -107,53 +118,50 @@ export default {
     },
     mixins: [fetchImageBackground, roleValidator, swalCommons, equipmentPicker],
     props: {
-        adventure: {
+        service: {
             type: Object,
             required: true,
         },
-        promo: {
+        reservation: {
             type: Object,
             required: true,
+        },
+        history: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
         return {
-            fromToDate: [this.promo.startDateTime, this.promo.endDateTime],
+            fromToDate: [
+                this.reservation.startDateTime,
+                this.reservation.endDateTime,
+            ],
         };
     },
 
     methods: {
-        async makeReservation() {
-            const reservation = this.buildReservation();
+        async CancelReservation() {
             try {
-                await generalService.makeReservation(reservation);
-                this.$router.push({ name: "ClientHomePage" });
+                const reservationId = this.reservation.reservationId;
+                console.log(reservationId);
+                await generalService.CancelClientReservation(reservationId);
+                document.location.reload();
                 this.toast.fire({
                     icon: "success",
-                    title: "You reservation was successful. Check your email for reservation details!",
+                    title: "You reservation is canceled!",
                 });
             } catch (error) {
                 this.toast.fire({
                     icon: "error",
-                    title: "Promo action was made unavailable or was reserved before you finished reservation",
+                    title: "You reservation was not canceled!",
                 });
             }
-        },
-        buildReservation() {
-            return {
-                userId: getId(),
-                serviceId: this.adventure.adventureId,
-                additionalEquipment: this.promo.addedBenefits,
-                price: this.promo.pricePerDay,
-                startDateTime: this.promo.startDateTime,
-                endDateTime: this.promo.endDateTime,
-                promoId: this.promo.promoActionId,
-            };
         },
     },
     created() {
         this.parseEquipment(
-            this.promo.addedBenefits ||
+            this.reservation.additionalEquipment ||
                 "stavka1:0;stavka2:5;stavka3:10;stavka4:0;stavka5:10;stavka6:5;stavka7:10;stavka8:10;stavka9:10;stavka10:5;stavka11:10;stavka12:10"
         );
         console.log(this.equipment);
@@ -162,10 +170,9 @@ export default {
         sale() {
             return (
                 100 *
-                (
-                    1 -
-                    this.promo.pricePerDay / this.adventure.pricePerDay
-                ).toFixed(2)
+                (1 - this.reservation.price / this.service.pricePerDay).toFixed(
+                    2
+                )
             );
         },
     },
@@ -183,14 +190,14 @@ export default {
 }
 
 .date-picker-container {
-    width: 66%;
+    width: 60%;
 }
 
 .calendar-icon {
     margin-top: 0.5em;
 }
 
-.adventurePricePerDay {
+.servicePricePerDay {
     text-decoration: line-through;
 }
 

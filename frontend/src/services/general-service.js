@@ -23,6 +23,16 @@ const generalService = {
             relPath: "CancelClientReservation",
             data: { reservationId },
         }),
+    sendReview: (mark) =>
+        serverEndpoint.post({
+            relPath: "CreateNewClientMark",
+            data: mark,
+        }),
+    sendIssue: (issue) =>
+        serverEndpoint.post({
+            relPath: "CreateNewClientIssue",
+            data: issue,
+        }),
 };
 
 export { generalService as default };

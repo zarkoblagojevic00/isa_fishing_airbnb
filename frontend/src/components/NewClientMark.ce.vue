@@ -1,0 +1,116 @@
+<template>
+    <div class="book-container">
+        <div class="img-container">
+            <div
+                class="img img-title-container"
+                :style="getImageStyle(service.imageIds[0])"
+            >
+                <div class="img-primary-content">
+                    <div class="img-title-address">
+                        <div class="img-service-name">{{ service.name }}</div>
+                        <div class="img-service-address">
+                            <font-awesome-icon
+                                :icon="faMapMarkerAlt"
+                            ></font-awesome-icon>
+                            {{ service.address }}, {{ service.cityName }}
+                        </div>
+                    </div>
+                    <div class="img-price-per-day">
+                        {{ service.pricePerDay }} $/day
+                    </div>
+                </div>
+            </div>
+            <div class="book-form-container">
+                <div class="book-title">
+                    <div>We are grateful for your feedback!</div>
+                </div>
+
+                <div class="input-mark-form">
+                    <div class="input-mark">
+                        <div class="mark-label">Mark</div>
+                        <StarRating
+                            v-model:rating="newMark.givenMark"
+                            :max-rating="5"
+                            :star-size="60"
+                            inactive-color="#555"
+                            active-color="#ada"
+                            :show-rating="true"
+                        />
+                    </div>
+                    <div class="input-comment">
+                        <div class="mark-label">Comment</div>
+                        <textarea
+                            class="input-comment-textarea"
+                            v-model="newMark.description"
+                            placeholder="Enter your description"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import fetchImageBackground from "../mixins/fetch-image-bg.js";
+import fawsInShadowRoot from "../mixins/faws-in-shadowroot.js";
+import StarRating from "vue-star-rating";
+import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+
+export default {
+    props: {
+        service: {
+            type: Object,
+            requred: true,
+        },
+        reservation: {
+            type: Object,
+            requred: true,
+        },
+    },
+    mixins: [fetchImageBackground, fawsInShadowRoot],
+
+    components: {
+        StarRating,
+    },
+
+    data() {
+        return {
+            newMark: {
+                serviceId: this.reservation.serviceId,
+                givenMark: 0,
+                description: "",
+            },
+        };
+    },
+
+    methods: {
+        getResult() {
+            return this.newMark;
+        },
+    },
+
+    computed: {
+        faMapMarkerAlt() {
+            return faMapMarkerAlt;
+        },
+    },
+};
+</script>
+<style src="../styles/form.css"></style>
+<style src="../styles/book.css"></style>
+<style>
+.mark-label {
+    font-size: 2rem;
+    margin-bottom: 0.25em;
+    margin-top: 0.25em;
+}
+
+.input-comment-textarea {
+    width: 500px;
+    height: 200px;
+    font-size: 1.1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding: 0.5em;
+}
+</style>

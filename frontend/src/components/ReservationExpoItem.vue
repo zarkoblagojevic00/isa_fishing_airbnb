@@ -84,7 +84,33 @@
                     <div
                         v-if="history && !reservation.isCanceled"
                         class="history-buttons"
-                    ></div>
+                    >
+                        <button
+                            v-if="!service.isReviewedByUser"
+                            class="
+                                clickable
+                                primary
+                                transition-ease
+                                history-button
+                            "
+                            @click="openNewClientMarkDialog"
+                        >
+                            Review
+                        </button>
+
+                        <button
+                            v-if="!service.isIssuedByUser"
+                            class="
+                                clickable
+                                danger
+                                transition-ease
+                                history-button
+                            "
+                            @click="openNewClientIssueDialog"
+                        >
+                            Issue
+                        </button>
+                    </div>
                     <button
                         v-if="!history && !reservation.isCanceled"
                         class="clickable danger transition-ease"
@@ -106,17 +132,27 @@ import fetchImageBackground from "../mixins/fetch-image-bg.js";
 import roleValidator from "../mixins/role-validator.js";
 import swalCommons from "../mixins/swal-commons.js";
 import equipmentPicker from "../mixins/equipment-picker.js";
+import vnodeInSwal from "../mixins/vnode-in-swal.js";
 
 import StarRating from "vue-star-rating";
 import generalService from "../services/general-service.js";
 import Datepicker from "vue3-date-time-picker";
+
+import NewClientMark from "./NewClientMark.ce.vue";
+import NewClientIssue from "./NewClientIssue.ce.vue";
 
 export default {
     components: {
         StarRating,
         Datepicker,
     },
-    mixins: [fetchImageBackground, roleValidator, swalCommons, equipmentPicker],
+    mixins: [
+        fetchImageBackground,
+        roleValidator,
+        swalCommons,
+        equipmentPicker,
+        vnodeInSwal,
+    ],
     props: {
         service: {
             type: Object,
@@ -146,7 +182,7 @@ export default {
                 const reservationId = this.reservation.reservationId;
                 console.log(reservationId);
                 await generalService.CancelClientReservation(reservationId);
-                document.location.reload();
+                // document.location.reload();
                 this.toast.fire({
                     icon: "success",
                     title: "You reservation is canceled!",
@@ -157,6 +193,92 @@ export default {
                     title: "You reservation was not canceled!",
                 });
             }
+        },
+
+        openNewClientMarkDialog() {
+            this.showComponent(
+                NewClientMark,
+                {
+                    service: this.service,
+                    reservation: this.reservation,
+                },
+                this.sendSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    if (!this.isMarkValid(componentRes)) {
+                        this.toast.fire({
+                            icon: "warning",
+                            title: "All fields must be filled in order to send your review",
+                        });
+                        return;
+                    }
+                    this.handleMarkResult(componentRes);
+                }
+            );
+        },
+
+        async handleMarkResult(mark) {
+            console.log(mark);
+
+            try {
+                await generalService.sendReview(mark);
+                this.toast.fire({
+                    icon: "success",
+                    title: "Your review was handed in.",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Your review was not handed in",
+                });
+            }
+            document.location.reload();
+        },
+
+        openNewClientIssueDialog() {
+            this.showComponent(
+                NewClientIssue,
+                {
+                    service: this.service,
+                    reservation: this.reservation,
+                },
+                this.sendSetupObject,
+                (componentRes, sawlRes) => {
+                    if (!sawlRes.isConfirmed) return;
+                    if (!this.isIssueValid(componentRes)) {
+                        this.toast.fire({
+                            icon: "warning",
+                            title: "All fields must be filled in order to send your review",
+                        });
+                        return;
+                    }
+                    this.handleIssueResult(componentRes);
+                }
+            );
+        },
+
+        async handleIssueResult(issue) {
+            console.log(issue);
+            try {
+                await generalService.sendIssue(issue);
+                this.toast.fire({
+                    icon: "success",
+                    title: "Your issue was handed in.",
+                });
+            } catch (error) {
+                this.toast.fire({
+                    icon: "error",
+                    title: "Your issue was not handed in",
+                });
+            }
+            // document.location.reload();
+        },
+
+        isMarkValid(mark) {
+            return mark.description && mark.givenMark > 0 && mark.givenMark < 5;
+        },
+        isIssueValid(issue) {
+            return issue.reason;
         },
     },
     created() {
@@ -205,5 +327,11 @@ export default {
     color: var(--danger);
     margin-left: 15px;
     font-weight: bold;
+}
+
+.history-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 33%;
 }
 </style>

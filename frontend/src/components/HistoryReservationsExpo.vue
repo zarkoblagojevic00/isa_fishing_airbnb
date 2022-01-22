@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h1>Booked reservations</h1>
+        <h1>Reservations history</h1>
         <div>
             <div v-if="reservations.length">
                 <Sorters
@@ -15,7 +15,7 @@
                     :key="idx"
                     :reservation="reservationService.reservation"
                     :service="reservationService.service"
-                    booked
+                    history
                 ></ReservationExpoItem>
             </div>
         </div>
@@ -50,7 +50,7 @@ export default {
     },
 
     async created() {
-        this.reservations = await generalService.getBookedClientReservations(
+        this.reservations = await generalService.getHistoryClientReservations(
             getId()
         );
     },

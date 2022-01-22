@@ -151,6 +151,112 @@ namespace API.Controllers
             return Ok(Responses.Ok);
         }
 
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult GetBookedClientReservation(int userId) {
+            return Ok(getAllClientReservations(userId).Where(r => r.Reservation.StartDateTime > DateTime.Now));
+        }
+
+        [HttpGet]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult GetHistoryClientReservation(int userId)
+        {
+            return Ok(getAllClientReservations(userId).Where(r => r.Reservation.EndDateTime < DateTime.Now));
+        }
+
+        private IEnumerable<ClientReservationOverviewDTO>getAllClientReservations(int userId)
+        {
+            var userReservations = UoW.GetRepository<IReservationReadRepository>().GetAll().Where(r => r.UserId == userId);
+            var services = UoW.GetRepository<IServiceReadRepository>().GetAll();
+
+            var result = services.Join(userReservations, x => x.ServiceId, y => y.ServiceId, (x, y) => new ClientReservationOverviewDTO()
+            {
+                Reservation = new ReservationOverviewDTO() {
+                    ReservationId = y.ReservationId,
+                    ServiceId = y.ServiceId,
+                    UserId = y.UserId,
+                    StartDateTime = y.StartDateTime,
+                    EndDateTime = y.EndDateTime,
+                    IsPromo = y.IsPromo,
+                    IsCanceled = y.IsCanceled,
+                    ReservedDateTime = y.ReservedDateTime,
+                    Price = y.Price,
+                    AdditionalEquipment = y.AdditionalEquipment,
+                },
+                Service = new ServiceOverviewDTO() {
+                    AdditionalEquipment = x.AdditionalEquipment,
+                    CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                    Address = x.Address,
+                    AvailableFrom = x.AvailableFrom,
+                    AvailableTo = x.AvailableTo,
+                    Capacity = x.Capacity,
+                    IsPercentageTakenFromCanceledReservations = x.IsPercentageTakenFromCanceledReservations,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    Name = x.Name,
+                    PercentageToTake = x.PercentageToTake,
+                    PricePerDay = x.PricePerDay,
+                    PromoDescription = x.PromoDescription,
+                    TermsOfUse = x.PromoDescription,
+                    AdventureId = x.ServiceId,
+                    ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                    AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+                },
+            });
+            return result;
+
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
+        public IActionResult CancelClientReservation(ReservationIdDTO reservationIdDTO)
+        {
+            int userId = GetUserIdFromCookie();
+            int reservationId = reservationIdDTO.ReservationId;
+            var reservation = UoW.GetRepository<IReservationReadRepository>().GetById(reservationId);       
+            if (reservation == null)
+            {
+                return BadRequest();
+            }
+            if (reservation.UserId != userId)
+            {
+                return Unauthorized();
+            }
+            
+            try
+            {
+                UoW.BeginTransaction();
+
+                reservation.IsCanceled = true;
+                UoW.GetRepository<IReservationWriteRepository>().Update(reservation);
+
+                if (reservation.IsPromo) {
+                    var promo = UoW.GetRepository<IPromoActionReadRepository>()
+                        .GetAll()
+                        .FirstOrDefault(p => p.ServiceId == reservation.ServiceId
+                        && p.StartDateTime == reservation.StartDateTime
+                        && p.EndDateTime == reservation.EndDateTime);
+
+                    if (promo == null)
+                    {
+                        return BadRequest();
+                    }
+
+                    promo.IsTaken = false;
+                    UoW.GetRepository<IPromoActionWriteRepository>().Update(promo);
+                }
+
+                UoW.Commit();
+            }
+
+            catch (Exception e)
+            {
+                UoW.Rollback();
+                return Problem(e.Message);
+            }
+            return Ok(Responses.Ok);
+        }
+
         [HttpPost]
         [TypeFilter(typeof(CustomAuthorizeAttribute), Arguments = new object[] { true, UserType.Registered })]
         public IActionResult CreateClientReservation(ClientNewReservationDTO reservationDto)
@@ -252,8 +358,8 @@ namespace API.Controllers
                     ReservedDateTime = DateTime.Now,
                     AdditionalEquipment = reservationDto.AdditionalEquipment,
                     Price = reservationDto.Price,
-                    StartDateTime = reservationDto.StartDateTime,
-                    EndDateTime = reservationDto.EndDateTime,
+                    StartDateTime = (promo == null) ? reservationDto.StartDateTime : promo.StartDateTime,
+                    EndDateTime = (promo == null) ? reservationDto.EndDateTime : promo.EndDateTime,
                     IsPromo = promo != null,
                 };
 

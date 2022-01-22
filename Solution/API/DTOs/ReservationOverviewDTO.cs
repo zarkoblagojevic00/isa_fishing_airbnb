@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Domain.Entities.Helpers;
 
-namespace Domain.Entities
+namespace API.DTOs
 {
-    public class Reservation : CalendarItem
+    public class ReservationOverviewDTO
     {
         public virtual int ReservationId { get; set; }
         public virtual int UserId { get; set; }
@@ -15,11 +13,9 @@ namespace Domain.Entities
         public virtual DateTime ReservedDateTime { get; set; }
         public virtual bool IsPromo { get; set; }
         public virtual bool IsCanceled { get; set; }
-        public virtual bool IsServiceUnavailableMarker { get; set; }
-        public virtual int? ReportId { get; set; }
-        public virtual int? MarkId { get; set; }
         public virtual string AdditionalEquipment { get; set; }
         public virtual double Price { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
     }
 }
-

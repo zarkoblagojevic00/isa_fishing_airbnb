@@ -1,7 +1,9 @@
 <template>
     <div v-if="villa" class="item-container shadow-item-clickable">
         <div class="img-container">
-            <div class="img" :style="getImageStyle(villa.imageIds[0])"></div>
+            <div class="img" :style="getImageStyle(villa.imageIds[0])">
+                <div class="promo-on-img">Promo</div>
+            </div>
         </div>
         <div class="expo-container">
             <div>

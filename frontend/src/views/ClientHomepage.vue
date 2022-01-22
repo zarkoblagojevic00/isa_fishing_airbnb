@@ -1,7 +1,7 @@
 <template>
     <div class="whole-page">
-        <div class="wrapper">
-            <div class="menu">
+        <div class="container">
+            <div class="menu sidebar vertical-scroll-no-bar fix-margin-top">
                 <div
                     class="menu-item"
                     @click="ChangeMode('ClientBookedReservations')"
@@ -98,11 +98,14 @@
                 </div> -->
             </div>
 
-            <div class="content">
+            <div class="service-content">
                 <ClientWelcome v-if="mode == 'ClientWelcome'" />
                 <VillaOwnerProfile v-if="mode == 'ViewProfile'" />
                 <VillaOwnerPassChange v-if="mode == 'ChangePass'" />
                 <VillaOwnerDeletion v-if="mode == 'RequestDeletion'" />
+                <BookedReservationsExpo
+                    v-if="mode == 'ClientBookedReservations'"
+                />
             </div>
         </div>
     </div>
@@ -113,14 +116,16 @@ import ClientWelcome from "../components/ClientWelcome.vue";
 import VillaOwnerProfile from "../components/VillaOwnerProfile.vue";
 import VillaOwnerPassChange from "../components/VillaOwnerPassChange.vue";
 import VillaOwnerDeletion from "../components/VillaAccountDeletion.vue";
+import BookedReservationsExpo from "../components/BookedReservationsExpo.vue";
 
 export default {
-    name: "VillaProfile",
+    name: "ClientHomepage",
     components: {
         ClientWelcome,
         VillaOwnerProfile,
         VillaOwnerPassChange,
         VillaOwnerDeletion,
+        BookedReservationsExpo,
     },
     data() {
         return {
@@ -133,13 +138,7 @@ export default {
             window.$("#" + newname).slideToggle();
         },
         ChangeMode(newMode) {
-            if (newMode == "AddNewVilla") {
-                this.chosenVilla = 0;
-            }
             this.mode = newMode;
-        },
-        ChangeSelectedVilla(newVilla) {
-            this.chosenVilla = newVilla;
         },
     },
 };
@@ -147,36 +146,25 @@ export default {
 
 <style scoped>
 .whole-page {
-    height: 1000px;
-    padding: 20px;
-    background-color: #cecece;
-    display: flex;
-    justify-content: center;
+    width: 80%;
+    margin: auto;
     position: relative;
 }
 
-.wrapper {
-    height: 100%;
-    width: 1500px;
-    display: flex;
-    flex-direction: row;
-}
-
 .menu {
-    border-radius: 5px;
-    background-color: gray;
-    height: 100%;
-    width: 300px;
+    margin-top: 30px;
+    border-radius: 0.25em;
+    background-color: #99a199;
+    width: 17%;
     display: flex;
     flex-direction: column;
-    margin-right: 10px;
 }
 
 .menu-item {
-    background-color: #333;
+    background-color: var(--primary-dark);
     height: 70px;
     border-bottom: 1px solid #c3c3c3;
-    border-radius: 7px;
+    border-radius: 0.3em;
     background-position: left 25px center;
     background-repeat: no-repeat;
     display: flex;
@@ -188,7 +176,7 @@ export default {
 }
 
 .menu-item:hover {
-    background-color: #a5978b;
+    background-color: var(--primary);
 }
 
 .menu-text {
@@ -219,14 +207,22 @@ export default {
     width: 100%;
     padding-left: 20px;
     border-bottom: 1px solid #333;
-    border-radius: 7px;
+    border-radius: 0.3em;
     box-sizing: border-box;
     height: 60px;
 }
 
 .submenu-item:hover {
-    background-color: #a5978b;
+    background-color: var(--primary);
     cursor: pointer;
+}
+
+.service-content {
+    width: 80%;
+}
+
+.item-container {
+    width: 100%;
 }
 
 @media (max-width: 500px) {

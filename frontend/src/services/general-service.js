@@ -33,6 +33,13 @@ const generalService = {
             relPath: "CreateNewClientIssue",
             data: issue,
         }),
+    unsubscribe: (reservationId) =>
+        serverEndpoint.post({
+            relPath: "CancelClientSubscription",
+            data: { reservationId },
+        }),
+    getSubscriptions: () =>
+        serverEndpoint.get({ relPath: "GetClientSubscriptions" }),
 };
 
 export { generalService as default };

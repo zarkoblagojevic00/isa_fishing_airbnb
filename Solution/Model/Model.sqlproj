@@ -109,6 +109,7 @@
     <None Include="MasterData\LOCAL\PromoActions.Table.sql" />
     <None Include="MasterData\LOCAL\AdditionalInstructorInfos.Table.sql" />
     <None Include="MasterData\LOCAL\NavigationTools.Table.sql" />
+    <None Include="MasterData\LOCAL\LinkNavigationBoat.Table.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="MasterData\Script.PostDeployment.sql" />

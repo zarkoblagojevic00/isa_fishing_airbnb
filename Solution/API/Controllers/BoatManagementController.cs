@@ -7,6 +7,7 @@ using API.ConfigurationObjects;
 using API.Controllers.Base;
 using API.DTOs;
 using Domain.Entities;
+using Domain.Entities.Helpers;
 using Domain.Repositories;
 using Domain.UnitOfWork;
 using FluentNHibernate.Utils;
@@ -24,6 +25,65 @@ namespace API.Controllers
     {
         public BoatManagementController(IUnitOfWork uow) : base(uow)
         {
+        }
+
+        [HttpGet]
+        public IActionResult SearchBoats(
+            [FromQuery] ServiceSearchParametersDTO searchParams)
+        {
+            int userId = -1;
+            try
+            {
+                userId = GetUserIdFromCookie();
+            }
+            catch (Exception ignore) { };
+
+            ServiceSearchParameters @params = new()
+            {
+                ServiceName = searchParams.Name ?? "",
+                LocationName = searchParams.Location ?? "",
+                DateRange = new CalendarItem() { StartDateTime = searchParams.FromDate, EndDateTime = searchParams.ToDate },
+                PriceRange = new PriceRange(searchParams.FromPrice, searchParams.ToPrice),
+                GivenMark = searchParams.GivenMark,
+                Capacity = searchParams.Capacity,
+            };
+
+            var availableServices = new ServiceFinder(ServiceType.Boat, UoW).FindServices(@params, userId);
+
+            var additionalInformation = UoW.GetRepository<IAdditionalBoatServiceInfoReadRepository>().GetAll();
+            var linkNavigationRepo = UoW.GetRepository<ILinkNavigationBoatReadRepository>();
+            var navigationToolRepo = UoW.GetRepository<IBoatServiceNavigationToolReadRepository>();
+
+            var result = availableServices.Select(fut => fut.Service).Join(additionalInformation, x => x.ServiceId, y => y.ServiceId, (x, y) => new BoatDTO()
+            {
+                BoatId = x.ServiceId,
+                Name = x.Name,
+                AdditionalEquipment = x.AdditionalEquipment,
+                BoatType = y.BoatType,
+                Length = y.Length,
+                EngineNum = y.NumberOfEngines,
+                EnginePower = y.PowerOfEngines,
+                Speed = y.MaxSpeed,
+                CityName = UoW.GetRepository<ICityReadRepository>().GetById(x.CityId).Name,
+                Address = x.Address,
+                AvailableFrom = x.AvailableFrom,
+                AvailableTo = x.AvailableTo,
+                Capacity = x.Capacity,
+                IsPercentageTaken = x.IsPercentageTakenFromCanceledReservations,
+                PercentageToTake = x.PercentageToTake,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                PricePerDay = x.PricePerDay,
+                PromoDescription = x.PromoDescription,
+                TermsOfUse = x.PromoDescription,
+                ImageIds = UoW.GetRepository<IImageReadRepository>().GetAll().Where(z => z.ServiceId == x.ServiceId).Select(z => z.ImageId),
+                AverageMark = new AverageMarkCalculator(UoW).CalculateAverageMark(x.ServiceId),
+                NavigationToolsObj = linkNavigationRepo
+                .GetAll()
+                .Where(p => p.ServiceId == x.ServiceId)
+                .Select(n => navigationToolRepo.GetById(n.BoatServiceNavigationToolId))
+            });
+            return Ok(result);
         }
 
         [HttpGet]

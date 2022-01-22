@@ -207,6 +207,14 @@ namespace API.Controllers
                     }
                 }
 
+                if (service.ServiceType == ServiceType.Adventure)
+                {
+                    var unavailabilityService = new UserUnavailabilityValidationService(UoW);
+                    bool isAvailable = unavailabilityService.IsInstructorAvailable(service.OwnerId, reservationDto.StartDateTime, reservationDto.EndDateTime);
+                    if (!isAvailable)
+                        return BadRequest(Responses.DatesOverlap);
+                }
+
                 var union = GetRelevantDateIntervalsService(service.ServiceId);
                 var intervalToCheck = new CalendarItem()
                 {
@@ -228,6 +236,12 @@ namespace API.Controllers
                 }
             }
 
+            if (service.ServiceType == ServiceType.Boat && reservationDto.IsCaptain == null)
+            {
+                return BadRequest(Responses.MissingResponsibility);
+            }
+
+            
             try
             {
                 var newReservation = new Reservation()
@@ -240,9 +254,23 @@ namespace API.Controllers
                     StartDateTime = reservationDto.StartDateTime,
                     EndDateTime = reservationDto.EndDateTime,
                     IsPromo = promo != null,
-                }; ;
+                };
 
                 UoW.GetRepository<IReservationWriteRepository>().Add(newReservation);
+
+                if (service.ServiceType == ServiceType.Boat)
+                {
+                    var boatResDetails = new BoatReservationDetail()
+                    {
+                        BoatOwnerResponsibilityType = reservationDto.IsCaptain.Value
+                            ? BoatOwnerResponsibilityType.Captain
+                            : BoatOwnerResponsibilityType.FirstAssistant,
+                        IsPromo = (reservationDto.PromoId >= 0),
+                        RelevantId = (reservationDto.PromoId >= 0) ? reservationDto.PromoId : newReservation.ReservationId,
+                    };
+                    UoW.GetRepository<IBoatReservationDetailWriteRepository>().Add(boatResDetails);
+                }
+
 
                 UoW.Commit();
 

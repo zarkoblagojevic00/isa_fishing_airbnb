@@ -31,5 +31,7 @@ namespace API.DTOs
         [CustomDateValidation(ErrorMessage = "End date has to be in the future!")]
         [CustomDateLessThan("StartDateTime", ErrorMessage = "The end date has to be after the start date!")]
         public DateTime EndDateTime { get; set; }
+
+        public bool? IsCaptain { get; set; }
     }
 }

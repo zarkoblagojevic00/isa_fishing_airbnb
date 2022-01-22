@@ -21,6 +21,7 @@ import AdminAnalytics from "../views/AdminAnalytics.vue";
 import VillasExpo from "../views/VillasExpo.vue";
 import VillaExpoDetails from "../views/VillaExpoDetails";
 import BoatsExpo from "../views/BoatsExpo.vue";
+import BoatExpoDetails from "../views/BoatExpoDetails.vue";
 import AdventuresExpo from "../views/AdventuresExpo.vue";
 import EditAdventure from "../views/EditAdventure.vue";
 import AdventureNewQuickAction from "../views/AdventureNewQuickAction.vue";
@@ -43,6 +44,11 @@ const routes = [
         path: "/boats",
         name: "BoatsExpo",
         component: BoatsExpo,
+    },
+    {
+        path: "/boats/details",
+        name: "BoatExpoDetails",
+        component: BoatExpoDetails,
     },
     {
         path: "/villas",

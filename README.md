@@ -3,7 +3,7 @@
 - Student 1: RA 44/2018 Žarko Blagojević
 - Student 2: RA 5/2018 Nikola Milosavljević
 - Student 3: RA 3/2018 Srđan Šuković 
-## Neophodne stvari za pokretanje projekta
+## Neophodne stvari za pokretanje projekta dodat tekst
 ---
 Kako bi se pokrenuo projekat neophodno je instalirati sledeće programe
 - [Microsoft SQL server](https://go.microsoft.com/fwlink/?linkid=866662)
